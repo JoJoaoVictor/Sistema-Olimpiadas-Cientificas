@@ -1,0 +1,17 @@
+{
+  "users": [],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Usuario Comum"
+    },
+    {
+      "id": "2",
+      "name": "Revisor"
+    },
+    {
+      "id": "3",
+      "name": "Professor"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+.newproject_container{
+    width: 850px;
+    margin: 0 auto;
+    padding:1em;
+
+    
+    
+}
+.newproject_container h1{
+  background-color: white;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow:  4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  border: 1px solid #0000006c;
+  
+}
+

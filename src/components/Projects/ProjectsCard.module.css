@@ -1,0 +1,127 @@
+.project_container {
+  padding: 0,1em;
+  width: 100%;
+  max-height: 500px;
+  max-width: 300px;
+  margin: 1em auto;
+  display: flex;
+  position: relative;
+
+}
+.card {
+  width: 300%; /* para grid */
+}
+
+.listView .card {
+  width: 100%; /* para lista */
+}
+
+.card_header{
+    background-color: rgb(0, 0, 0);
+    border-radius: 8px 8px 0 0;
+    padding: 1em;
+    color: #ffffff;
+}
+.card_body {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  color: #000000;
+  box-shadow:  2px px rgba(0, 0, 0, 0.1);
+  overflow: hidden ;
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+
+}
+.card_body:hover {
+  box-shadow:  8px 16px rgba(0, 0, 0, 0.2);
+}
+.categori_text {
+    display: flex;
+    align-items: center;
+    
+}
+/* Estilo base do span */
+.categori_text span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid rgb(0, 0, 0);
+  }
+  
+  /* Classes específicas para cada categoria */
+  .categori_text span.revisão {
+    background-color: rgba(255, 87, 9, 0.932);
+  }
+  
+  .categori_text span.aprovado {
+    background-color: #38c03c;
+  }
+  .info_group {
+    padding: 1.9em;
+    background-color: #ffffff;
+    border-top: 1px solid #ffffff;
+  }
+
+  .card_footer {
+  position: sticky;
+  bottom:0;
+  background-color: #ffffff;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;  
+  z-index: 10;
+  }
+  
+
+/* Estilos compartilhados  */
+.edit_btn,
+.delete_btn {
+  border-radius: 8px;
+  font-size: 0.9em;
+  padding: 0.6em 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  border: none;
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+.edit_btn {
+  background-color: #ffffff;
+  color: #1967d2;
+}
+
+.edit_btn:hover {
+  background-color: #ffffff;
+}
+
+.delete_btn {
+  background-color: #ffffff;
+  color: #d93025;
+}
+
+.delete_btn:hover {
+  background-color: #ffffff;
+} 
+  /* Estilos para ícones */
+  .project_card_actions svg {
+    margin-right: 0.5em;
+  }
+  
+  .edit_btn:hover{
+    background-color: rgb(61, 161, 47);
+    color: rgb(255, 255, 255);
+  }
+  .delete_btn:hover {
+    background-color: rgb(252, 0, 0);
+    color: rgb(255, 255, 255);
+  }
+  .card_data{
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 15px;
+  }

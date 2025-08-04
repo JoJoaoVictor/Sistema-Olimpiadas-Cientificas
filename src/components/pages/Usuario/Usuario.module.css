@@ -1,0 +1,125 @@
+.container {
+  font-family: Helvetica, sans-serif;
+  color: #000;
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow:10px 10px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border: 1px solid #00000060;
+}
+
+.user_img {
+  display: flex;
+  box-shadow:4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 1.5em;
+  border: 1px solid #00000060;
+  margin-top: 20px;
+}
+
+.user_img img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 10px;
+  border: 3px solid #79787880;
+
+}
+
+.user_text {
+  
+  justify-content: space-between;
+  gap: 5px;
+  
+}
+
+.user_text p {
+  margin: 13px;
+  
+  font-size: 1em;
+  color: #333;
+  gap: 5px;
+  padding: 2px;
+  
+}
+.bordas{
+  font-size: 13px;
+  margin-top: -10px;
+  display: flex;
+  background-color: #66666634;
+  border-bottom: 1px solid #00000060;
+  margin: 10px;
+}
+
+
+.bnt {
+  flex-wrap: wrap;
+  justify-content: space-around;
+  
+
+}
+
+.bnt button {
+  padding: 0.5em 1.2em;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ;
+  font-size: 1em;
+}
+
+.bnt button:hover {
+  background-color: #ff0000cb;
+  color: #ffffff;
+ 
+  font-weight: bold;
+}
+
+.bnt_edit {
+  display: flex;
+  padding: 0.5em;
+  margin-left: 20em;
+
+
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.5s ;
+
+  text-decoration: none;
+}
+.bnt_edit:hover{
+  background-color: #11bb4ac0;
+  color: #ffffff;
+  
+ 
+
+}
+.bnt_password {
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  padding: 0.5em;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.5s ;
+  text-decoration: none;
+}
+.bnt_password:hover{
+  background-color: #58585893;
+  color: #ffffff;
+  font-weight: bold;
+  
+
+}

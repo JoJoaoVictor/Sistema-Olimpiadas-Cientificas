@@ -1,0 +1,51 @@
+.imageUploader {
+  margin: 1px;
+}
+
+.preview {
+  margin-top: 10px;
+}
+
+.preview img {
+  width: 200px;
+  height: auto;
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+
+.uploadButton {
+  background-color: #222;
+  color: #fff;
+  padding:  0.7em 1.2em;
+  text-decoration: none;
+  transition: 0.2s;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  margin-top: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.226);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+.uploadButton:hover{
+  color: #000000;
+  background-color: #c2c2c24b;
+  box-shadow:  8px 16px rgba(0, 0, 0, 0.2);
+}
+.submitButton{
+    background-color: #000000;
+    color: #fff;
+    padding:  0.7em 1.2em;
+    text-decoration: none;
+    transition: 0.2s;
+    cursor: pointer;
+    border: none;
+    border-radius: 30px;
+    
+}
+.submitButton:hover{
+    color: #222;
+}
+  
+
+  

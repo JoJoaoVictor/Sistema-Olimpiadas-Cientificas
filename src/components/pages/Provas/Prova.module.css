@@ -1,0 +1,29 @@
+.container{
+  background-color: white;
+    border-radius: 10px;
+    padding:  1.5em 1.5em;
+    margin: 1em 2em ;
+    width: 99%;
+    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
+}
+.container h2 {
+    margin: 1em;
+}   
+
+.prova_card{
+  padding: 1em;
+    display: flex;
+    border-bottom: 1px solid #63636370;
+    gap: 1em;
+    justify-content: space-between;
+}
+.provas_list{
+  border-radius: 1px solid #00000070;
+}
+.provas_button{
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+  
+}

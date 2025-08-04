@@ -1,0 +1,16 @@
+.form_control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+.form_control label{
+    margin-bottom: 1em ;
+    font-weight: bold;
+}
+.form_control Select{
+    padding: 1em;
+    border-radius: 8px;
+
+
+}

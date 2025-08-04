@@ -1,0 +1,111 @@
+.projects_container{
+  padding: 1em;
+  width: 100%;
+
+}
+.gridView {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.listView {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.icon_button{
+  background-color: #ffffffce;
+  color: rgb(0, 0, 0);
+  position: relative;
+  border: none;
+  padding:0.5em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.5em;
+
+  &:hover{
+    color: #3762da;
+    text-decoration: bold;
+    background-color: #ffffff;
+    transition: 0.3s;
+    border:none;
+    
+  }
+}
+.title_container{
+  display: flex;
+  margin-bottom: 2em;
+  background-color: white;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow:  4px 8px rgba(0, 0, 0, 0.2);
+  &
+  :link{
+    margin-left: auto;
+  }
+}
+.projects_card{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  padding:1.5em;
+  border-radius:8px ;
+}
+.filter_button{
+  display: flex;
+  justify-Content: space-between;
+  margin-Bottom: 20px;
+  
+  
+}
+.select{
+  color: #797979;
+  background-color: #ffffff;
+  display: flex;
+  border: 1px solid #99999970;
+  border-radius: 5px;
+  padding: 0.5em 1em;
+  justify-content: space-between;
+  font-size: 1em;
+  text-align: center;
+
+  &:hover{
+    border: 1px solid #000000;
+    transition: 0.2s;
+    color: #000000;
+  }
+}
+.select_anos{
+  color: #797979;
+  width: 150px;
+  position: fixed;
+  max-height: 10px;
+  
+  
+}
+
+.button{
+  background-color: #ffffffce;
+  color: #797979;
+  position: relative;
+  border: 1px solid #99999970;
+  padding: 0.5em ;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+
+  &:hover{
+  
+    text-decoration: bold;
+    border: 1px solid #000000;
+    transition: 0.2s;
+    color: #000000;
+    
+  }
+}
+

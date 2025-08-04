@@ -1,0 +1,96 @@
+.list_item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  list-style: none;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.list_content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.categori_text {
+    display: flex;
+    align-items: center;
+    
+}
+/* Estilo base do span */
+.categori_text span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgb(0, 0, 0);
+  }
+  
+  /* Classes específicas para cada categoria */
+  .categori_text span.revisão {
+    background-color: rgba(255, 87, 9, 0.932);
+  }
+  
+  .categori_text span.aprovado {
+    background-color: #38c03c;
+  }
+ 
+.edit_btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  text-decoration: none;
+  display: flex;
+  gap: 0.4em;
+  border: none;
+  align-items: center;
+  transition: 0.3s ease;
+  font-size: 0.9em;
+}
+.edit_btn:hover{
+    background-color: rgb(61, 161, 47);
+    color: rgb(255, 255, 255);
+  }
+  .edit_btn {
+  background-color: #ffffff00;
+  color: #1967d2;
+}
+
+.delete_btn {
+  background-color: #f44336;
+  color: white;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  text-decoration: none;
+  display: flex;
+  gap: 0.4em;
+  border: none;
+  align-items: center;
+  transition: 0.3s ease;
+  font-size: 0.9em;
+}
+.delete_btn:hover {
+    background-color: rgb(252, 0, 0);
+    color: rgb(255, 255, 255);
+  }
+  .delete_btn {
+  background-color: #ffffffbe;
+  color: #d93025;
+}
+  
+
+.date {
+  font-size: 0.85em;
+  color: #555;
+  display: flex;
+}
