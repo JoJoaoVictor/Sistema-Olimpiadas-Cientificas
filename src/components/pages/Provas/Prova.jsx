@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import styles from './Prova.module.css';
 import { gerarPDF } from '../../ConfProvas/pdfUtils'; 
-import SearchBar from '../../form/SearchBar';
+import { FiSearch } from 'react-icons/fi';
+import { BsPencil, } from 'react-icons/bs';
+import Select from 'react-select'
 
 function Prova() {
   const [provas, setProvas] = useState([]);
-  const [searchDate, setSearchDate] = useState('');
   const [provasFiltradas, setProvasFiltradas] = useState([]);
 
-  // Estado para armazenar o filtro de série/ano e dificuldade
+  // Estados dos filtros
+  const [searchName, setSearchName] = useState('');
+  const [searchDate, setSearchDate] = useState('');
   const [anosSelecionados, setAnosSelecionados] = useState([]);
-  const [mostrarQuestoes, setMostrarQuestoes] = useState(false); // Só mostramos as questões após o filtro
+  const [faseSelecionada, setFaseSelecionada] = useState('');
+  const [statusSelecionado, setStatusSelecionado] = useState('');
 
   // Carrega todas as provas montadas ao iniciar o componente
   useEffect(() => {
@@ -19,65 +23,163 @@ function Prova() {
       .then(data => setProvas(data))
       .catch(err => console.log(err));
   }, []);
-/*
-  const questoesFiltradas = mostrarQuestoes
-  ? questoes.filter(q =>
-      q.name?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      q.abilityCode?.toLowerCase().includes(habilidade.toLowerCase()) &&
-      q.phaseLevel?.toLowerCase().includes(phaseLevel.toLowerCase()) &&
-      (dificuldade === '' || String(q.difficultyLevel) === dificuldade) &&
-      (anosSelecionados.length === 0 || anosSelecionados.map((a) => normalizarAno(a.value)).includes(normalizarAno(q.serieAno))) 
-    )
-  : [];
-*/
-  // Filtra as provas por data (com base no campo createdAt)
-  useEffect(() => {
-    if (searchDate) {
-      setProvasFiltradas(provas.filter(prova => {
-        const dataFormatada = prova.createdAt?.split(' ')[0];
-        return dataFormatada === new Date(searchDate).toLocaleDateString('pt-BR');
-      }));
-    } else {
-      setProvasFiltradas(provas);
-    }
-  }, [searchDate, provas]);
 
-  // Chama o gerador de PDF com visualização das questões predefinidas 
+  // Aplica todos os filtros
+  useEffect(() => {
+      let filtradas = [...provas];
+
+    if (searchName.trim() !== '') {
+      filtradas = filtradas.filter(p =>
+        p.name?.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+
+    if (searchDate) {
+      const dataSelecionada = new Date(searchDate).toLocaleDateString('pt-BR');
+      filtradas = filtradas.filter(p =>
+        p.createdAt?.split(' ')[0] === dataSelecionada
+      );
+    }
+
+    if (anosSelecionados.length > 0) {
+      filtradas = filtradas.filter(p => {
+        const serieNormalizada = String(p.ano || p.serieAno)
+          .replace('º', '')
+          .replace('°', '')
+          .replace('ano', '')
+          .replace(/\s/g, '');
+
+        return anosSelecionados.some(opt => serieNormalizada === opt.value);
+      });
+    }
+
+    if (faseSelecionada) {
+      filtradas = filtradas.filter(p =>
+        p.fase?.toLowerCase() === faseSelecionada.toLowerCase()
+      );
+    }
+
+    if (statusSelecionado) {
+      filtradas = filtradas.filter(p =>
+        p.status?.toLowerCase() === statusSelecionado.toLowerCase()
+      );
+    }
+
+    setProvasFiltradas(filtradas);
+  }, [searchName, searchDate, anosSelecionados, faseSelecionada, statusSelecionado, provas]);
+
   function visualizarPDF(prova) {
-    gerarPDF(prova.questoes, prova, true); 
+    gerarPDF(prova.questoes, prova, true);
   }
+
+  // Lista fixa de anos (pode vir do backend)
+ const opcoesAno = [
+    { value: '4', label: '4º' },
+    { value: '5', label: '5º' },
+    { value: '6', label: '6º' },
+    { value: '7', label: '7º' },
+    { value: '8', label: '8º' },
+    { value: '9', label: '9º' },
+    { value: '1', label: '1º Médio' },
+    { value: '2', label: '2º Médio' },
+    { value: '3', label: '3º Médio' },
+  ];
+
+  // Lista fixa de fases
+  const listaFases = ['Fase 1', 'Fase 2', 'Final'];
+
+  // Lista fixa de status
+  const listaStatus = ['Aplicada', 'Pendente'];
 
   return (
     <div className={styles.container}>
-      <div>
-        <h2>Provas Salvas</h2>
-          {/*Campo de busca*/
-          <br />
+      <h2>Provas Salvas</h2>
 
-          /*
-          nome da prova:
-          ano: 4°ano e 5° assim em diante. 
-          fase da prova:
-          provas ja aplicada:
-          provas em analise:
-          data de criação:
+      {/* Filtros */}
+      <div className={styles.filtros}>
+     
+          
+        </div>
+        {/* Buscar pelo nome */}
+        <div className={styles.search_container}>
+          <FiSearch className={styles.icon} />
+           <input style={{ border:'none', outline: 'none' }}
+            type="text"
+            placeholder="Buscar prova..."
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+          />
+        </div>
+       <div className={styles.select}>
+        {/* Filtro por ano */}
+        <Select style={{ outline: 'none' }}
+          className={styles.select_anos}
+          isSearchable
+          options={opcoesAno}
+          isMulti
+          placeholder="Ano"
+          value={anosSelecionados}
+          onChange={(selected) => setAnosSelecionados(selected || [])}
+          closeMenuOnSelect={false}
+          isClearable
+          styles={{
+            control: (base) => ({
+              ...base, 
+              borderColor: '#ccc',
+              border: 'none',
+              outline: 'none', 
+              boxShadow: 'none', 
+            }),
+          }}
+        />
 
-          */}
+        {/* Filtro por fase */}
+        <select className={styles.fase_select}
+          value={faseSelecionada}
+          onChange={e => setFaseSelecionada(e.target.value)}
+        >
+          <option value="">Todas as fases</option>
+          {listaFases.map(fase => (
+            <option key={fase} value={fase}>{fase}</option>
+          ))}
+        </select>
+
+        {/* Filtro por status */}
+        <select
+          value={statusSelecionado}
+          onChange={e => setStatusSelecionado(e.target.value)}
+        >
+          <option value="">Todos os status</option>
+          {listaStatus.map(status => (
+            <option key={status} value={status}>{status}</option>
+          ))}
+        </select>
+
+         {/* Filtro por data */}
+        <input
+          type="date"
+          value={searchDate}
+          onChange={e => setSearchDate(e.target.value)}
+        />
+        
       </div>
+
+      {/* Lista de provas */}
       <div className={styles.provas_container}>
         <div className={styles.provas_list}>
+           <h2 style={{padding:'5px', marginTop:'20px', marginLeft: '10px'}}>Resultados da busca</h2>
           {provasFiltradas.length === 0 
-            ? <p>Nenhuma prova encontrada para essa data.</p>
+            ? <p>Nenhuma prova encontrada.</p>
             : provasFiltradas.map(prova => (
               <div key={prova.id} className={styles.prova_card}>
                 <h4>{prova.name}</h4>
-                <p>{prova.createdAt || 'Não informada'}</p>
-                <p>Quantidade de questões: {prova.questoes?.length || 0}</p>
-                  
-                    <button className={styles.prova_button} onClick={() => window.location.href = `/provas/${prova.id}`}>Editar</button>
-                    <button onClick={() => visualizarPDF(prova)}>Visualizar PDF</button>
-                  
-                  
+                <p>Data: {prova.createdAt || 'Não informada'}</p>
+                <p>Ano: {prova.ano || 'Não informado'}</p>
+                <p>Fase: {prova.fase || 'Não informada'}</p>
+                <p>Status: {prova.status || 'Não informado'}</p>
+                
+                <button className={styles.prova_button} onClick={() => window.location.href = `/provas/${prova.id}`}><BsPencil /></button>
+                <button onClick={() => visualizarPDF(prova)}>Visualizar</button>
               </div>
             ))
           }

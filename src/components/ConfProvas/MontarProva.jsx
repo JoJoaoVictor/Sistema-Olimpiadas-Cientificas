@@ -323,7 +323,7 @@ if (incluirResposta) {
   return (
     <div className={styles.container}>
       <img src={tema} alt="Tema" className={styles.tema} />
-      <div className={styles.select_container}>
+     
         <h2>Buscar Questões</h2>
 
         {/* Barra de busca por nome */}
@@ -335,15 +335,16 @@ if (incluirResposta) {
               delay={400}
             />
         </div>
-      
-        {/* Filtro por grau de ensino - ainda não implementado */}
-        <select>
+
+      <div className={styles.select_container}>
+
+       {/* Filtro por grau de ensino - ainda não implementado */}
+          <select>
           <option value="">Grau de ensino</option>
           <option value="">Fundamental I</option>
           <option value="">Fundamental II</option>
           <option value="">Ensino Médio</option>
         </select>
-
         
         {/* Filtro por unidade temática - ainda não implementado */}
         <select>
@@ -352,7 +353,10 @@ if (incluirResposta) {
             <option value="tema2"> Geometria </option> 
             <option value="tema3"> Grandezas e Medidas </option>
             <option value="tema4"> Números </option>
-            <option value="tema5"> Probrabilidade e Estatística </option>
+            <option value="tema5"> Probabilidade e estatística </option>
+            <option value="tema6"> Álgebra / Geometria </option>
+            <option value="tema7"> Probabilidade </option>
+            <option value="tema8"> Estatística </option>
         </select>
         
         {/* Filtro por objetos de conhecimento - ainda não implementado */}
@@ -376,14 +380,14 @@ if (incluirResposta) {
           <option value="5">5</option>
         </select>
            {/* Filtro por código de habilidade */}
-        <input
+        <input 
           type="text"
           placeholder="Buscar habilidade"
           value={habilidade}
           onChange={(e) => {
             setHabilidade(e.target.value);
             setMostrarQuestoes(true);
-          }}style={{  border: '1px solid #ccc', boxShadow: '2px 4px rgba(0, 0, 0, 0.2)'}}/>  
+          }}/>  
         {/* Filtro por fase */}
         <input  
           type="text"
@@ -392,7 +396,7 @@ if (incluirResposta) {
           onChange={(e) => {
             setPhaseLevel(e.target.value);
             setMostrarQuestoes(true);
-          }} style={{  border: '1px solid #ccc', boxShadow: '2px 4px rgba(0, 0, 0, 0.2)',}}/>
+          }} />
               
         {/* Filtro por série/ano */}
               <Select className={styles.selct_ano}
@@ -408,15 +412,18 @@ if (incluirResposta) {
                 closeMenuOnSelect={false}
                 isClearable
                 styles={{
-                  control: (base) => ({
+                  control: (base) => ({ 
                     ...base,
                     borderColor: '#ccc',
-                      padding: '2px',
-                    boxShadow: 'none',
+                    border: 'none',
+                    outline: 'none', 
+                    boxShadow: 'none', 
+
                   }),
                 }}
               />
       </div>
+      
       <div className={styles.questoes_container}>
           {/* Lista de questões filtradas */}
           {mostrarQuestoes && (

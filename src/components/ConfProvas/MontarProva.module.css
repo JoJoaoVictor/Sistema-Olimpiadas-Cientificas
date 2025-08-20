@@ -14,31 +14,31 @@
     width: 100%;
     margin: 0.5em;
 }
-
 .select_container{
     padding: 5px;
     border-Radius: 5px;
-    margin-top: 1em;
 }
-.selct_ano{
-    color: #797979;
-    max-width: 200px;
-    margin: 5px;
+.selct_ano{ 
+    padding: 1px ;
+    margin-left: 5px;
+    margin-top: 10px;
+    max-width: 190px;
     border-radius: 5px;
     border: 1px solid #ccc;
-    box-Shadow: 2px 4px rgba(0, 0, 0, 0.2);
-    font-size: 1em;
-    position: fixed;
-    max-height: 50px;
+   
 }
+.selct_ano:hover{
+    border: 1px solid #000000;
+    transition: 0.3s;
+}
+
 .select_container select{
     color: #797979;
     max-width: 200px;
     margin: 5px;
-    padding: 0.5em;
+    padding: 0.6em;
     border-radius: 5px;
     border: 1px solid #ccc;
-    box-Shadow: 2px 4px rgba(0, 0, 0, 0.2);
     font-size: 1em;
 }
 .select_container select:hover{
@@ -49,18 +49,20 @@
     color: #797979;
     max-width: 200px;
     margin: 5px;
-    padding: 0.5em;
+     padding: 0.6em;
     border-radius: 5px; 
     font-size: 1em;
+    border: 1px solid #ccc;   
 }
-
+.select_container input:hover{
+    border: 1px solid #000000;
+    transition: 0.3s;
+}
 .questoes_container{
     margin-top: 1.5em;
     padding: 1em;
     border-radius: 5px;
-
 }
-
 .list_item{
   display: flex;
   justify-content: space-between;
@@ -69,8 +71,7 @@
   width: 100%;
   background-color: #cecccc11;
   border-radius: 6px;
-  margin-bottom: 0.5rem;
-   
+  margin-bottom: 0.5rem;  
 }
 .list_content {
   display: flex;
@@ -85,7 +86,6 @@
 .categori_text {
     display: flex;
     align-items: center;
-    
 }
 .categori_text span {
     display: inline-block;
@@ -100,7 +100,6 @@
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
-    
 }
 /*Botões de ação*/
 .save_btn,
@@ -119,13 +118,11 @@
   cursor: pointer;
   font-size: 1em;
   color: white;
-  
 }
 /*salva prova*/
 .save_btn{
     color: #218838;
     background-color: rgba(255, 255, 255, 0);
-  
 }
 .save_btn:hover {
     color: #ffffff;
@@ -136,16 +133,13 @@
   color: #000000;
   background-color: #fdfdfd00;
   font-size: 1em;
-  
 }
 .remove_btn:hover {
-   
   color: #e9031a;
 }
 /*Visualiza questão*/
 .info_btn {
   padding: 0px 5px;
- 
   align-items: center;
   gap: 0.4em;
   border: none;
@@ -158,7 +152,6 @@
 }
 .info_btn:hover {
   color: #000000;
-
 }
 /*Gera prova*/
 .gera_btn {
@@ -176,7 +169,6 @@
 .visu_btn:hover {
     color: #ffffff;
     background-color: #007bff;
-
 }
 /*Adiciona questão hover*/
 .add_bnt {
@@ -187,12 +179,10 @@
     border-radius: 50%;
     justify-content: center;
     font-size: 1.1em;
-
 }
 .add_bnt:hover{
      background-color: #007bff;
      color: white;
- 
 }
 
 .setaBtn {
@@ -205,7 +195,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .setaBtn:hover {
   background-color: #dcdcdc;
 }

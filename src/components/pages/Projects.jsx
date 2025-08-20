@@ -7,6 +7,7 @@ import ProjectList from '../Projects/ProjectList' // Componente que exibe a list
 import { useState, useEffect } from 'react' // Hooks do React para estado e efeitos colaterais
 import Loading from '../Layout/Loading' // Componente de loading (carregamento)
 import SearchBar from '../form/SearchBar'
+
 // icons Layuot
 import { LuLayoutGrid } from "react-icons/lu";
 import { LuLayoutList } from "react-icons/lu";
@@ -212,7 +213,7 @@ function Project() {
                             isSearchable
                             options={opcoesAno}
                             isMulti
-                            placeholder="Anos"
+                            placeholder="Ano"
                             value={anosSelecionados}
                             onChange={(selected) => {
                                 setAnosSelecionados(selected || []);
@@ -222,11 +223,15 @@ function Project() {
                             styles={{
                                 control: (base) => ({
                                 ...base,
-                                borderColor: '#99999970',
-                                border: '1px solid #99999970',
-                                padding: '2px',
-                                boxShadow: 'none',
-                                
+                              padding: '2px',
+                              border: '1px solid #ccc',
+                              borderRadius: '5px',
+                              outline: 'none', 
+                              boxShadow: 'none',
+                              '&:hover': {
+                              border: '1px solid #000000', 
+                              transition: '0.3s',
+                              }, 
                                 }),
                             }}
                             />

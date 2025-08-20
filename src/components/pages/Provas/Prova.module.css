@@ -1,29 +1,118 @@
 .container{
-  background-color: white;
+   background-color: white;
     border-radius: 10px;
     padding:  1.5em 1.5em;
     margin: 1em 2em ;
-    width: 99%;
+    width: 100%;
     box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
 }
 .container h2 {
     margin: 1em;
-}   
+    color: rgb(0, 0, 0);
+    width: 100%;
 
+}   
+.provas_container{
+    margin-top: 2em;
+    width: 100% ;
+ 
+ 
+}
 .prova_card{
-  padding: 1em;
     display: flex;
-    border-bottom: 1px solid #63636370;
-    gap: 1em;
     justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    padding: 1em;
+    margin:10px;   
+    border: 1px solid #63636370;    
+    border-radius: 5px;
+
+
 }
 .provas_list{
-  border-radius: 1px solid #00000070;
+    border-radius: 1px solid #00000070;
 }
 .provas_button{
-  display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     margin: 1em;
-  
+}
+.filtros{
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1em;
+    margin-bottom: 10px;
+
+}
+.search_container{
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px ;
+    border-radius: 8px;
+    width: 99%;
+    display: flex;
+    background-color: white;
+    margin: 10px;
+}
+.search_container:hover {
+    color: #000000;
+    border-color: #000000;
+    transition: 0.2s;
+}
+
+.icon {
+    color: #666;
+    font-size: 18px;
+    margin: 3px;
+}
+.search_container .input {
+    flex: 1;
+    font-size: 16px;
+    padding: 10px;
+}
+.select_anos{
+  color: #797979;
+  width: 150px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.select_anos:hover{
+    border: 1px solid #000000;
+    transition: 0.3s;
+}
+.select{
+  margin-left: -5px;  
+  display: flex;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  text-align: center;
+  gap: 2em;
+}
+.select select{
+    max-width: 200px;
+    padding: 0.8em;
+    color: #797979;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 1px solid #ccc   ;
+}
+.select input{
+    color: #797979;
+    max-width: 200px;    
+    padding: 0.8em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 1px solid #ccc   
+}
+.select input:hover{
+    border: 1px solid #000000;
+    transition: 0.3s;
+}
+.select select:hover{
+    border: 1px solid #000000;  
+    transition: 0.3s;
 }

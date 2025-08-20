@@ -81,14 +81,11 @@
   }
 }
 .select_anos{
+  padding: 0px ;
   color: #797979;
   width: 150px;
-  position: fixed;
   max-height: 10px;
-  
-  
 }
-
 .button{
   background-color: #ffffffce;
   color: #797979;
