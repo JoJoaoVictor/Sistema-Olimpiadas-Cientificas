@@ -20,6 +20,8 @@ function MontarProva() {
   const [searchTerm, setSearchTerm] = useState('');
   const [habilidade, setHabilidade] = useState('');
   const [phaseLevel, setPhaseLevel] = useState(''); // Nível da fase, ex: 3ª fase
+  const [status, setStatus] = useState('Pendente'); 
+
 
   // Estado para armazenar o filtro de série/ano e dificuldade
   const [anosSelecionados, setAnosSelecionados] = useState([]);
@@ -148,9 +150,11 @@ const moverQuestaoParaBaixo = (index) => {
     id: projeto.id || Date.now(),
     name: nomeProva || `Prova ${Date.now()}`,
     fase: faseProva,
-    ano: anoProva,
+   
     questoes: questoesSelecionadas,
-    createdAt: projeto.createdAt || dataFormatada
+    createdAt: projeto.createdAt || dataFormatada,
+    anos: anosSelecionados.map(a => a.value), // salva como array de anos
+    status
     
   };
 
@@ -507,15 +511,17 @@ if (incluirResposta) {
 
        </div>
             <ModalSalvarProva
-            isOpen={modalAberto}
-            onClose={() => setModalAberto(false)}
-            onConfirm={salvarProva}
-            nomeProva={nomeProva}
-            fase={faseProva}
-            ano={anoProva}
-            setNomeProva={setNomeProva}
-            setFase={setFaseProva}
-            setAno={setAnoProva}
+              isOpen={modalAberto}
+              onClose={() => setModalAberto(false)}
+              onConfirm={salvarProva}
+              nomeProva={nomeProva}
+              fase={faseProva}
+              anosSelecionados={anosSelecionados}    
+              status={status}                        
+              setNomeProva={setNomeProva}
+              setFase={setFaseProva}
+              setAnosSelecionados={setAnosSelecionados}  
+              setStatus={setStatus}  
             />
     </div>
     

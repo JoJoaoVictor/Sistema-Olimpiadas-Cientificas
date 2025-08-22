@@ -28,10 +28,27 @@
   width: 100%;
   margin-bottom: 1rem;
   padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+.field {
+  padding: auto;
+}
+
+.error {
+  border: 1px solid #e74c3c;
+  background-color: #fdf2f2;
+}
+
+.error_message {
+  color: #e74c3c;
+  font-size: 12px;
+  display: block;
+
 }
