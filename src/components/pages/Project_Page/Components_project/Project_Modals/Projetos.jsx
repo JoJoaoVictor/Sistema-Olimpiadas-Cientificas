@@ -1,8 +1,8 @@
 import styles from './Projetos.module.css'
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import Container from '../Layout/Container.jsx'
-import ProjectForm from '../Projects/ProjectForme.jsx'
+import Container from '../../../../../components/Layout/Container.jsx'
+import ProjectForm from '../../Project_Forme/ProjectForme.jsx'
 
 function Projetos() {
   // Obtém o ID da questão pela URL (usado para buscar no backend)

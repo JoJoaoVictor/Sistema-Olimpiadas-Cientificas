@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import Input from '../form/Input.jsx';
-import Select from '../form/Select.jsx';
+import Input from '../../../form/Input.jsx';
+import Select from '../../../form/Select.jsx';
 import styles from './ProjectForme.module.css';
-import SubmitButton from '../form/SubmitButton.jsx';
-import ImageUploader from '../form/ImageUploader.jsx';
+import SubmitButton from '../../../form/SubmitButton.jsx';
+import ImageUploader from '../../../form/ImageUploader.jsx';
 
 function ProjectForme({ handleSubmit,projectData, btnText }) {
     // Definindo os estados para cada campo do formulário

@@ -1,12 +1,12 @@
 // Importação de dependências e componentes
 import styles from './Projects.module.css' // Estilos CSS module específicos para este componente
-import Container from '../Layout/Container' // Componente de container para layout
-import LinkButton from '../Layout/LinkButton' // Componente de botão com link
-import ProjectsCard from '../Projects/ProjectsCard' // Componente que exibe cada card de projeto
-import ProjectList from '../Projects/ProjectList' // Componente que exibe a lista de projetos
+import Container from '../../Layout/Container' // Componente de container para layout
+import LinkButton from '../../Layout/LinkButton' // Componente de botão com link
+import ProjectsCard from './../Project_Page/Components_project/Project_Card/ProjectsCard' // Componente que exibe cada card de projeto
+import ProjectList from './../Project_Page/Components_project/Project_List/ProjectList' // Componente que exibe a lista de projetos
 import { useState, useEffect } from 'react' // Hooks do React para estado e efeitos colaterais
-import Loading from '../Layout/Loading' // Componente de loading (carregamento)
-import SearchBar from '../form/SearchBar'
+import Loading from '../../Layout/Loading' // Componente de loading (carregamento)
+import SearchBar from '../../form/SearchBar'
 
 // icons Layuot
 import { LuLayoutGrid } from "react-icons/lu";

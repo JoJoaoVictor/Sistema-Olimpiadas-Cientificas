@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 
 /*pages*/
 import Home from './components/pages/Home/Home.jsx';
-import NewProject from './components/pages/NewProject.jsx';
-import Project from './components/pages/Projects.jsx';
+import NewProject from './components/pages/Project_Page/NewProject.jsx';
+import Project from './components/pages/Project_Page/Projects.jsx';
 import Usuario from './components/pages/Usuario/Usuario.jsx';
 import Login from './components/pages/Usuario/Componentes/Login/Login.jsx';
 import Register from './components/pages/Usuario/Componentes/Login/Registro.jsx';
-import Projetos from './components/Projects/Projetos.jsx';
+import Projetos from './components/pages/Project_Page/Components_project/Project_Modals/Projetos.jsx';
 import MontarProva from './components/ConfProvas/MontarProva.jsx';
 import Prova from './components/pages/Provas/Prova';
 /*Hook*/
