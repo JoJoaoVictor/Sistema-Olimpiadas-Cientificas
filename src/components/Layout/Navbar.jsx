@@ -55,9 +55,6 @@ function Navbar() {
           <li className={styles.item}>
             <Link to="/projects">Questões</Link>
           </li>
-          <li className={styles.item}>
-            <Link to="/newproject">Nova Questão</Link>
-          </li>
          
           {/* Se o usuário NÃO estiver logado, exibe botão "Login" */}
           {!isLogged && (

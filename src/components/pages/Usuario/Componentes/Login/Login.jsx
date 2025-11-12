@@ -117,7 +117,7 @@ const Login = () => {
           <button type="submit" onClick={handleLogin}>Entrar</button>
 
           <div className="google-button" style={{ marginTop: "20px" }}>
-            <GoogleOAuthProvider clientId="1095631680198-hcaqmakiotpccdo5osvs811a0c33v2bl.apps.googleusercontent.com">
+            <GoogleOAuthProvider clientId="1095631680198-ogn262m5chbaf47suea8646qaqc8ocrh.apps.googleusercontent.com">
               <GoogleLogin 
                 onSuccess={handleGoogleLogin}
                 onError={() => {

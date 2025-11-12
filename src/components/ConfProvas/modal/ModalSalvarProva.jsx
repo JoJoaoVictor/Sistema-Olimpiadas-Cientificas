@@ -82,28 +82,20 @@ function ModalSalvarProva({
           styles={{
             control: (base) => ({
               ...base, 
-              borderColor: '#ccc',
-              border: 'none',
-              outline: 'none', 
               boxShadow: 'none', 
             }),
           }}
         />
 
         {/* Status da Prova */}
-        <label>Status:</label>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">Selecione...</option>
-          <option value="Pendente">Pendente</option>
-          <option value="Aplicada">Aplicada</option>
-        </select>
-
+        
+     
         {/* Exibe erro se algum campo estiver vazio */}
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          <button onClick={onClose}>Cancelar</button>
-          <button onClick={handleConfirm}>Salvar</button>
+          <button className={styles.bnt_cancela}onClick={onClose}>Cancelar</button>
+          <button className={styles.bnt_salva} onClick={handleConfirm}>Salvar</button>
         </div>
       </div>
     </div>

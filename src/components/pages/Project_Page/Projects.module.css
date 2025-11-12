@@ -1,6 +1,7 @@
 .projects_container{
   padding: 1em;
   width: 100%;
+  font-size: 1em;
 
 }
 .gridView {
@@ -81,10 +82,10 @@
   }
 }
 .select_anos{
-  padding: 0px ;
+  max-height: 40px;
   color: #797979;
   width: 150px;
-  max-height: 10px;
+  min-height: 10px;
 }
 .button{
   background-color: #ffffffce;

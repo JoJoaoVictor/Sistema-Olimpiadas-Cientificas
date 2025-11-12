@@ -52,3 +52,42 @@
   display: block;
 
 }
+.actions{
+  margin-top: 10px;
+  display: flex;
+  font-size: 0.9em;
+}
+.bnt_cancela{
+  background-color: #f44336; /* Red */
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1em;
+  margin: 1px ;
+  cursor: pointer;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #c52014;
+  }
+}
+.bnt_salva{
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1em;
+  margin: 1px ;
+  cursor: pointer;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #357a38;
+  }
+}

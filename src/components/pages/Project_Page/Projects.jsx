@@ -169,14 +169,14 @@ function Project() {
         <div className={styles.projects_container}>
             {/* Título e botão de criar projeto */}
             <div className={styles.title_container}>
-                <h1>Minhas Questões</h1>
-                <LinkButton to="/montarProva/" text="Montar Prova" />
+                <h1>Nova Questão</h1>
+                <LinkButton to="/newproject" text="Criar Questão" />
             </div>
 
             {/* Área dos filtros e resultados */}
             <div className={styles.projects_card} style={{ boxShadow: '4px 8px rgba(0, 0, 0, 0.2)' }}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <h1 style={{marginBottom: '10px'}}>Documentos</h1>
+                    <h1 style={{marginBottom: '10px'}}>Minhas Questões</h1>
                 {/* Botão de muda Layout das questões */}    
                 <button 
                     className={styles.icon_button}
@@ -223,7 +223,6 @@ function Project() {
                             styles={{
                                 control: (base) => ({
                                 ...base,
-                              padding: '2px',
                               border: '1px solid #ccc',
                               borderRadius: '5px',
                               outline: 'none', 

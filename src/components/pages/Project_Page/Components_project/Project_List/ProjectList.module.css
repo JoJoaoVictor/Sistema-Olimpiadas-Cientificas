@@ -47,7 +47,7 @@
 .edit_btn {
   background-color: #4caf50;
   color: white;
-  padding: 0.4em 0.8em;
+  padding:1em;
   border-radius: 5px;
   text-decoration: none;
   display: flex;
@@ -55,7 +55,7 @@
   border: none;
   align-items: center;
   transition: 0.3s ease;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 .edit_btn:hover{
     background-color: rgb(61, 161, 47);

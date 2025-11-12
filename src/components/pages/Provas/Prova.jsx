@@ -101,9 +101,9 @@ function Prova() {
       <div className={styles.search_container}>
         <FiSearch className={styles.icon} />
         <input
-          style={{ border: 'none', outline: 'none' }}
+          style={{ border: 'none', outline: 'none',fontSize: '1em' }}
           type="text"
-          placeholder="Buscar prova..."
+          placeholder="Buscar prova..." 
           value={searchName}
           onChange={e => setSearchName(e.target.value)}
         />
@@ -123,10 +123,15 @@ function Prova() {
           isClearable
           styles={{
             control: base => ({
-              ...base,
-              border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
+              ...base,        
+                               border: '1px solid #ccc',
+                              borderRadius: '5px',
+                              outline: 'none', 
+                              boxShadow: 'none',
+                              '&:hover': {
+                              border: '1px solid #000000', 
+                              transition: '0.3s',
+                              }, 
             }),
           }}
         />
@@ -143,14 +148,21 @@ function Prova() {
             control: base => ({
               ...base,
               border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
+             
+               border: '1px solid #ccc',
+                              borderRadius: '5px',
+                              outline: 'none', 
+                              boxShadow: 'none',
+                              '&:hover': {
+                              border: '1px solid #000000', 
+                              transition: '0.3s',
+                              }, 
             }),
           }}
         />
 
         {/* Filtro por status */}
-        <select
+        <select style={{fontSize:'1em'}}
           value={statusSelecionado}
           onChange={e => setStatusSelecionado(e.target.value)}
         >
@@ -161,7 +173,7 @@ function Prova() {
         </select>
 
         {/* Filtro por data */}
-        <input
+        <input style={{fontSize:'1em', padding:'5px', borderRadius:'5px', border:'1px solid #ccc'}}
           type="date"
           value={searchDate}
           onChange={e => setSearchDate(e.target.value)}
@@ -182,20 +194,32 @@ function Prova() {
             provasFiltradas.map(prova => (
               <div key={prova.id} className={styles.prova_card}>
                 <div className={styles.prova_card_item}>
-                  <h4>{prova.name}</h4>
-                  <p>Data: {prova.createdAt || 'Não informada'}</p>
-                  <p>Ano escolar: {(prova.anos || []).join(', ') || 'Não informado'}</p>
-                  <p>Fase: {prova.fase || 'Não informada'}</p>
-                  <p>Status: {prova.status || 'Não informado'}</p>
+                  {/* Nome da prova  */}
+                  <h3>
+                {prova.name}
+                    </h3>
+                 
+                   {/* Informações adicionais como Fase, ano, data e status  */}
+                  <span >
+                    <p style={{  color: '#555' }}> <strong>Ano escolar:</strong> {(prova.anos || []).join(', ') || 'Não informado'}
+                    <strong> - Fase:</strong> {prova.fase || 'Não informada'}</p>
+                  </span>
+                 <span className={styles.status}>
+                  <span className={styles[prova.status?.toLowerCase()]}></span> {/* Círculo colorido */}
+                  <p style={{ color: '#555' }}>
+                    <strong> Status:</strong> {prova.status || 'Não informado'}
+                    <strong> - Última modificação:</strong> {prova.createdAt || 'Não informada'}
+                  </p>
+                </span>
                 </div>
                 <div className={styles.prova_card_buttons}>
                   <button
-                    className={styles.prova_button}
+                    className={styles.edit_btn}
                     onClick={() => window.location.href = `/provas/${prova.id}`}
                   >
                     <BsPencil />
-                  </button>
-                  <button onClick={() => visualizarPDF(prova)}>Visualizar</button>
+                  </button >
+                  <button className={styles.view_btn} onClick={() => visualizarPDF(prova)}><FiSearch/></button>
                 </div>
               </div>
             ))

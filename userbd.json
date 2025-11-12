@@ -12,6 +12,10 @@
     {
       "id": "3",
       "name": "Professor"
+    },
+    {
+      "id": "4",
+      "name": "Admin"
     }
   ]
 }
