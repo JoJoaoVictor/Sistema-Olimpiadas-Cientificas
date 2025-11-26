@@ -341,91 +341,88 @@ if (incluirResposta) {
         </div>
 
       <div className={styles.select_container}>
+          {/* Filtro por série/ano */}
+                <Select className={styles.selct_ano}
+                  isSearchable
+                  options={opcoesAno}
+                  isMulti
+                  placeholder="Filtrar por Ano"
+                  value={anosSelecionados}
+                  onChange={(selected) => {
+                    setAnosSelecionados(selected || []);
+                    setMostrarQuestoes(true);
+                  }}
+                  closeMenuOnSelect={false}
+                  isClearable
+                  styles={{
+                    control: (base) => ({ 
+                      ...base,
+                      display: 'flex',
+                      border: '1px solid #ccc',
+                                borderRadius: '5px',
+                                outline: 'none', 
+                                boxShadow: 'none',
+                                '&:hover': {
+                                border: '1px solid #000000', 
+                                transition: '0.3s',
+                                }, 
 
-       {/* Filtro por grau de ensino - ainda não implementado */}
+                    }),
+                  }}
+                />
+          {/* Filtro por unidade temática - ainda não implementado */}
+          <select >
+            <option value="tema">Unidade Temática</option>
+              <option value="tema1"> Álgebra </option>
+              <option value="tema2"> Geometria </option> 
+              <option value="tema3"> Grandezas e Medidas </option>
+              <option value="tema4"> Números </option>
+              <option value="tema5"> Probabilidade e estatística </option>
+              <option value="tema6"> Álgebra / Geometria </option>
+              <option value="tema7"> Probabilidade </option>
+              <option value="tema8"> Estatística </option>
+          </select>
+          
+          {/* Filtro por objetos de conhecimento - ainda não implementado */}
           <select>
-          <option value="">Grau de ensino</option>
-          <option value="">Fundamental I</option>
-          <option value="">Fundamental II</option>
-          <option value="">Ensino Médio</option>
-        </select>
-        
-        {/* Filtro por unidade temática - ainda não implementado */}
-        <select>
-          <option value="tema">Unidade Temática</option>
-            <option value="tema1"> Álgebra </option>
-            <option value="tema2"> Geometria </option> 
-            <option value="tema3"> Grandezas e Medidas </option>
-            <option value="tema4"> Números </option>
-            <option value="tema5"> Probabilidade e estatística </option>
-            <option value="tema6"> Álgebra / Geometria </option>
-            <option value="tema7"> Probabilidade </option>
-            <option value="tema8"> Estatística </option>
-        </select>
-        
-        {/* Filtro por objetos de conhecimento - ainda não implementado */}
-        <select>
-          <option value="">Objetos de Conhecimento</option>
-        </select>
+            <option value="">Objetos de Conhecimento</option>
+          </select>
 
-        {/* Filtro por nível de dificuldade */}
-        <select
-          value={dificuldade}
-          onChange={(e) => {
-            setDificuldade(e.target.value);
-            setMostrarQuestoes(true);
-          }}
-        >
-          <option value="">Nível de Dificuldade</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-           {/* Filtro por código de habilidade */}
-        <input 
-          type="text"
-          placeholder="Buscar habilidade"
-          value={habilidade}
-          onChange={(e) => {
-            setHabilidade(e.target.value);
-            setMostrarQuestoes(true);
-          }}/>  
-        {/* Filtro por fase */}
-        <input  
-          type="text"
-          placeholder="Nível da Fase"
-          value={phaseLevel}
-          onChange={(e) => {
-            setPhaseLevel(e.target.value);
-            setMostrarQuestoes(true);
-          }} />
+          {/* Filtro por nível de dificuldade */}
+          <select 
+            value={dificuldade}
+            onChange={(e) => {
+              setDificuldade(e.target.value);
+              setMostrarQuestoes(true);
+            }}
+          >
+            <option value="">Nível de Dificuldade</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+            {/* Filtro por código de habilidade */}
+          <input 
+            type="text"
+            placeholder="Buscar habilidade"
+            value={habilidade}
+            onChange={(e) => {
+              setHabilidade(e.target.value);
+              setMostrarQuestoes(true);
+            }}/>  
+          {/* Filtro por fase */}
+          <input  
+            type="text"
+            placeholder="Nível da Fase"
+            value={phaseLevel}
+            onChange={(e) => {
+              setPhaseLevel(e.target.value);
+              setMostrarQuestoes(true);
+            }} />
               
-        {/* Filtro por série/ano */}
-              <Select className={styles.selct_ano}
-                isSearchable
-                options={opcoesAno}
-                isMulti
-                placeholder="Filtrar por Ano..."
-                value={anosSelecionados}
-                onChange={(selected) => {
-                  setAnosSelecionados(selected || []);
-                  setMostrarQuestoes(true);
-                }}
-                closeMenuOnSelect={false}
-                isClearable
-                styles={{
-                  control: (base) => ({ 
-                    ...base,
-                    borderColor: '#ccc',
-                    border: 'none',
-                    outline: 'none', 
-                    boxShadow: 'none', 
-
-                  }),
-                }}
-              />
+       
       </div>
       
       <div className={styles.questoes_container}>

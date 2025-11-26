@@ -147,9 +147,7 @@ function Prova() {
            styles={{
             control: base => ({
               ...base,
-              border: 'none',
-             
-               border: '1px solid #ccc',
+                              border: '1px solid #ccc',
                               borderRadius: '5px',
                               outline: 'none', 
                               boxShadow: 'none',

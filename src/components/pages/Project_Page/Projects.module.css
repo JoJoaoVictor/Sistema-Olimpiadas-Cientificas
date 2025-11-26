@@ -106,4 +106,16 @@
     
   }
 }
+.button_aprovada {
+    background-color: #ffffff;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    
+}
+
+.button_pendente {
+    background-color:  rgba(255, 255, 255, 0.904);
+    color: rgba(255, 88, 11, 0.904);;
+    border: 1px solid  rgba(255, 88, 11, 0.904);
+}
 

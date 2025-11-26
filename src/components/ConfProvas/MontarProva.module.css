@@ -15,23 +15,19 @@
     margin: 0.5em;
 }
 .select_container{
+    font-size: 1.2em;
+    display: flex;
     padding: 5px;
     border-Radius: 5px;
+    justify-content: space-around;
+    align-items: center;
 }
 .selct_ano{ 
-    padding: 1px ;
-    margin-left: 5px;
-    margin-top: 10px;
-    max-width: 190px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-   
-}
-.selct_ano:hover{
-    border: 1px solid #000000;
-    transition: 0.3s;
-}
+  max-height: 40px;
+  min-height: 10px;
+  width: 150px;
 
+}
 .select_container select{
     color: #797979;
     max-width: 200px;
@@ -49,7 +45,7 @@
     color: #797979;
     max-width: 200px;
     margin: 5px;
-     padding: 0.6em;
+    padding: 0.6em;
     border-radius: 5px; 
     font-size: 1em;
     border: 1px solid #ccc;   

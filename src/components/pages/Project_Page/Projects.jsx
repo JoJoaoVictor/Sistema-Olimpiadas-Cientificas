@@ -196,13 +196,13 @@ function Project() {
                 <div className={styles.filter_button}>
                     
                     <button 
-                        className={styles.button}
+                        className={`${styles.button} ${tipoQuestao === 'aprovadas' ? styles.button_aprovada : ''}`}
                         onClick={() => setTipoQuestao('aprovadas')}
-                        >
+                    >
                         Questões Aprovadas 
                     </button>
                     <button 
-                        className={styles.button}
+                        className={`${styles.button} ${tipoQuestao === 'pendentes' ? styles.button_pendente : ''}`}
                         onClick={() => setTipoQuestao('pendentes')}
                     >
                         Questões Pendentes

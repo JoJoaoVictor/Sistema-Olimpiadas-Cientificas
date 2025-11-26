@@ -204,7 +204,7 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
             {/* Campo: Nome do Projeto */}
             <Input
                 type="text"
-                text="Insira o Titulo da Questão"
+                text="Titulo da Questão"
                 name="name"
                 placeholder="Insira o nome"
                 value={name}
