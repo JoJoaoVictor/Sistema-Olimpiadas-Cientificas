@@ -6,6 +6,8 @@ import Select from '../../../form/Select.jsx';
 import styles from './ProjectForme.module.css';
 import SubmitButton from '../../../form/SubmitButton.jsx';
 import ImageUploader from '../../../form/ImageUploader.jsx';
+import LatexText from './../Components_project/LatexText.jsx' // Importa o componente LatexText
+import { BsFillInfoCircleFill } from 'react-icons/bs';
 
 function ProjectForme({ handleSubmit,projectData, btnText }) {
     // Definindo os estados para cada campo do formulário
@@ -276,6 +278,7 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
                 value={knowledgeObjects}
                 handleOnChange={(e) => setKnowledgeObjects(e.target.value)}
             />
+            
             <Input
                 type="text"
                 text="Código da habilidade"
@@ -283,7 +286,7 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
                 placeholder="Insira o código"
                 value={abilityCode}
                 handleOnChange={(e) => setAbilityCode(e.target.value)}
-            />
+            /> <BsFillInfoCircleFill/>
             <Input
                 type="text"
                 text="Descrição da habilidade"
@@ -294,45 +297,71 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
             />
             {/* Seção 4: Proposição da Habilidade */}
             <b>4. Proposição da habilidade</b>
-            <Input
-                type="text"
-                text="Enunciado da questão (máximo de 50 palavras)"
-                name="questionStatement"
-                placeholder="Insira o texto"
-                value={questionStatement}
-                handleOnChange={(e) => setQuestionStatement(e.target.value)}
-            />
+            <p style={{ fontSize: '1rem', color: '#666',padding: '5px' }}>
+                Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use \\(...\\) e para fórmulas em bloco, use \\[...\\]. 
+                <br/>Exemplo: A área do círculo é \(\\pi r^2\).
+                </p>
+                  <Input
+                    type="text"
+                    text="Enunciado da questão (máximo de 50 palavras)"
+                    name="questionStatement"
+                    placeholder="Insira o texto"
+                    value={questionStatement}
+                    handleOnChange={(e) => setQuestionStatement(e.target.value)}
+                />
+                {/* Instrução e pré-visualização para o enunciado */}
+                {questionStatement && (
+                    <div>
+                    <strong style={{padding:'5px'}}>Pré-visualização:</strong>
+                    <LatexText content={questionStatement} />
+                    </div>
+                )}
+
             {/* Seção: Upload de Imagem */}
             <b>Área da imagem usada na questão (caso necessário)</b><br />
             <b>Observação: a imagem deve ter boa resolução e tamanhos de letras e figuras adequados.</b>
             <ImageUploader />
             {/* Campo: Alternativas da Questão */}
-            <Input
-                type="text"
-                text="Apresentar 5 (cinco) alternativas (em ordem crescente, nos casos aplicáveis)"
-                name="alternatives"
-                placeholder="Insira o texto"
-                value={alternatives}
-                handleOnChange={(e) => setAlternatives(e.target.value)}
-            />
+             <Input
+        type="text"
+        text="Apresentar 5 (cinco) alternativas (em ordem crescente, nos casos aplicáveis)"
+        name="alternatives"
+        placeholder="Insira o texto"
+        value={alternatives}
+        handleOnChange={(e) => setAlternatives(e.target.value)}
+      />
+      {alternatives && (
+        <div>
+          <strong>Pré-visualização:</strong>
+          <LatexText content={alternatives} />
+        </div>
+      )}
             {/* Seção 5: Resolução da Questão */}
             <b>5. Resolução da Questão</b>
-            <Input
-                type="text"
-                text="Indicar a alternativa correta"
-                name="correctAlternative"
-                placeholder="Insira o texto"
-                value={correctAlternative}
-                handleOnChange={(e) => setCorrectAlternative(e.target.value)}
-            />
-            <Input
-                type="text"
-                text="Resolução detalhada da questão (sem limite de linhas)"
-                name="detailedResolution"
-                placeholder="Insira o texto"
-                value={detailedResolution}
-                handleOnChange={(e) => setDetailedResolution(e.target.value)}
-            />
+             <Input
+                    type="text"
+                    text="Indicar a alternativa correta"
+                    name="correctAlternative"
+                    placeholder="Insira o texto"
+                    value={correctAlternative}
+                    handleOnChange={(e) => setCorrectAlternative(e.target.value)}
+                />
+                <Input
+                    type="text"
+                    text="Resolução detalhada da questão (sem limite de linhas)"
+                    name="detailedResolution"
+                    placeholder="Insira o texto"
+                    value={detailedResolution}
+                    handleOnChange={(e) => setDetailedResolution(e.target.value)}
+                />
+                {/* Instrução e pré-visualização para a resolução detalhada */}
+                {detailedResolution && (
+                    <div>
+                    <strong>Pré-visualização:</strong>
+                    <LatexText content={detailedResolution} />
+                    </div>
+                )}
+
             {/* Seção 6: Envio para Análise */}
 
             {/* Exibe a seção de envio para análise apenas se estiver no modo de edição*/}

@@ -9,7 +9,8 @@ import cabecalho from '../../img/heder.png'; // Imagem do cabeçalho
 import rodape from '../../img/footer.png'; // Imagem do rodapé
 import tema from '../../img/tema.png'; // Imagem do tema
 import { info } from 'autoprefixer';
-import ModalSalvarProva from './modal/ModalSalvarProva';
+import ModalSalvarProva from './modal/ModalSalvarProva'; // Modal para salvar a prova
+import ModalInfoQuestao from './modal/ModalInfoQuestao'; // Modal de informações da questão
 
 function MontarProva() {
   // Estados para armazenar os dados do projeto e questões
@@ -22,14 +23,18 @@ function MontarProva() {
   const [phaseLevel, setPhaseLevel] = useState(''); // Nível da fase, ex: 3ª fase
   const [status, setStatus] = useState('Pendente'); 
 
-
   // Estado para armazenar o filtro de série/ano e dificuldade
   const [anosSelecionados, setAnosSelecionados] = useState([]);
   const [dificuldade, setDificuldade] = useState('');
   const [mostrarQuestoes, setMostrarQuestoes] = useState(false); // Só mostramos as questões após o filtro
 
   // Estado para controlar abertura do modal
-  const [modalAberto, setModalAberto] = useState(false);
+  const [modalSalvarAberto, setModalSalvarAberto] = useState(false); // Modal de salvar prova
+  const [modalInfoAberto, setModalInfoAberto] = useState(false); // Modal de informações da questão
+  
+   // Estados para o modal de informações da questão
+  const [questaoSelecionada, setQuestaoSelecionada] = useState(null);
+
   // Estados para armazenar as informações do formulário dentro do modal
   const [nomeProva, setNomeProva] = useState('');
   const [faseProva, setFaseProva] = useState('');
@@ -175,7 +180,7 @@ const moverQuestaoParaBaixo = (index) => {
     })
     .then(() => {
       alert('Prova salva com sucesso!');
-      setModalAberto(false);
+      setModalSalvarAberto(false);
     })
     .catch(err => console.error('Erro ao salvar prova:', err));
 }
@@ -190,8 +195,6 @@ const questoesFiltradas = mostrarQuestoes
       (anosSelecionados.length === 0 || anosSelecionados.map((a) => normalizarAno(a.value)).includes(normalizarAno(q.serieAno))) 
     )
   : [];
-
-
 
   // Função para gerar o PDF com as questões selecionadas
 function gerarPDF(preview = false) {
@@ -323,6 +326,17 @@ if (incluirResposta) {
   }
 }
 
+  // Função para abrir o modal
+    const abrirModalInfo = (questao) => {
+      setQuestaoSelecionada(questao);
+      setModalInfoAberto(true);
+    };
+
+    // Função para fechar o modal de informações
+    const fecharModalInfo = () => {
+      setModalInfoAberto(false);
+      setQuestaoSelecionada(null);
+    };
 
   return (
     <div className={styles.container}>
@@ -437,7 +451,7 @@ if (incluirResposta) {
                       <div className={styles.list_content}>
                         <div>
                            <strong > {questao.name}</strong> 
-                           <button className={styles.info_btn} onClick={() => info()}><BsFillInfoCircleFill /></button>
+                           <button className={styles.info_btn} onClick={() => abrirModalInfo(questao)}><BsFillInfoCircleFill /></button>
                         <br/>
                         <span style={{fontSize: '1em', color: '#555' }}>   
                         Dificuldade: {questao.difficultyLevel}/5 - 
@@ -477,7 +491,7 @@ if (incluirResposta) {
                  <div className={styles.list_content}>
                         <div>
                            <strong > {questao.name}</strong>
-                           <button className={styles.info_btn} onClick={() => info()}><BsFillInfoCircleFill /></button>
+                           <button className={styles.info_btn} onClick={() => abrirModalInfo(questao)}><BsFillInfoCircleFill /></button>
                         <br/>
                         <span style={{fontSize: '1em', color: '#555' }}>   
                         Dificuldade: {questao.difficultyLevel}/5 - 
@@ -502,14 +516,14 @@ if (incluirResposta) {
       </div>
       {/* Botão para salvar a prova */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
-        <button className={styles.save_btn} onClick={() => setModalAberto(true)}>Salvar Prova</button>
+        <button className={styles.save_btn} onClick={() => setModalSalvarAberto(true)}>Salvar Prova</button>
         <button className={styles.visu_btn} onClick={() => gerarPDF(true)}>Visualizar PDF</button>
 
 
        </div>
             <ModalSalvarProva
-              isOpen={modalAberto}
-              onClose={() => setModalAberto(false)}
+              isOpen={modalSalvarAberto}
+              onClose={() => setModalSalvarAberto(false)}
               onConfirm={salvarProva}
               nomeProva={nomeProva}
               fase={faseProva}
@@ -519,6 +533,11 @@ if (incluirResposta) {
               setFase={setFaseProva}
               setAnosSelecionados={setAnosSelecionados}  
               setStatus={setStatus}  
+            />
+            <ModalInfoQuestao
+              questao={questaoSelecionada}
+              isOpen={modalInfoAberto}
+              onClose={fecharModalInfo}
             />
     </div>
     

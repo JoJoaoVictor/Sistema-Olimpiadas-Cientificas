@@ -24,44 +24,31 @@ function Projetos() {
   useEffect(() => {
     async function buscarProjeto() {
       // DEBUG: Início da busca
-      console.log('🔍 Iniciando busca da questão...')
-      
       setCarregando(true)
       
       // Tenta buscar a questão em ambos os endpoints
       const fontes = ['projects', 'questõesAprovadas']
       for (const endpoint of fontes) {
         // DEBUG: Mostra qual endpoint está sendo tentado
-        console.log(`📡 Tentando endpoint: ${endpoint}`)
         
         try {
           const res = await fetch(`http://localhost:5000/${endpoint}/${id}`)
           if (res.ok) {
             const data = await res.json()
             
-            // DEBUG: Mostra qual endpoint retornou a questão
-            console.log(`✅ Questão encontrada no endpoint: ${endpoint}`)
-            console.log(`📊 Dados da questão:`, {
-              id: data.id,
-              name: data.name,
-              categoryName: data.categoryName
-            })
-            
             setProjeto(data) // Define a questão
             setTipoQuestao(endpoint) // Define o endpoint onde foi achado
-            
-            // DEBUG: Mostra o valor de tipoQuestao após carregar
-            console.log(`🎨 tipoQuestao definido como: ${endpoint}`)
+
             
             setCarregando(false)
             return
           }
         } catch (error) {
-          console.error(`❌ Erro no endpoint ${endpoint}:`, error)
+          console.error(` Erro no endpoint ${endpoint}:`, error)
         }
       }
       
-      console.error('❌ Questão não encontrada.')
+      console.error(' Questão não encontrada.')
       setCarregando(false)
     }
 
@@ -75,10 +62,6 @@ function Projetos() {
 
   // Lida com a edição ou movimentação da questão entre os arrays
   async function editPost(project) {
-    // DEBUG: Início da edição
-    console.log('✏️ Iniciando edição da questão...')
-    console.log(`📝 Categoria anterior: ${projeto.categoryName}, Nova categoria: ${project.categoryName}`)
-    
     const novaCategoria = project.categoryName
     let novoEndpoint = tipoQuestao // Inicia como o atual
 
@@ -86,16 +69,11 @@ function Projetos() {
     if (novaCategoria === 'Aprovado') novoEndpoint = 'questõesAprovadas'
     else if (novaCategoria === 'Revisão') novoEndpoint = 'projects'
 
-    // DEBUG: Mostra os endpoints envolvidos
-    console.log(`🔄 Endpoint anterior: ${tipoQuestao}, Novo endpoint: ${novoEndpoint}`)
-
     const updatedProject = { ...project, id: projeto.id }
 
     // Se a categoria mudou, precisamos mover de um array para outro
     if (novoEndpoint !== tipoQuestao) {
       try {
-        // DEBUG: Movendo questão
-        console.log(`🚀 Movendo questão para novo endpoint: ${novoEndpoint}`)
         
         // POST: adiciona no novo array
         const addRes = await fetch(`http://localhost:5000/${novoEndpoint}`, {
@@ -114,17 +92,12 @@ function Projetos() {
         // Atualiza estados após sucesso
         setTipoQuestao(novoEndpoint)
         
-        // DEBUG: Confirma atualização
-        console.log(`✅ tipoQuestao atualizado para: ${novoEndpoint}`)
-        
         setProjeto(updatedProject)
         setShowProjetoForm(false)
       } catch (err) {
-        console.error('❌ Erro ao mover questão:', err)
+        console.error(' Erro ao mover questão:', err)
       }
     } else {
-      // DEBUG: Atualizando no mesmo endpoint
-      console.log(`📋 Atualizando questão no mesmo endpoint: ${tipoQuestao}`)
       
       // Caso continue no mesmo array, apenas atualiza
       fetch(`http://localhost:5000/${tipoQuestao}/${projeto.id}`, {
@@ -139,19 +112,14 @@ function Projetos() {
         .then((data) => {
           setProjeto(data)
           setShowProjetoForm(false)
-          
-          // DEBUG: Confirma atualização
-          console.log(`✅ Questão atualizada com sucesso no endpoint: ${tipoQuestao}`)
         })
         .catch((err) => {
-          console.error('❌ Erro ao editar projeto:', err)
+          console.error(' Erro ao editar projeto:', err)
         })
     } 
   }
 
   // DEBUG: Mostra estado atual durante o render
-  console.log(`🎨 RENDER - tipoQuestao: ${tipoQuestao}, categoryName: ${projeto.categoryName}`)
-  console.log(`🎯 Cor aplicada: ${tipoQuestao === 'questõesAprovadas' ? 'VERDE' : 'LARANJA'}`)
 
   return (
     <div className={styles.project_datails}>

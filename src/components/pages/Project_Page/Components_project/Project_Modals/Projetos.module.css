@@ -19,7 +19,7 @@
      color: rgb(255, 255, 255);
     padding: 0.4em;
     border-radius: 4px;
-    box-shadow:  2px 4px rgba(0, 0, 0, 0.212);
+  
 }
 
 /* Aumentando a especificidade para sobrescrever o .project_datails h1 */
