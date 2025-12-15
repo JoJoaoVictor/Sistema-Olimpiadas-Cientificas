@@ -1,5 +1,6 @@
 import styles from './ModalInfoQuestao.module.css';
 import LatexText from '.././../pages/Project_Page/Components_project/LatexText';
+
 const ModalInfoQuestao = ({ questao, onClose }) => {
   if (!questao) return null;
 
@@ -34,13 +35,38 @@ const ModalInfoQuestao = ({ questao, onClose }) => {
 
           <div className={styles.info_section}>
             <h3>Conteúdo da Questão</h3>
-            <p><strong>Enunciado:</strong> {questao.questionStatement}</p>
+            
+            {/* Enunciado com suporte LaTeX */}
+            <div className={styles.field_with_latex}>
+              <strong>Enunciado:</strong>
+              <div className={styles.latex_content}>
+                <LatexText content={questao.questionStatement || "Sem enunciado"} />
+              </div>
+            </div>
+
+            {/* Imagem (se existir) */}
             {questao.imageURL && (
               <p><strong>Imagem:</strong> {questao.imageURL}</p>
             )}
-            <p><strong>Alternativas:</strong> {questao.alternatives}</p>
+
+            {/* Alternativas com suporte LaTeX */}
+            <div className={styles.field_with_latex}>
+              <strong>Alternativas:</strong>
+              <div className={styles.latex_content}>
+                <LatexText content={questao.alternatives || "Sem alternativas"} />
+              </div>
+            </div>
+
+            {/* Resposta Correta */}
             <p><strong>Resposta Correta:</strong> {questao.correctAlternative}</p>
-            <p><strong>Resolução Detalhada:</strong> {questao.detailedResolution}</p>
+
+            {/* Resolução Detalhada com suporte LaTeX */}
+            <div className={styles.field_with_latex}>
+              <strong>Resolução Detalhada:</strong>
+              <div className={styles.latex_content}>
+                <LatexText content={questao.detailedResolution || "Sem resolução detalhada"} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

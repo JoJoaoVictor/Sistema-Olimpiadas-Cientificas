@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Container from '../../../../Layout/Container.jsx'
 import ProjectForm from '../../Project_Forme/ProjectForme.jsx'
+import LatexText from '../LatexText.jsx'
 
 function Projetos() {
   // Obtém o ID da questão pela URL (usado para buscar no backend)
@@ -119,8 +120,6 @@ function Projetos() {
     } 
   }
 
-  // DEBUG: Mostra estado atual durante o render
-
   return (
     <div className={styles.project_datails}>
       <Container customClass="Column">
@@ -154,26 +153,46 @@ function Projetos() {
               </button>
 
               {!showProjetoForm ? (
-                // Exibe dados da questão (modo leitura)
+                // Exibe dados da questão (modo leitura) COM SUPORTE LaTeX
                 <div className={styles.project_info}>
                   {/* Adiciona informação de status para debug visual */}
-                  <span> Nome:<p>{projeto.name}</p> </span>
-                  <span>Dificuldade: </span><p>{projeto.difficultyLevel}/5</p>
-                  <span>Professor: </span><p>{projeto.professorName}</p>
-                  <span>Série/Ano escolar a que se referem a questão:</span><p>{projeto.serieAno} ano</p>
-                  <span>Grau de Ensino: </span><p>{projeto.grauName}</p>
-                  <span>Fase: </span><p>{projeto.phaseLevel}</p>
+                  <span>Nome:<p>{projeto.name}</p></span>
+                  <span>Dificuldade: <p>{projeto.difficultyLevel}/5</p></span>
+                  <span>Professor: <p>{projeto.professorName}</p></span>
+                  <span>Série/Ano escolar a que se referem a questão: <p>{projeto.serieAno} ano</p></span>
+                  <span>Grau de Ensino: <p>{projeto.grauName}</p></span>
+                  <span>Fase: <p>{projeto.phaseLevel}</p></span>
                 
-                  <span>Tema BNCC: </span><p>{projeto.bnccTheme}</p>
-                  <span>Código Habilidade: </span><p>{projeto.abilityCode}</p>
-                  <span>Descrição Habilidade: </span><p>{projeto.abilityDescription}</p>
-                  <span>Objetos de Conhecimento: </span><p>{projeto.knowledgeObjects}</p>
-                  <span>Enunciado: </span><p>{projeto.questionStatement}</p>
-                  <span>Imagem(opcional):</span><p></p>{projeto.imageURL}
-                
-                  <span>Alternativas: </span><p>{projeto.alternatives}</p>
-                  <span>Resposta Correta: </span><p>{projeto.correctAlternative}</p>
-                  <span>Resolução Detalhada: </span><p>{projeto.detailedResolution}</p>
+                  <span>Tema BNCC: <p>{projeto.bnccTheme}</p></span>
+                  <span>Código Habilidade: <p>{projeto.abilityCode}</p></span>
+                  <span>Descrição Habilidade: <p>{projeto.abilityDescription}</p></span>
+                  <span>Objetos de Conhecimento: <p>{projeto.knowledgeObjects}</p></span>
+                  
+                  {/* Campos com suporte LaTeX */}
+                  <div className={styles.latex_field}>
+                    <span>Enunciado: </span>
+                    <div className={styles.latex_content}>
+                      <LatexText content={projeto.questionStatement || "Sem enunciado"} />
+                    </div>
+                  </div>
+
+                  <span>Imagem (opcional): <p>{projeto.imageURL || "Nenhuma imagem"}</p></span>
+                  
+                  <div className={styles.latex_field}>
+                    <span>Alternativas: </span>
+                    <div className={styles.latex_content}>
+                      <LatexText content={projeto.alternatives || "Sem alternativas"} />
+                    </div>
+                  </div>
+
+                  <span>Resposta Correta: <p>{projeto.correctAlternative}</p></span>
+                  
+                  <div className={styles.latex_field}>
+                    <span>Resolução Detalhada: </span>
+                    <div className={styles.latex_content}>
+                      <LatexText content={projeto.detailedResolution || "Sem resolução detalhada"} />
+                    </div>
+                  </div>
                 </div>
               ) : (
                 // Formulário de edição

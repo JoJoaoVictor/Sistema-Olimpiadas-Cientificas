@@ -8,7 +8,6 @@ import jsPDF from 'jspdf';
 import cabecalho from '../../img/heder.png'; // Imagem do cabeçalho
 import rodape from '../../img/footer.png'; // Imagem do rodapé
 import tema from '../../img/tema.png'; // Imagem do tema
-import { info } from 'autoprefixer';
 import ModalSalvarProva from './modal/ModalSalvarProva'; // Modal para salvar a prova
 import ModalInfoQuestao from './modal/ModalInfoQuestao'; // Modal de informações da questão
 
@@ -337,7 +336,7 @@ if (incluirResposta) {
       setModalInfoAberto(false);
       setQuestaoSelecionada(null);
     };
-
+    
   return (
     <div className={styles.container}>
       <img src={tema} alt="Tema" className={styles.tema} />
@@ -429,7 +428,7 @@ if (incluirResposta) {
           {/* Filtro por fase */}
           <input  
             type="text"
-            placeholder="Nível da Fase"
+            placeholder="Nível de Categoria"
             value={phaseLevel}
             onChange={(e) => {
               setPhaseLevel(e.target.value);
@@ -459,7 +458,7 @@ if (incluirResposta) {
                         Tema: {questao.bnccTheme}                        
                         <span> <p className={styles.categori_text}>
                           Serie /Ano: {questao.serieAno} -
-                          Fase: {questao.phaseLevel} 
+                          Categoria: {questao.phaseLevel} 
                           </p> 
                           
                         </span>

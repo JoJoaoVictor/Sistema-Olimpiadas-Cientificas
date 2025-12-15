@@ -18,3 +18,16 @@
     border-radius: 4px;
     font-size: 1em;
 }
+
+.form p {
+ font-size: 1em;
+    margin-bottom: 1em;
+    color: #495057;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    margin-top: 5px;
+    line-height: 1.6;
+    min-height: 40px;
+}
