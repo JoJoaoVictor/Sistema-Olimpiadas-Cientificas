@@ -85,3 +85,38 @@
 .info_section strong {
   color: #555;
 }
+.field_with_latex {
+  margin: 10px 0;
+}
+
+.field_with_latex strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.latex_content {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+/* Ajustes para as fórmulas matemáticas */
+.latex_content .katex {
+  font-size: 1.1em;
+}
+
+/* Melhor espaçamento para fórmulas em bloco */
+.latex_content .katex-display {
+  margin: 10px 0;
+  padding: 10px 0;
+}
+
+/* Garantir que o texto normal tenha boa legibilidade */
+.latex_content span:not(.katex *) {
+  font-size: 1em;
+  line-height: 1.6;
+}

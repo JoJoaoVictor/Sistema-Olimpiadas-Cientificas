@@ -298,8 +298,8 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
             {/* Seção 4: Proposição da Habilidade */}
             <b>4. Proposição da habilidade</b>
             <p style={{ fontSize: '1rem', color: '#666',padding: '5px' }}>
-                Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use \\(...\\) e para fórmulas em bloco, use \\[...\\]. 
-                <br/>Exemplo: A área do círculo é \(\\pi r^2\).
+                Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use \(...\) e para fórmulas em bloco, use \[...\]. 
+                <br/>Exemplo: A área do círculo é \(\pi r^2\).
                 </p>
                   <Input
                     type="text"
@@ -316,7 +316,7 @@ function ProjectForme({ handleSubmit,projectData, btnText }) {
                     <LatexText content={questionStatement} />
                     </div>
                 )}
-
+                <br/>
             {/* Seção: Upload de Imagem */}
             <b>Área da imagem usada na questão (caso necessário)</b><br />
             <b>Observação: a imagem deve ter boa resolução e tamanhos de letras e figuras adequados.</b>
