@@ -1,10 +1,43 @@
 .container{
     background-color: white;
     border-radius: 10px;
-    padding:  0.5em 1em;
-    margin: 1em 2em ;
+    padding: 0.5em 1em;
+    margin: 1em 2em;
     width: 100%;
+   
     box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.tema{
+    box-sizing: border-box; /* Inclui padding na largura total */
+    max-width: 1200px; /* Largura máxima do container */
+    width: 100%; /* Ocupa toda largura do container */
+    height: auto; /* Mantém proporção da imagem */
+    max-width: 100%; /* Não ultrapassa o container */
+    display: block; /* Remove espaço extra embaixo */
+    border-radius: 5px; /* Opcional: deixa a imagem com cantos arredondados */
+    object-fit: cover; /* Opcional: ajusta como a imagem se comporta */
+    
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .container {
+        margin: 0.5em 1em;
+        padding: 0.5em;
+    }
+    
+    .tema {
+        border-radius: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 0.5em;
+        padding: 0.3em;
+    }
 }
 .container h1{
     text-align: center;
@@ -18,41 +51,69 @@
     font-size: 1.2em;
     display: flex;
     padding: 5px;
-    border-Radius: 5px;
-    justify-content: space-around;
+    border-radius: 5px;
+    justify-content: space-between;
     align-items: center;
+    gap: 5px; /* Espaçamento consistente entre elementos */
+    flex-wrap: wrap; 
 }
-.selct_ano{ 
-  max-height: 40px;
-  min-height: 10px;
-  width: 150px;
 
+.selct_ano {
+    width: 220px;
+    min-width: 200px;
+    font-size: 1em;
+    margin: 5px;
 }
+
 .select_container select{
     color: #797979;
-    max-width: 200px;
+    width: auto; /* Largura fixa */
+    min-width: 200px; /* Largura mínima */
+    height: 50px; /* Altura fixa */
     margin: 5px;
     padding: 0.6em;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1em;
+    box-sizing: border-box;
+    transition: border 0.3s;
 }
+
 .select_container select:hover{
     border: 1px solid #000000;
-    transition: 0.3s;
 }
+
 .select_container input{
     color: #797979;
-    max-width: 200px;
+    width: auto; /* Largura fixa para o input de busca */
+    min-width: 200px;
+    height: 50px; /* Altura fixa */
     margin: 5px;
     padding: 0.6em;
     border-radius: 5px; 
     font-size: 1em;
-    border: 1px solid #ccc;   
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    transition: border 0.3s;
 }
+
 .select_container input:hover{
     border: 1px solid #000000;
-    transition: 0.3s;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .select_container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .selct_ano,
+    .select_container select,
+    .select_container input {
+        width: 100%;
+        max-width: 100%;
+    }
 }
 .questoes_container{
     margin-top: 1.5em;

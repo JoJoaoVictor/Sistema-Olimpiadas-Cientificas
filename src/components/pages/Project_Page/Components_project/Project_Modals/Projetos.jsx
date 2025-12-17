@@ -149,7 +149,7 @@ function Projetos() {
                             : styles.button_pendente
                     } ${showProjetoForm ? styles.button_active : ''}`}
                 >
-                    {!showProjetoForm ? 'Editar Questão' : 'Fechar Edição'}
+                    {!showProjetoForm ? 'Editar Questão' : 'Cancelar Edição'}
               </button>
 
               {!showProjetoForm ? (

@@ -86,11 +86,11 @@
 .button {
     font-size: 1em;
     color: white;
-    padding: 0.7rem 1.5rem;
+    padding: 1em;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin: 2em;
+    margin: 3em;
     transition: 0.2s;
 }
 

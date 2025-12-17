@@ -116,10 +116,8 @@
     padding: 10px;
 }
 .select_anos{
-  max-height: 40px;
-  min-height: 10px;
-  width: 150px;
-  border-radius: 5px;
+  color: #797979;
+  width: 170px;
 
 }
 

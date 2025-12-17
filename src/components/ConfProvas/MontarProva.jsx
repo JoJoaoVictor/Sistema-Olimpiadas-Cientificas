@@ -9,7 +9,7 @@ import cabecalho from '../../img/heder.png'; // Imagem do cabeçalho
 import rodape from '../../img/footer.png'; // Imagem do rodapé
 import tema from '../../img/tema.png'; // Imagem do tema
 import ModalSalvarProva from './modal/ModalSalvarProva'; // Modal para salvar a prova
-import ModalInfoQuestao from './modal/ModalInfoQuestao'; // Modal de informações da questão
+import ModalInfoQuestao from './modal/ModalInfoQuestao'; // Modal de informações da questão;
 
 function MontarProva() {
   // Estados para armazenar os dados do projeto e questões
@@ -355,34 +355,65 @@ if (incluirResposta) {
 
       <div className={styles.select_container}>
           {/* Filtro por série/ano */}
-                <Select className={styles.selct_ano}
-                  isSearchable
-                  options={opcoesAno}
-                  isMulti
-                  placeholder="Filtrar por Ano"
-                  value={anosSelecionados}
-                  onChange={(selected) => {
-                    setAnosSelecionados(selected || []);
-                    setMostrarQuestoes(true);
-                  }}
-                  closeMenuOnSelect={false}
-                  isClearable
-                  styles={{
-                    control: (base) => ({ 
-                      ...base,
-                      display: 'flex',
-                      border: '1px solid #ccc',
-                                borderRadius: '5px',
-                                outline: 'none', 
-                                boxShadow: 'none',
-                                '&:hover': {
-                                border: '1px solid #000000', 
-                                transition: '0.3s',
-                                }, 
-
-                    }),
-                  }}
-                />
+               <Select 
+                className={styles.selct_ano}
+                isSearchable
+                options={opcoesAno}
+                isMulti
+                placeholder="Filtrar por Ano"
+                value={anosSelecionados}
+                onChange={(selected) => {
+                  setAnosSelecionados(selected || []);
+                  setMostrarQuestoes(true);
+                }}
+                closeMenuOnSelect={false}
+                isClearable
+                styles={{
+                  control: (base, state) => ({ 
+                    ...base,
+                    minHeight: '45px',
+                    height: '50px',
+                    border: state.isFocused ? '1px solid #000000' : '1px solid #ccc',
+                    borderRadius: '5px',
+                    boxShadow: 'none',
+                    '&:hover': {
+                      border: '1px solid #000000',
+                    },
+                    transition: 'border 0.3s',
+                  }),
+                  valueContainer: (base) => ({
+                    ...base,
+                    height: '50px',
+                    padding: '0 0.5em',
+                    overflow: 'auto', // Permite scroll se tiver muitos itens selecionados
+                  }),
+                  input: (base) => ({
+                    ...base,
+                    margin: 0,
+                    padding:0,
+                  }),
+                  indicatorsContainer: (base) => ({
+                    ...base,
+                    height: '45px',
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor: '#e0e0e0',
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: '#797979',
+                  }),
+                  placeholder: (base) => ({
+                    ...base,
+                    color: '#797979',
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 9999, // Garante que o menu fique por cima
+                  }),
+                }}
+/>
           {/* Filtro por unidade temática - ainda não implementado */}
           <select >
             <option value="tema">Unidade Temática</option>

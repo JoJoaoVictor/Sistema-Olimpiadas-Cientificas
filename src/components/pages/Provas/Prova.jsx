@@ -124,6 +124,8 @@ function Prova() {
           styles={{
             control: base => ({
               ...base,        
+              minHeight: '45px',
+                    height: '50px',
                                border: '1px solid #ccc',
                               borderRadius: '5px',
                               outline: 'none', 
@@ -132,9 +134,41 @@ function Prova() {
                               border: '1px solid #000000', 
                               transition: '0.3s',
                               }, 
-            }),
-          }}
-        />
+           
+                             }),valueContainer: (base) => ({
+                                ...base,
+                                height: '45px',
+                                padding: '0 0.6em',
+                                overflow: 'auto', // Permite scroll se tiver muitos itens selecionados
+                            }),
+                            input: (base) => ({
+                                ...base,
+                                margin: 0,
+                                padding: 0,
+                            }),
+                            indicatorsContainer: (base) => ({
+                                ...base,
+                                height: '45px',
+                            }),
+                            multiValue: (base) => ({
+                                ...base,
+                                backgroundColor: '#e0e0e0',
+                            }),
+                            multiValueLabel: (base) => ({
+                                ...base,
+                                color: '#797979',
+                            }),
+                            placeholder: (base) => ({
+                                ...base,
+                                color: '#797979',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 9999, // Garante que o menu fique por cima
+                            }),
+                            }}
+                    />
+
 
         {/* Filtro por fase */}
          <Select 
@@ -147,6 +181,8 @@ function Prova() {
            styles={{
             control: base => ({
               ...base,
+                              minHeight: '45px',
+                              height: '50px',
                               border: '1px solid #ccc',
                               borderRadius: '5px',
                               outline: 'none', 
