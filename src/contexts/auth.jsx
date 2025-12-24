@@ -1,84 +1,85 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { authService } from "../services/authService";
 
-// Cria o contexto de autenticação
 export const AuthContext = createContext({});
 
-// Provedor de autenticação
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState();
- // Verifica se há um usuário logado ao carregar o componente
+  // 1. INICIALIZAÇÃO: Já começa lendo do service para evitar 'null' no F5
+  const [user, setUser] = useState(authService.getUser());
+  const [token, setToken] = useState(authService.getToken()); 
+  const [loading, setLoading] = useState(true);
+
+  // Validação inicial ao montar o componente
   useEffect(() => {
-    const userToken = localStorage.getItem("user_token");
-    // Carrega os usuários do Local Storage ao inicia
-    const usersStorage = localStorage.getItem("users_bd");
+    const checkAuth = () => {
+      const storedToken = authService.getToken();
+      const storedUser = authService.getUser();
 
-    if (userToken && usersStorage) {
-      const hasUser = JSON.parse(usersStorage)?.filter(
-        (user) => user.username === JSON.parse(userToken).username
-      );
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(storedUser);
+      } else {
+        // Se algo estiver corrompido, limpa tudo
+        authService.clearAuthData();
+        setToken(null);
+        setUser(null);
+      }
+      setLoading(false);
+    };
 
-      if (hasUser) setUser(hasUser[0]);// Define o usuário logado
-    }
+    checkAuth();
   }, []);
 
- // Função de login
-  const login = (username, password) => {
-    const usersStorage = JSON.parse(localStorage.getItem("users_bd"));
+  // --- LOGIN ---
+  const login = async (email, password) => {
+    const result = await authService.login(email, password);
 
-    const hasUser = usersStorage?.filter((user) => user.username === username);
-
-    if (hasUser?.length) {
-      if (hasUser[0].username === username && hasUser[0].password === password) {
-        const token = Math.random().toString(36).substring(2);// Gera um token aleatório
-        localStorage.setItem("user_token", JSON.stringify({ username, token }));// Armazena o token 
-        setUser({ username, password });// Define o usuário logado
-        return;
-      } else {
-        return "E-mail ou senha incorretos";
-      }
-    } else {
-      return "Usuário não cadastrado";
+    if (result.success) {
+      // Atualiza o estado lendo o que o service acabou de salvar
+      setUser(authService.getUser());
+      setToken(authService.getToken()); 
+      return null; // Sucesso
     }
+    return result.error; // Retorna erro (string ou objeto)
   };
-// Função de registro
-  const registro = (username, password) => {
-    const usersStorage = JSON.parse(localStorage.getItem("users_bd"));// Armazena o novo usuário
 
-    const hasUser = usersStorage?.filter((user) => user.username === username);
+  // --- REGISTRO ---
+  const registro = async (data) => {
+    const result = await authService.register(data);
 
-    if (hasUser?.length) {
-      return "Já tem uma conta com esse E-mail";
+    if (result.success) {
+      setUser(authService.getUser());
+      setToken(authService.getToken());
+      return null;
     }
-
-    let newUser;
-
-    if (usersStorage) {
-      newUser = [...usersStorage, { username, password }];
-    } else {
-      newUser = [{ username, password }];
-    }
-
-    localStorage.setItem("users_bd", JSON.stringify(newUser));
-
-    return;
+    return result.error;
   };
- // Função de logout
-  const signout = () => {
-    setUser(null);// Remove o usuário logado
-    localStorage.removeItem("user_token"); // Remove o token
+
+  // --- LOGOUT ---
+  const signout = async () => {
+    await authService.logout();
+    setUser(null);
+    setToken(null);
   };
+
   return (
     <AuthContext.Provider
-      value={{ user, signed: !!user, login, registro, signout }}
+      value={{
+        signed: !!user, // Converte user para booleano (true se existir)
+        user,
+        token, 
+        loading,
+        login,
+        registro,
+        signout,
+      }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-// Validação das props
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };

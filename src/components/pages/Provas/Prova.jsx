@@ -46,22 +46,22 @@ function Prova() {
 
     // Filtro por anos escolares (array de objetos)
     if (anosSelecionados.length > 0) {
-    filtradas = filtradas.filter(p => {
-      const anosDaProva = p.anos || []; // pega array de anos da prova
-      return anosSelecionados.some(opt => anosDaProva.includes(opt.label));
-    });
-  }
+      filtradas = filtradas.filter(p => {
+        const anosDaProva = p.anos || []; 
+        return anosSelecionados.some(opt => anosDaProva.includes(opt.label));
+      });
+    }
 
     // Filtro por fase
-      if (faseSelecionada) {
+    if (faseSelecionada) {
       filtradas = filtradas.filter(p => String(p.fase) === faseSelecionada);
     }
     // Filtro por Status
     if (statusSelecionado) {
-    filtradas = filtradas.filter(p =>
-      p.status === statusSelecionado
-    );
-  }
+      filtradas = filtradas.filter(p =>
+        p.status === statusSelecionado
+      );
+    }
 
     setProvasFiltradas(filtradas);
   }, [searchName, searchDate, anosSelecionados, faseSelecionada, statusSelecionado, provas]);
@@ -70,7 +70,7 @@ function Prova() {
     gerarPDF(prova.questoes, prova, true);
   }
 
-  // Lista fixa de anos (pode vir do backend)
+  // Lista fixa de anos
   const opcoesAno = [
     { value: '4', label: '4º' },
     { value: '5', label: '5º' },
@@ -84,119 +84,127 @@ function Prova() {
   ];
 
   // Lista fixa de fases
-    const listaFases = [
+  const listaFases = [
     { value: '1', label: 'Fase 1' },
     { value: '2', label: 'Fase 2' },
     { value: 'Final', label: 'Final' }
   ];
 
-
   // Lista fixa de status
-  const listaStatus = ['Aplicada', 'Pendente','Aprovada'];
+  const listaStatus = ['Aplicada', 'Pendente', 'Aprovada'];
 
   return (
     <div className={styles.container}>
       <h2>Provas Salvas</h2>
-        {/* Buscar pelo nome */}
+      {/* Buscar pelo nome */}
       <div className={styles.search_container}>
         <FiSearch className={styles.icon} />
         <input
-          style={{ border: 'none', outline: 'none',fontSize: '1em' }}
+          style={{ border: 'none', outline: 'none', fontSize: '1em' }}
           type="text"
           placeholder="Buscar prova..." 
           value={searchName}
           onChange={e => setSearchName(e.target.value)}
         />
       </div>
-      {/* Filtros */}
-      <div className={styles.select}>
+      
+      {/* --- CORREÇÃO APLICADA AQUI: notranslate e translate="no" --- */}
+      <div className={`${styles.select} notranslate`} translate="no">
+        
         {/* Filtro por ano */}
         <Select
-          className={styles.select_anos}
-          isSearchable
-          options={opcoesAno}
-          isMulti
-          placeholder="Ano"
-          value={anosSelecionados}
-          onChange={selected => setAnosSelecionados(selected || [])}
-          closeMenuOnSelect={false}
-          isClearable
-          styles={{
-            control: base => ({
-              ...base,        
-              minHeight: '45px',
-                    height: '50px',
-                               border: '1px solid #ccc',
-                              borderRadius: '5px',
-                              outline: 'none', 
-                              boxShadow: 'none',
-                              '&:hover': {
-                              border: '1px solid #000000', 
-                              transition: '0.3s',
-                              }, 
-           
-                             }),valueContainer: (base) => ({
-                                ...base,
-                                height: '45px',
-                                padding: '0 0.6em',
-                                overflow: 'auto', // Permite scroll se tiver muitos itens selecionados
-                            }),
-                            input: (base) => ({
-                                ...base,
-                                margin: 0,
-                                padding: 0,
-                            }),
-                            indicatorsContainer: (base) => ({
-                                ...base,
-                                height: '45px',
-                            }),
-                            multiValue: (base) => ({
-                                ...base,
-                                backgroundColor: '#e0e0e0',
-                            }),
-                            multiValueLabel: (base) => ({
-                                ...base,
-                                color: '#797979',
-                            }),
-                            placeholder: (base) => ({
-                                ...base,
-                                color: '#797979',
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                zIndex: 9999, // Garante que o menu fique por cima
-                            }),
-                            }}
-                    />
-
-
+    /* --- A CORREÇÃO DE OURO ESTÁ AQUI EMBAIXO --- */
+    className={`${styles.select_anos} notranslate`} 
+    menuPortalTarget={document.body} 
+    /* ------------------------------------------- */
+    
+    isSearchable
+    options={opcoesAno}
+    isMulti
+    placeholder="Ano"
+    value={anosSelecionados}
+    onChange={selected => setAnosSelecionados(selected || [])}
+    closeMenuOnSelect={false}
+    isClearable
+    
+    /* Estilos para o menu flutuante funcionar direito */
+    styles={{
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }), // Garante que fica por cima de tudo
+        control: base => ({
+            ...base,        
+            minHeight: '45px',
+            height: '50px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            outline: 'none', 
+            boxShadow: 'none',
+            '&:hover': {
+                border: '1px solid #000000', 
+                transition: '0.3s',
+            }, 
+        }),
+        valueContainer: (base) => ({
+            ...base,
+            height: '45px',
+            padding: '0 0.6em',
+            overflow: 'auto',
+        }),
+        input: (base) => ({
+            ...base,
+            margin: 0,
+            padding: 0,
+        }),
+        indicatorsContainer: (base) => ({
+            ...base,
+            height: '45px',
+        }),
+        multiValue: (base) => ({
+            ...base,
+            backgroundColor: '#e0e0e0',
+        }),
+        multiValueLabel: (base) => ({
+            ...base,
+            color: '#797979',
+        }),
+        placeholder: (base) => ({
+            ...base,
+            color: '#797979',
+        }),
+        menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+        }),
+    }}
+/>
         {/* Filtro por fase */}
-         <Select 
+        <Select 
+          /* --- CORREÇÃO APLICADA AQUI: Remove componentes conflitantes --- */
+          components={{ A11yText: () => null, LiveRegion: () => null }}
           className={styles.select_anos}
           options={listaFases}
           placeholder="Fase"
           value={listaFases.find(f => f.value === faseSelecionada) || null}
           onChange={selected => setFaseSelecionada(selected?.value || '')}
           isClearable
-           styles={{
+          styles={{
             control: base => ({
               ...base,
-                              minHeight: '45px',
-                              height: '50px',
-                              border: '1px solid #ccc',
-                              borderRadius: '5px',
-                              outline: 'none', 
-                              boxShadow: 'none',
-                              '&:hover': {
-                              border: '1px solid #000000', 
-                              transition: '0.3s',
-                              }, 
+              minHeight: '45px',
+              height: '50px',
+              border: '1px solid #ccc',
+              borderRadius: '5px',
+              outline: 'none', 
+              boxShadow: 'none',
+              '&:hover': {
+                border: '1px solid #000000', 
+                transition: '0.3s',
+              }, 
             }),
           }}
         />
 
         {/* Filtro por status */}
-        <select style={{fontSize:'1em'}}
+        <select style={{ fontSize: '1em' }}
           value={statusSelecionado}
           onChange={e => setStatusSelecionado(e.target.value)}
         >
@@ -207,14 +215,12 @@ function Prova() {
         </select>
 
         {/* Filtro por data */}
-        <input style={{fontSize:'1em', padding:'5px', borderRadius:'5px', border:'1px solid #ccc'}}
+        <input style={{ fontSize: '1em', padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
           type="date"
           value={searchDate}
           onChange={e => setSearchDate(e.target.value)}
         />
       </div>
-
-    
 
       {/* Lista de provas */}
       <div className={styles.provas_container}>
@@ -228,23 +234,23 @@ function Prova() {
             provasFiltradas.map(prova => (
               <div key={prova.id} className={styles.prova_card}>
                 <div className={styles.prova_card_item}>
-                  {/* Nome da prova  */}
-                  <h3>
-                {prova.name}
-                    </h3>
+                  {/* Nome da prova */}
+                  <h3>{prova.name}</h3>
                  
-                   {/* Informações adicionais como Fase, ano, data e status  */}
-                  <span >
-                    <p style={{  color: '#555' }}> <strong>Ano escolar:</strong> {(prova.anos || []).join(', ') || 'Não informado'}
-                    <strong> - Fase:</strong> {prova.fase || 'Não informada'}</p>
+                  {/* Informações adicionais */}
+                  <span>
+                    <p style={{ color: '#555' }}> 
+                      <strong>Ano escolar:</strong> {(prova.anos || []).join(', ') || 'Não informado'}
+                      <strong> - Fase:</strong> {prova.fase || 'Não informada'}
+                    </p>
                   </span>
-                 <span className={styles.status}>
-                  <span className={styles[prova.status?.toLowerCase()]}></span> {/* Círculo colorido */}
-                  <p style={{ color: '#555' }}>
-                    <strong> Status:</strong> {prova.status || 'Não informado'}
-                    <strong> - Última modificação:</strong> {prova.createdAt || 'Não informada'}
-                  </p>
-                </span>
+                  <span className={styles.status}>
+                    <span className={styles[prova.status?.toLowerCase()]}></span> 
+                    <p style={{ color: '#555' }}>
+                      <strong> Status:</strong> {prova.status || 'Não informado'}
+                      <strong> - Última modificação:</strong> {prova.createdAt || 'Não informada'}
+                    </p>
+                  </span>
                 </div>
                 <div className={styles.prova_card_buttons}>
                   <button
@@ -252,8 +258,8 @@ function Prova() {
                     onClick={() => window.location.href = `/provas/${prova.id}`}
                   >
                     <BsPencil />
-                  </button >
-                  <button className={styles.view_btn} onClick={() => visualizarPDF(prova)}><FiSearch/></button>
+                  </button>
+                  <button className={styles.view_btn} onClick={() => visualizarPDF(prova)}><FiSearch /></button>
                 </div>
               </div>
             ))

@@ -1,14 +1,15 @@
 import { useContext } from "react";
-import { AuthContext } from "../contexts/auth.jsx";
+// CORREÇÃO: O caminho deve apontar para a pasta 'context' e o arquivo 'auth'
+import { AuthContext } from "../contexts/auth.jsx"; 
 
-/**
-  Hook personalizado para acessar o contexto de autenticação.
-
-  returns {Object} Retorna o contexto de autenticação.
-  throws {Error} Lança um erro se o hook for usado fora de um AuthProvider.
- */ 
 const useAuth = () => {
   const context = useContext(AuthContext);
+
+  // Verificação de segurança (Boa prática)
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+  }
+
   return context;
 };
 

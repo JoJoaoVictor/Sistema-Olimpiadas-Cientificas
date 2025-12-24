@@ -3,8 +3,8 @@
     padding: 0.1em;
     justify-content: space-between;
     width: 100%;
+  min-width: 100vw;
   
-
 }
 .searchBar{
     padding: 10px;

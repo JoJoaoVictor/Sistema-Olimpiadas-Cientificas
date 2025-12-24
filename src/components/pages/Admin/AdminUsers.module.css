@@ -1,0 +1,138 @@
+/* Container Principal da Página de Administração */
+.admin_container {
+  padding: 2em;
+  background-color: #f9f9f9; /* Fundo claro para o container */
+  min-height: 100vh; /* Garante que ocupe toda a altura da tela */
+  min-width: 100vw;
+}
+/* Container do Cabeçalho (Título e Contador) */
+.admin_header {
+  margin-bottom: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin_header h1 {
+  font-size: 2.5rem;
+  color: #222;
+  margin: 0;
+}
+
+.admin_header p {
+  color: #000000;
+  font-size: 1.2rem;
+  
+}
+
+/* Tabela Principal */
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Remove espaços entre bordas */
+  margin-top: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave estilo Card */
+  border-radius: 8px; /* Bordas arredondadas nos cantos da tabela */
+  overflow: hidden; /* Garante que a borda arredondada corte o conteúdo */
+}
+
+/* Cabeçalho da Tabela */
+.table thead tr {
+  background-color: #222; /* Fundo escuro */
+  color: #ffbb33; /* Texto Amarelo (Destaque do seu projeto) ou Branco */
+  text-align: left;
+  font-weight: bold;
+}
+
+.table th,
+.table td {
+  padding: 15px 20px; /* Espaçamento interno das células */
+  border-bottom: 1px solid #eee; /* Linha divisória suave */
+}
+
+/* Linhas da Tabela */
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+/* Efeito Hover na linha (Destaca onde o mouse está) */
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Última linha sem borda */
+.table tbody tr:last-of-type {
+  border-bottom: 2px solid #222;
+}
+
+/* Select de Cargo (Dropdown) */
+.role_select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.role_select:focus {
+  border-color: #ffbb33;
+}
+
+/* Botão de Excluir */
+.delete_btn {
+  background-color: #ff4d4d; /* Vermelho alerta */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete_btn:hover {
+  background-color: #cc0000; /* Vermelho mais escuro no hover */
+}
+
+/* Responsividade: Para telas menores que tablets */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* Esconde cabeçalho em celular */
+  }
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border-bottom: 1px solid #eee;
+  }
+
+  /* Cria rótulos fictícios para celular */
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+  }
+}
