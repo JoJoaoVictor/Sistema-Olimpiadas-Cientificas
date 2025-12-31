@@ -1,8 +1,10 @@
 /**
- * Serviço de Autenticação
- * Compatível com FastAPI + JWT + Refresh Token
- * Atualizado para tratar erros de validação (Pydantic/422)
- * Inclui: Login, Registro, Google, Logout, Refresh e Recuperação de Senha
+ * Serviço de Autenticação (Frontend)
+ * Arquivo: src/services/authService.js
+ * * Responsável por:
+ * 1. Comunicar com a API (Login, Registro, Logout, Senhas)
+ * 2. Gerenciar Tokens (Salvar no LocalStorage)
+ * 3. Tratar erros de forma segura para não quebrar o React
  */
 
 import api from "./api";
@@ -10,11 +12,14 @@ import api from "./api";
 const DEFAULT_AVATAR = "https://www.w3schools.com/howto/img_avatar.png";
 
 export const authService = {
+  
   /**
    * ==========================
-   * LOGIN EMAIL + SENHA
+   * 1. LOGIN & REGISTRO
    * ==========================
    */
+
+  // Login tradicional (Email/Senha)
   async login(email, password) {
     try {
       const response = await api.post("/api/v1/auth/login", {
@@ -30,23 +35,17 @@ export const authService = {
 
       return { success: true, data: data.data };
     } catch (error) {
-      // Tratamento básico para login
       return {
         success: false,
-        error: error.response?.data?.detail || "Erro ao fazer login",
+        error: this._handleError(error), // Usa o tratador seguro
       };
     }
   },
 
-  /**
-   * ==========================
-   * REGISTRO (CORRIGIDO PARA O ERRO 422)
-   * ==========================
-   */
+  // Registro de novos usuários
   async register({ name, email, password, role }) {
-    // 1. Validação básica antes de enviar
     if (!name || !email || !password) {
-      return { success: false, error: "Preencha todos os campos" };
+      return { success: false, error: "Preencha todos os campos obrigatórios." };
     }
 
     try {
@@ -64,39 +63,15 @@ export const authService = {
       }
 
       return { success: true, data: data.data };
-
     } catch (error) {
-      console.error("Erro no registro:", error);
-
-      // --- CORREÇÃO DO ERRO 'REACT CHILD' ---
-      // Aqui transformamos qualquer resposta do backend em uma STRING simples.
-      let errorMessage = "Erro ao cadastrar usuário";
-
-      if (error.response && error.response.data && error.response.data.detail) {
-        const detail = error.response.data.detail;
-
-        if (typeof detail === "string") {
-          // Caso 1: Backend retornou texto simples (Ex: "Email já existe")
-          errorMessage = detail;
-        } else if (Array.isArray(detail) && detail.length > 0) {
-          // Caso 2: Backend retornou Lista de Erros do Pydantic (Ex: Senha fraca)
-          // Pegamos a mensagem do primeiro erro da lista
-          errorMessage = detail[0].msg || "Dados inválidos";
-        }
-      }
-
       return {
         success: false,
-        error: errorMessage, // Agora garantimos que isso é texto, não objeto
+        error: this._handleError(error), // Usa o tratador seguro
       };
     }
   },
 
-  /**
-   * ==========================
-   * LOGIN COM GOOGLE
-   * ==========================
-   */
+  // Login Social (Google)
   async loginWithGoogle(credential) {
     try {
       const response = await api.post("/api/v1/auth/google", {
@@ -111,85 +86,76 @@ export const authService = {
 
       return { success: true, data: data.data };
     } catch (error) {
-      console.error(error);
       return {
         success: false,
-        error: "Falha ao autenticar com Google",
+        error: "Falha ao autenticar com Google. Tente novamente.",
       };
     }
   },
 
   /**
    * ==========================
-   * RECUPERAÇÃO DE SENHA (NOVO)
+   * 2. RECUPERAÇÃO DE SENHA
    * ==========================
    */
-  // 1. Solicitar o link por email
+
+  // Passo 1: Enviar email com link
   async forgotPassword(email) {
     try {
       const response = await api.post("/api/v1/auth/forgot-password", { email });
-      // O backend retorna { message: "..." }
       return { success: true, message: response.data.message };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || "Erro ao solicitar recuperação.",
+        error: this._handleError(error),
       };
     }
   },
 
-  // 2. Redefinir a senha com o token
+  // Passo 2: Definir nova senha usando o token
   async resetPassword(token, newPassword) {
     try {
+      // ATENÇÃO: Enviamos 'new_password' para bater com o Schema do Backend
       const response = await api.post("/api/v1/auth/reset-password", {
-        token,
-        new_password: newPassword, // Backend espera snake_case
+        token: token,
+        new_password: newPassword, 
       });
       return { success: true, message: response.data.message };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || "Erro ao redefinir senha.",
+        error: this._handleError(error),
       };
     }
   },
 
   /**
    * ==========================
-   * LOGOUT
+   * 3. GESTÃO DE SESSÃO
    * ==========================
    */
+
   async logout() {
     try {
-      // Tenta avisar o backend para invalidar token (opcional dependendo da API)
+      // Opcional: Avisar o backend para invalidar token (blacklist)
       await api.post("/api/v1/auth/logout");
-    } catch {
-      // Ignora erro de rede no logout
+    } catch (err) {
+      // Ignora erro de rede no logout, apenas limpa localmente
     } finally {
-      // Sempre limpa o navegador
       this.clearAuthData();
     }
   },
 
-  /**
-   * ==========================
-   * PERFIL
-   * ==========================
-   */
+  // Busca dados atualizados do usuário (útil após editar perfil)
   async getCurrentUser() {
     try {
-      const response = await api.get("/api/v1/auth/profile");
-      return response.data.data.user;
+      const response = await api.get("/api/v1/auth/me"); // ou /users/me dependendo da sua rota
+      return response.data.data;
     } catch (error) {
       return null;
     }
   },
 
-  /**
-   * ==========================
-   * REFRESH TOKEN
-   * ==========================
-   */
   async refreshToken() {
     const authData = this.getAuthData();
     if (!authData?.refresh_token) throw new Error("Sem refresh token");
@@ -198,10 +164,14 @@ export const authService = {
       refresh_token: authData.refresh_token,
     });
 
-    // Atualiza os tokens na memória e no storage
-    authData.access_token = response.data.data.tokens.access_token;
-    authData.refresh_token = response.data.data.tokens.refresh_token;
+    // Atualiza os tokens mantendo o usuário atual
+    authData.access_token = response.data.data.access_token;
+    // Se o back retornar novo refresh token, atualiza. Se não, mantem o velho.
+    if (response.data.data.refresh_token) {
+        authData.refresh_token = response.data.data.refresh_token;
+    }
 
+    // Salva novamente
     this.setAuthData({ user: authData.user, tokens: authData });
 
     return authData.access_token;
@@ -209,27 +179,24 @@ export const authService = {
 
   /**
    * ==========================
-   * STORAGE (Salvar no Navegador)
+   * 4. LOCAL STORAGE (Persistência)
    * ==========================
    */
+
   setAuthData(data) {
-    // Garante que picture tenha um valor padrão se vier null do back
+    // Normalização de dados (avatar vs picture)
     const user = {
       ...data.user,
       picture: data.user.avatar_url || data.user.picture || DEFAULT_AVATAR,
     };
 
-    // Estrutura que será salva
     const authPayload = {
-      access_token: data.tokens.access_token,
-      refresh_token: data.tokens.refresh_token,
+      access_token: data.tokens ? data.tokens.access_token : data.access_token,
+      refresh_token: data.tokens ? data.tokens.refresh_token : data.refresh_token,
       user,
     };
 
-    // Salva o objeto JSON completo
     localStorage.setItem("user_token", JSON.stringify(authPayload));
-
-    // Salva o token avulso (útil para interceptors simples)
     localStorage.setItem("access_token", authPayload.access_token);
   },
 
@@ -261,26 +228,51 @@ export const authService = {
 
   /**
    * ==========================
-   * ROLES (Permissões)
+   * 5. PERMISSÕES (ROLES)
    * ==========================
    */
   hasRole(role) {
     return this.getUser()?.role === role;
   },
 
-  isAdmin() {
-    return this.hasRole("ADMIN");
-  },
+  isAdmin() { return this.hasRole("ADMIN"); },
+  isProfessor() { return this.hasRole("PROFESSOR"); },
+  isRevisor() { return this.hasRole("REVISOR"); },
+  isEstudante() { return this.hasRole("STUDENT"); },
 
-  isProfessor() {
-    return this.hasRole("PROFESSOR");
-  },
+  /**
+   * ==========================
+   * 6. UTILITÁRIOS (PRIVADO)
+   * ==========================
+   */
+  
+  /**
+   * Trata erros do Axios/FastAPI de forma segura.
+   * Evita o erro "Objects are not valid as a React child".
+   * Transforma Arrays e Objetos em String simples.
+   */
+  _handleError(error) {
+    let errorMessage = "Ocorreu um erro inesperado.";
 
-  isRevisor() {
-    return this.hasRole("REVISOR");
-  },
+    if (error.response && error.response.data) {
+        const detail = error.response.data.detail;
 
-  isEstudante() {
-    return this.hasRole("STUDENT");
-  },
+        if (typeof detail === "string") {
+            // Caso simples: "Senha incorreta"
+            errorMessage = detail;
+        } else if (Array.isArray(detail) && detail.length > 0) {
+            // Caso Pydantic (Erro 422): [{ loc:.., msg: "Campo obrigatório" }]
+            // Pega a mensagem do primeiro erro
+            errorMessage = detail[0].msg || "Dados inválidos enviadas.";
+        } else if (typeof detail === "object") {
+             // Caso objeto genérico
+             errorMessage = JSON.stringify(detail);
+        }
+    } else if (error.message) {
+        // Erro de rede ou timeout
+        errorMessage = error.message;
+    }
+
+    return errorMessage;
+  }
 };

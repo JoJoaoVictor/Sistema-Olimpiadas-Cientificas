@@ -1,10 +1,9 @@
 import styles from "./Usuario.module.css"; 
 import useAuth from "../../../hooks/useAuth";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
 // Ícones
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiUser, FiMail, FiCheckCircle } from "react-icons/fi";
 import { RiLock2Line } from "react-icons/ri";
 import { BsPencil } from 'react-icons/bs';
 
@@ -12,131 +11,351 @@ function Usuario() {
   const { signout } = useAuth();
   const navigate = useNavigate();
 
-  // Estados para armazenar os dados do perfil
+  // Imagem padrão caso tudo falhe
+  const DEFAULT_IMAGE = "https://placehold.co/150?text=Foto";
+
+  // --- Estados de Exibição (Dados do Usuário) ---
   const [name, setName] = useState("Usuário");
   const [email, setEmail] = useState("Carregando...");
-  const [profilePic, setProfilePic] = useState("https://via.placeholder.com/150"); 
-  const [role, setRole] = useState("Professor"); // Exemplo de cargo
+  const [profilePic, setProfilePic] = useState(DEFAULT_IMAGE); 
+  const [role, setRole] = useState("Estudante"); 
+  const [createdAt, setCreatedAt] = useState("..."); 
+  const [hasPassword, setHasPassword] = useState(false); 
+  
+  // --- Estados dos Modais ---
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
+  // --- Estados do Formulário de Edição ---
+  const [editName, setEditName] = useState("");
+  const [editAvatarUrl, setEditAvatarUrl] = useState("");
+  
+  // --- Estados do Formulário de Senha ---
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // =========================================================
+  // 1. CARREGAR DADOS INICIAIS (DO LOCALSTORAGE)
+  // =========================================================
   useEffect(() => {
-    // 1. Recupera o objeto salvo pelo authService no Login
     const storedData = localStorage.getItem("user_token");
 
     if (storedData) {
       try {
-        // O authService agora salva um JSON: { user: {...}, access_token: "..." }
         const parsedData = JSON.parse(storedData);
 
-        // Verifica se existe a propriedade 'user' dentro do objeto salvo
         if (parsedData.user) {
           const user = parsedData.user;
-          
-          setName(user.name || "Usuário sem nome");
+          const userName = user.name || "Usuário";
+
+          // Preenche os dados visuais
+          setName(userName);
           setEmail(user.email || "Email não disponível");
-          setRole(user.role || "Professor");
+          setRole(user.role || "Estudante");
+          setHasPassword(user.has_password); 
+
+          // Preenche o formulário de edição
+          setEditName(userName);
           
-          // Se tiver foto salva, usa. Se não, mantém o placeholder padrão.
-          if (user.picture || user.avatar_url) {
-            setProfilePic(user.picture || user.avatar_url);
+          // Lógica de Prioridade da Imagem
+          let currentUrl = "";
+          if (user.avatar_url) {
+            setProfilePic(user.avatar_url);
+            currentUrl = user.avatar_url;
+          } else if (user.picture) {
+             setProfilePic(user.picture);
+             currentUrl = user.picture;
+          } else {
+            // Gerador de avatar com iniciais
+            const autoAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=150`;
+            setProfilePic(autoAvatar);
+          }
+          setEditAvatarUrl(currentUrl);
+
+          // Formata a data
+          if (user.created_at) {
+            const date = new Date(user.created_at);
+            setCreatedAt(date.toLocaleDateString('pt-BR'));
           }
         } 
       } catch (error) {
-        console.error("Erro ao ler dados do usuário:", error);
-        // Se der erro no JSON.parse, os dados estão corrompidos ou no formato antigo.
-        // O logout forçado abaixo ajuda a limpar isso.
+        console.error("Erro ao ler dados locais:", error);
       }
     }
   }, []);
 
-  // Função de Logout com navegação segura
   const handleLogout = () => {
     signout();
     navigate("/login");
   };
 
+  // =========================================================
+  // 2. FUNÇÃO DE SALVAR PERFIL 
+  // =========================================================
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    
+    // Recupera o Token atual
+    const storedData = JSON.parse(localStorage.getItem("user_token"));
+    const token = storedData?.token || storedData?.access_token; // Garante pegar o token certo
+    
+    if (!token) {
+        alert("Sessão expirada. Faça login novamente.");
+        return;
+    }
+
+    // Define a imagem final (se vazio, gera automático)
+    let finalAvatarUrl = editAvatarUrl;
+    if (!finalAvatarUrl || finalAvatarUrl.trim() === "") {
+        finalAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(editName)}&background=random&size=150`;
+    }
+
+    try {
+      // Requisição para atualizar o perfil
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/users/me`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                name: editName,
+                avatar_url: finalAvatarUrl
+            })
+        });
+
+        if (response.ok) {
+            // 1. Atualiza a tela imediatamente (Feedback visual)
+            setName(editName); 
+            setProfilePic(finalAvatarUrl);
+
+            // 2. Atualiza o LocalStorage (Para persistir se der F5)
+            // Mantemos os dados antigos e só mudamos o que foi editado
+            const updatedUser = { 
+                ...storedData.user, 
+                name: editName, 
+                avatar_url: finalAvatarUrl, 
+                picture: finalAvatarUrl 
+            };
+            
+            localStorage.setItem("user_token", JSON.stringify({ ...storedData, user: updatedUser }));
+
+            setShowEditModal(false);
+            alert("Perfil atualizado com sucesso!");
+        } else {
+            const errorData = await response.json();
+            alert(`Erro ao salvar: ${errorData.detail || errorData.message || 'Erro desconhecido'}`);
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        alert("Erro de conexão com o servidor.");
+    }
+  };
+  // =========================================================
+  // 3. FUNÇÃO DE ALTERAR SENHA
+  // =========================================================
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      alert("A nova senha e a confirmação não conferem.");
+      return;
+    }
+
+    const storedData = JSON.parse(localStorage.getItem("user_token"));
+    const token = storedData?.token || storedData?.access_token;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/v1/users/change-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                current_password: currentPassword, // Senha atual (obrigatória se tiver senha)
+                new_password: newPassword
+            })
+        });
+
+        if (response.ok) {
+            alert("Senha alterada com sucesso!");
+            // Limpa os campos e fecha modal
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+            setShowPasswordModal(false);
+        } else {
+            const errorData = await response.json();
+            alert(`Erro: ${errorData.detail || 'Falha ao alterar senha'}`);
+        }
+    } catch (error) {
+        alert("Erro de conexão ao tentar alterar senha.");
+    }
+  };
+
   return (
-    <div className={styles.container}>
-      <h2>Perfil do Usuário</h2>
-      
-      <div className={styles.user_img}>
-        {/* Imagem de Perfil com tratamento de erro e estilo inline corrigido */}
-        <img 
-          style={{ 
-            width: "120px", 
-            height: "120px", 
-            borderRadius: "50%", 
-            objectFit: "cover",
-            border: "3px solid #f0f0f0" // Adicionei uma borda sutil para destaque
-          }} 
-          src={profilePic} 
-          alt="Imagem de perfil"
-          onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} // Fallback caso a imagem quebre
-        />
-        
-        <div className={styles.user_text}>
-          {/* Nome do Usuário */}
-          <p style={{ marginTop: "20px", fontWeight: "bold", fontSize: "1.3rem" }}>
-            {name}
-          </p> 
-          
-          {/* Cargo / ID */}
-          <p className={styles.user_text} style={{ color: "#666" }}>
-            ID: <strong>{role}</strong>
-          </p>
-          
-          {/* Botão Alterar Senha */}
-          <div className={styles.bnt}>
-            <Link className={styles.bnt_password} to={`/alterar-senha`}>
-              <RiLock2Line style={{ marginRight: "5px" }}/> Alterar Senha
-            </Link>
-          </div>
-        </div>
-
-        {/* Botão Editar (Posicionado ao lado ou abaixo, dependendo do CSS) */}
-        <div className={styles.bnt}>
-          <Link className={styles.bnt_edit} to={`/editar-perfil`}>
-            <BsPencil style={{ marginRight: "5px" }}/> Editar
-          </Link>
-        </div>
-      </div>
-
-      {/* Seção de Detalhes */}
-      <h2 style={{ margin: '25px 0 10px 25px' }}>Informações do Usuário</h2>
-      
+    <div className={styles.page_wrapper}>
       <div className={styles.container}>
-        <div className={styles.user_text} style={{ width: '100%' }}>
-          
-          <div className={styles.bordas}>
-            <p><strong>Nome:</strong> {name}</p>
-          </div>
-          
-          <div className={styles.bordas}>
-            <p><strong>Email:</strong> {email}</p>
-          </div>
-          
-          <div className={styles.bordas}>
-            <p><strong>Tipo de Usuário:</strong> {role}</p>
-          </div>
-          
-          <div className={styles.bordas}>
-            <p><strong>Data de Cadastro:</strong> 01/01/2023</p> {/* Pode vir do backend futuramente */}
-          </div>
-          
-          <div className={styles.bordas}>
-            <p><strong>Status:</strong> <span style={{color: 'green', fontWeight: 'bold'}}>Ativo</span></p>
-          </div>
         
-        </div>      
+        {/* === CARD DA ESQUERDA (FOTO E BOTÕES) === */}
+        <aside className={styles.profile_card}>
+          <div className={styles.profile_header}>
+            <img 
+              className={styles.avatar}
+              src={profilePic} 
+              alt="Perfil"
+              // Handler de erro robusto para imagens quebradas
+              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }} 
+            />
+            <h2 className={styles.user_name}>{name}</h2>
+            <span className={styles.user_badge}>{role}</span>
+          </div>
+
+          <div className={styles.action_buttons}>
+            <button className={styles.btn_outline} onClick={() => setShowEditModal(true)}>
+              <BsPencil /> Editar Perfil
+            </button>
+            <button className={styles.btn_outline} onClick={() => setShowPasswordModal(true)}>
+              <RiLock2Line /> {hasPassword ? "Alterar Senha" : "Criar Senha"}
+            </button>
+            <button className={`${styles.btn_outline} ${styles.btn_danger}`} onClick={handleLogout}>
+              <FiLogOut /> Sair
+            </button>
+          </div>
+        </aside>
+
+        {/* === CARD DA DIREITA (DETALHES) === */}
+        <main className={styles.details_section}>
+          <div className={styles.section_title}>
+            <h3>Informações da Conta</h3>
+            <p>Seus dados pessoais cadastrados no sistema.</p>
+          </div>
+
+          <div className={styles.info_grid}>
+            <div className={styles.info_item}>
+              <label><FiUser /> Nome Completo</label>
+              <p>{name}</p>
+            </div>
+            <div className={styles.info_item}>
+              <label><FiMail /> Email</label>
+              <p>{email}</p>
+            </div>
+            <div className={styles.info_item}>
+              <label><FiCheckCircle /> Cargo</label>
+              <p>{role}</p>
+            </div>
+            <div className={styles.info_item}>
+              <label><FiCalendar /> Membro Desde</label>
+              <p>{createdAt}</p>
+            </div>
+            <div className={styles.info_item}>
+               <label>Status da Conta</label>
+               <span className={styles.status_active}>Ativo</span>
+            </div>
+          </div>
+        </main>
       </div>
 
-      {/* Botão de Sair */}
-      <div className={styles.bnt} style={{ marginTop: "20px" }}>
-        <button onClick={handleLogout} style={{ cursor: "pointer" }}>
-          <FiLogOut style={{ marginRight: "8px" }} />
-          Sair
-        </button>
-      </div>
-      
+      {/* === MODAL: EDITAR PERFIL === */}
+      {showEditModal && (
+        <div className={styles.modal_overlay} onClick={() => setShowEditModal(false)}>
+          <div className={styles.modal_content} onClick={(e) => e.stopPropagation()}>
+            <h3>Editar Perfil</h3>
+            <form onSubmit={handleSaveProfile}>
+              
+              <div className={styles.form_group}>
+                <label>Nome Completo</label>
+                <input 
+                    type="text" 
+                    value={editName} 
+                    onChange={(e) => setEditName(e.target.value)} 
+                    required 
+                />
+              </div>
+
+              <div className={styles.form_group}>
+                <label>URL da Imagem (Avatar)</label>
+                <input 
+                    type="text" 
+                    placeholder="Cole o link da sua imagem..."
+                    value={editAvatarUrl} 
+                    onChange={(e) => setEditAvatarUrl(e.target.value)} 
+                />
+              </div>  
+
+              {/* Preview da Imagem no Modal */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px', padding: '10px', background: '#f5f5f5', borderRadius: '8px' }}>
+                 <span style={{fontSize: '0.8rem', color: '#666'}}>Pré-visualização:</span>
+                 <img 
+                   src={editAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(editName)}`}
+                   alt="Preview"
+                   style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #ddd' }}
+                   onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }}
+                 />
+              </div>
+
+              <div className={styles.modal_actions}>
+                <button type="button" className={styles.btn_cancel} onClick={() => setShowEditModal(false)}>Cancelar</button>
+                <button type="submit" className={styles.btn_save}>Salvar Alterações</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* === MODAL: ALTERAR SENHA === */}
+      {showPasswordModal && (
+        <div className={styles.modal_overlay} onClick={() => setShowPasswordModal(false)}>
+          <div className={styles.modal_content} onClick={(e) => e.stopPropagation()}>
+            <h3>Segurança</h3>
+            <form onSubmit={handleChangePassword}>
+              {hasPassword && (
+                <div className={styles.form_group}>
+                  <label>Senha Atual</label>
+                  <input 
+                    type="password" 
+                    value={currentPassword} 
+                    onChange={(e) => setCurrentPassword(e.target.value)} 
+                    placeholder="Digite sua senha atual"
+                    required 
+                  />
+                </div>
+              )}
+              
+              <div className={styles.form_group}>
+                <label>Nova Senha</label>
+                <input 
+                    type="password" 
+                    value={newPassword} 
+                    onChange={(e) => setNewPassword(e.target.value)} 
+                    placeholder="Mínimo 6 caracteres"
+                    required 
+                    minLength={6}
+                />
+              </div>
+              
+              <div className={styles.form_group}>
+                <label>Confirmar Nova Senha</label>
+                <input 
+                    type="password" 
+                    value={confirmPassword} 
+                    onChange={(e) => setConfirmPassword(e.target.value)} 
+                    placeholder="Repita a nova senha"
+                    required 
+                    minLength={6}
+                />
+              </div>
+
+              <div className={styles.modal_actions}>
+                <button type="button" className={styles.btn_cancel} onClick={() => setShowPasswordModal(false)}>Cancelar</button>
+                <button type="submit" className={styles.btn_save}>Atualizar Senha</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

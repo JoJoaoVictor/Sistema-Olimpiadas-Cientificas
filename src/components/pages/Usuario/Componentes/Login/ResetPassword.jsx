@@ -40,15 +40,33 @@ const ResetPassword = () => {
 
     setLoading(true);
 
-    const result = await authService.resetPassword(token, password);
+    try {
+        // Passamos o token e a senha.
+        // O authService deve formatar isso corretamente para { token: "...", new_password: "..." }
+        const result = await authService.resetPassword(token, password);
 
-    if (result.success) {
-      setSuccess(true);
-      // Redireciona para o login após 3 segundos
-      setTimeout(() => navigate("/login"), 3000);
-    } else {
-      setError(result.error);
+        if (result.success) {
+            setSuccess(true);
+            setTimeout(() => navigate("/login"), 3000);
+        } else {
+            // --- PROTEÇÃO CONTRA CRASH DO REACT ---
+            // Se o erro for um objeto ou array (comum no 422), transformamos em texto
+            let msg = result.error;
+            if (typeof msg === 'object') {
+                if (Array.isArray(msg) && msg.length > 0) {
+                    msg = msg[0].msg || JSON.stringify(msg);
+                } else if (msg.detail) {
+                    msg = msg.detail;
+                } else {
+                    msg = JSON.stringify(msg);
+                }
+            }
+            setError(String(msg)); // Garante que é string
+        }
+    } catch (err) {
+        setError("Ocorreu um erro inesperado.");
     }
+    
     setLoading(false);
   };
 
@@ -70,10 +88,10 @@ const ResetPassword = () => {
         <form onSubmit={handleSubmit}>
           <h1>Nova Senha</h1>
 
+          {/* O erro agora é renderizado com segurança */}
           {error && <p className="error-message">{error}</p>}
           {!token && <p className="error-message">Link inválido. Tente solicitar novamente.</p>}
 
-          {/* Nova Senha */}
           <div className="input-field">
             <input
               type="password"
@@ -86,7 +104,6 @@ const ResetPassword = () => {
             <FaLock className="icon" />
           </div>
 
-          {/* Confirmar Senha */}
           <div className="input-field">
             <input
               type="password"

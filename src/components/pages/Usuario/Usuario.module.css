@@ -1,125 +1,264 @@
-.container {
-  font-family: Helvetica, sans-serif;
-  color: #000;
-  width: 100%;
-  max-width: 800px;
-  margin: 40px auto;
-  background-color: #ffffff;
-  padding: 2em;
-  border-radius: 12px;
-  box-shadow:10px 10px rgba(0, 0, 0, 0.1);
-  justify-content: space-between;
-  flex-wrap: wrap;
-  border: 1px solid #00000060;
-}
+/* =========================================================
+   LAYOUT GERAL (GRID PC vs MOBILE)
+   ========================================================= */
 
-.user_img {
-  display: flex;
-  box-shadow:4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  padding: 1.5em;
-  border: 1px solid #00000060;
-  margin-top: 20px;
-}
-
-.user_img img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin: 10px;
-  border: 3px solid #79787880;
-
-}
-
-.user_text {
+.page_wrapper {
+    /* Centraliza a página na tela */
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f4f6f8; /* Fundo cinza claro profissional */
+    min-height: 100vh;
+    min-width: 100vw  ;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
   
-  justify-content: space-between;
-  gap: 5px;
+  .container {
+    width: 100%;
+    max-width: 1100px; /* Mais largo para PC */
+    display: grid;
+    /* Desktop: Coluna da esquerda (300px) e o resto para a direita */
+    grid-template-columns: 320px 1fr; 
+    gap: 30px;
+    align-items: start; /* Impede que a esquerda estique se a direita for longa */
+  }
   
-}
-
-.user_text p {
-  margin: 13px;
+  /* =========================================================
+     COLUNA ESQUERDA: CARTÃO DE PERFIL
+     ========================================================= */
   
-  font-size: 1em;
-  color: #333;
-  gap: 5px;
-  padding: 2px;
+  .profile_card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    text-align: center;
+    position: sticky; /* No PC, fica fixo ao rolar */
+    top: 20px;
+  }
   
-}
-.bordas{
-  font-size: 13px;
-  margin-top: -10px;
-  display: flex;
-  background-color: #66666634;
-  border-bottom: 1px solid #00000060;
-  margin: 10px;
-}
-
-
-.bnt {
-  flex-wrap: wrap;
-  justify-content: space-around;
+  .profile_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+  }
   
-
-}
-
-.bnt button {
-  padding: 0.5em 1.2em;
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ;
-  font-size: 1em;
-}
-
-.bnt button:hover {
-  background-color: #ff0000cb;
-  color: #ffffff;
- 
-  font-weight: bold;
-}
-
-.bnt_edit {
-  display: flex;
-  padding: 0.5em;
-  margin-left: 20em;
-
-
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.5s ;
-
-  text-decoration: none;
-}
-.bnt_edit:hover{
-  background-color: #11bb4ac0;
-  color: #ffffff;
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+  }
   
- 
-
-}
-.bnt_password {
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  padding: 0.5em;
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.5s ;
-  text-decoration: none;
-}
-.bnt_password:hover{
-  background-color: #58585893;
-  color: #ffffff;
-  font-weight: bold;
+  .user_name {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2c3e50;
+    font-weight: 700;
+  }
   
-
-}
+  .user_badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .action_buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  
+  /* Botões laterais estilo "Menu" */
+  .btn_outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #555;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn_outline:hover {
+    background-color: #f9f9f9;
+    border-color: #bbb;
+    color: #333;
+  }
+  
+  .btn_danger {
+    color: #d32f2f;
+    border-color: #ffcdd2;
+  }
+  
+  .btn_danger:hover {
+    background-color: #ffebee;
+    border-color: #ef9a9a;
+  }
+  
+  /* =========================================================
+     COLUNA DIREITA: DETALHES
+     ========================================================= */
+  
+  .details_section {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+  }
+  
+  .section_title {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+  }
+  
+  .section_title h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.4rem;
+    color: #333;
+  }
+  
+  .section_title p {
+    margin: 0;
+    color: #888;
+    font-size: 0.95rem;
+  }
+  
+  /* Grid interna dos detalhes */
+  .info_grid {
+    display: grid;
+    /* Cria colunas automáticas de no mínimo 250px */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  
+  .info_item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .info_item label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #888;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .info_item p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .status_active {
+    display: inline-block;
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    border: 1px solid #c8e6c9;
+    width: fit-content;
+  }
+  
+  /* =========================================================
+     MODAL (Mantido igual, apenas ajustado visualmente)
+     ========================================================= */
+  
+  .modal_overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal_content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease;
+  }
+  
+  .modal_content h3 { margin-top: 0; color: #333; margin-bottom: 20px;}
+  
+  .form_group { margin-bottom: 15px; text-align: left;}
+  .form_group label { display: block; margin-bottom: 6px; font-weight: 500; color: #555;}
+  .form_group input { 
+    width: 100%; padding: 12px; 
+    border: 1px solid #ccc; border-radius: 8px; 
+    font-size: 1rem; box-sizing: border-box;
+  }
+  .form_group input:focus { outline: none; border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1);}
+  
+  .modal_actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;}
+  
+  .btn_cancel { background: #f5f5f5; color: #333; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;}
+  .btn_save { background: #1976d2; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;}
+  .btn_save:hover { background: #1565c0;}
+  
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  /* =========================================================
+     RESPONSIVIDADE (Transforma PC em Mobile)
+     ========================================================= */
+  
+  @media (max-width: 850px) {
+    .container {
+      grid-template-columns: 1fr; /* Vira uma coluna só */
+      gap: 20px;
+    }
+  
+    .profile_card {
+      position: static; /* Remove o sticky no mobile */
+      padding: 20px;
+    }
+  
+    .details_section {
+      padding: 25px;
+    }
+    
+    .info_grid {
+      grid-template-columns: 1fr; /* Itens um embaixo do outro no mobile */
+    }
+  }

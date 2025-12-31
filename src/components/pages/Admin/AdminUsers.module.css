@@ -1,138 +1,291 @@
-/* Container Principal da Página de Administração */
-.admin_container {
-  padding: 2em;
-  background-color: #f9f9f9; /* Fundo claro para o container */
-  min-height: 100vh; /* Garante que ocupe toda a altura da tela */
-  min-width: 100vw;
-}
-/* Container do Cabeçalho (Título e Contador) */
-.admin_header {
-  margin-bottom: 2em;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.admin_header h1 {
-  font-size: 2.5rem;
-  color: #222;
-  margin: 0;
-}
-
-.admin_header p {
-  color: #000000;
-  font-size: 1.2rem;
+/* =========================================
+   ESTRUTURA DA PÁGINA
+   ========================================= */
+   .page_wrapper {
+    background-color: #f4f6f8;
+    min-height: 100vh;
+    min-width: 100vw;
+    padding: 40px 20px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
   
-}
-
-/* Tabela Principal */
-.table {
-  width: 100%;
-  border-collapse: collapse; /* Remove espaços entre bordas */
-  margin-top: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave estilo Card */
-  border-radius: 8px; /* Bordas arredondadas nos cantos da tabela */
-  overflow: hidden; /* Garante que a borda arredondada corte o conteúdo */
-}
-
-/* Cabeçalho da Tabela */
-.table thead tr {
-  background-color: #222; /* Fundo escuro */
-  color: #ffbb33; /* Texto Amarelo (Destaque do seu projeto) ou Branco */
-  text-align: left;
-  font-weight: bold;
-}
-
-.table th,
-.table td {
-  padding: 15px 20px; /* Espaçamento interno das células */
-  border-bottom: 1px solid #eee; /* Linha divisória suave */
-}
-
-/* Linhas da Tabela */
-.table tbody tr {
-  transition: all 0.3s ease;
-}
-
-/* Efeito Hover na linha (Destaca onde o mouse está) */
-.table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Última linha sem borda */
-.table tbody tr:last-of-type {
-  border-bottom: 2px solid #222;
-}
-
-/* Select de Cargo (Dropdown) */
-.role_select {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.role_select:focus {
-  border-color: #ffbb33;
-}
-
-/* Botão de Excluir */
-.delete_btn {
-  background-color: #ff4d4d; /* Vermelho alerta */
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
-}
-
-.delete_btn:hover {
-  background-color: #cc0000; /* Vermelho mais escuro no hover */
-}
-
-/* Responsividade: Para telas menores que tablets */
-@media (max-width: 768px) {
-  .table thead {
-    display: none; /* Esconde cabeçalho em celular */
-  }
-
-  .table, .table tbody, .table tr, .table td {
-    display: block;
+  .container {
     width: 100%;
+    background-color: transparent;
   }
-
-  .table tr {
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  
+  /* =========================================
+     CABEÇALHO & ESTATÍSTICAS
+     ========================================= */
+  .header_section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
   }
-
-  .table td {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
-    border-bottom: 1px solid #eee;
+  
+  .header_section h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
   }
-
-  /* Cria rótulos fictícios para celular */
-  .table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 15px;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
+  
+  .header_section p {
+    color: #666;
+    margin: 0;
+  }
+  
+  .stats_card {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+  }
+  
+  .stats_card div {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stats_card strong { font-size: 1.5rem; color: #333; line-height: 1; }
+  .stats_card span { font-size: 0.85rem; color: #888; text-transform: uppercase; }
+  
+  /* =========================================
+     BARRA DE BUSCA
+     ========================================= */
+  .toolbar {
+    margin-bottom: 20px;
+  }
+  
+  .search_box {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 0 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  }
+  
+  .search_box input {
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .search_box svg { color: #888; }
+  
+  /* =========================================
+     TABELA (DESKTOP)
+     ========================================= */
+  .content_area {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    overflow: hidden; /* Para os cantos arredondados */
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #eaeaea;
+  }
+  
+  .table th {
     text-align: left;
-    font-weight: bold;
-    color: #333;
+    padding: 18px 25px;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
   }
-}
+  
+  .table td {
+    padding: 15px 25px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    vertical-align: middle;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #fafafa;
+  }
+  
+  /* Célula do Usuário (Foto + Nome) */
+  .user_cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .user_cell img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Dropdown Estilizado */
+  .role_select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background-color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  /* Botão de Excluir (Ícone) */
+  .icon_btn_delete {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon_btn_delete:hover {
+    background-color: #ffe5e5;
+    color: #d32f2f;
+  }
+  
+  /* =========================================
+     LISTA DE CARDS (MOBILE) - Oculto no PC
+     ========================================= */
+  .mobile_list {
+    display: none; /* Padrão escondido */
+    padding: 20px;
+    display: grid;
+    gap: 15px;
+  }
+  
+  /* =========================================
+     MODAL DE EXCLUSÃO
+     ========================================= */
+  .modal_overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+  }
+  
+  .modal_content {
+    background: white; padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 400px; text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .modal_header_danger {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+  }
+  
+  .modal_actions {
+    display: flex; justify-content: center; gap: 15px; margin-top: 25px;
+  }
+  
+  .btn_cancel {
+    padding: 10px 20px; background: #eee; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+  }
+  
+  .btn_confirm_danger {
+    padding: 10px 20px; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+  }
+  
+  @keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  
+  /* =========================================
+     RESPONSIVIDADE (MEDIA QUERIES)
+     ========================================= */
+  @media (min-width: 769px) {
+    /* No PC, esconde a lista mobile */
+    .mobile_list { display: none !important; }
+  }
+  
+  @media (max-width: 768px) {
+    /* No Mobile, esconde a tabela e mostra os cards */
+    .table { display: none; }
+    .mobile_list { display: grid !important; }
+    
+    .container { padding: 0; }
+    
+    .header_section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .stats_card { width: 100%; box-sizing: border-box;}
+  
+    /* Estilo do Card Mobile */
+    .user_card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+  
+    .card_header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+  
+    .card_header img {
+        width: 50px; height: 50px; border-radius: 50%;
+    }
+  
+    .email_text {
+        display: block; font-size: 0.9rem; color: #777;
+    }
+  
+    .role_select_mobile {
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px;
+    }
+  
+    .btn_delete_mobile {
+        width: 100%;
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #ffe5e5;
+        color: #d32f2f;
+        border: 1px solid #ffcdd2;
+        border-radius: 6px;
+        font-weight: 600;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+  }
