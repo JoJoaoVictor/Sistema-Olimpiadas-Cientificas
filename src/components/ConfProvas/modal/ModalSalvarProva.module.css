@@ -1,93 +1,190 @@
+/* Fundo escuro com desfoque moderno */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-.modal {
+/* Container do Modal */
+.modalContainer {
   background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 300px;
-  max-width: 90%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 500px; /* Aumentado para melhor layout */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
 }
 
-.modal h2 {
-  margin-bottom: 1rem;
+/* Cabeçalho */
+.modalHeader {
+  padding: 1.5rem 1.5rem 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.modal input {
+.modalHeader h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.modalHeader p {
+  margin: 0.5rem 0 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Corpo do Modal */
+.modalBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Layout de Formulário */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.row .formGroup {
+  flex: 1;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.required {
+  color: #e74c3c;
+}
+
+/* Inputs e Selects */
+.input, .selectNative {
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
   width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-.actions {
+.input:focus, .selectNative:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* Mensagem de Erro */
+.errorBanner {
+  background-color: #fdf2f2;
+  color: #e74c3c;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border-left: 4px solid #e74c3c;
+  animation: shake 0.3s ease-in-out;
+}
+
+/* Rodapé com botões */
+.modalFooter {
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-.field {
-  padding: auto;
+  border-top: 1px solid #eee;
 }
 
-.error {
-  border: 1px solid #e74c3c;
-  background-color: #fdf2f2;
+/* Botões Modernos */
+.btnCancel {
+  background-color: transparent;
+  border: 1px solid #ced4da;
+  color: #666;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.error_message {
-  color: #e74c3c;
-  font-size: 12px;
-  display: block;
+.btnCancel:hover {
+  background-color: #e2e6ea;
+  color: #333;
+}
 
-}
-.actions{
-  margin-top: 10px;
-  display: flex;
-  font-size: 0.9em;
-}
-.bnt_cancela{
-  background-color: #f44336; /* Red */
+.btnSave {
+  background-color: #007bff; /* Azul padrão */
   border: none;
   color: white;
-  padding: 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1em;
-  margin: 1px ;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 5px;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
 
-  &:hover {
-    background-color: #c52014;
+.btnSave:hover {
+  background-color: #0056b3;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Responsividade Mobile */
+@media (max-width: 480px) {
+  .modalContainer {
+    width: 95%;
   }
-}
-.bnt_salva{
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1em;
-  margin: 1px ;
-  cursor: pointer;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: #357a38;
+  
+  .row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .modalFooter {
+    flex-direction: column-reverse; /* Salvar fica em cima no mobile */
+  }
+  
+  .btnCancel, .btnSave {
+    width: 100%;
+    text-align: center;
   }
 }

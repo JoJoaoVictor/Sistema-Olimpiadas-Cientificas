@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { authService } from './services/authService';
 import PrivateRoute from './components/Routes/PrivateRoute.jsx';
 
 /* Pages */
@@ -22,13 +21,13 @@ import Prova from './components/pages/Provas/Prova';
 import Container from './components/Layout/Container.jsx';
 import Navbar from './components/Layout/Navbar.jsx';
 import Footer from './components/Layout/Footer.jsx';
-import ScrollToTop from "./components/Layout/ScrollToTop.jsx"
+import ScrollToTop from "./components/Layout/ScrollToTop.jsx";
 
 /* Swiper */ 
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import 'swiper/css/scrollbar'
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 
 /**
  * ==========================================================
@@ -43,12 +42,30 @@ const Unauthorized = () => (
   </div>
 );
 
-function App() {
+/**
+ * ==========================================================
+ * COMPONENTE: CONTEÚDO DA APLICAÇÃO (Dentro do Router)
+ * Contém a lógica de exibir/ocultar Navbar e Footer
+ * ==========================================================
+ */
+function AppContent() {
+  const location = useLocation();
+
+  // Rotas onde a Navbar NÃO deve aparecer (Login, Registro, Recuperação de Senha)
+  const hideNavbarRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
+  
+  // Verifica se a rota atual está na lista de ocultar
+  const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
+
+  // Verifica se deve mostrar o Footer (Apenas na Home, conforme sua lógica original)
+  const shouldShowFooter = location.pathname === "/";
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
-      <Navbar /> 
+      
+      {/* Renderização Condicional da Navbar */}
+      {shouldShowNavbar && <Navbar />}
       
       <Container customClass="min-height">
         <Routes>
@@ -107,15 +124,24 @@ function App() {
         </Routes>
       </Container>
       
-      <ConditionalFooter />
+      {/* Renderização Condicional do Footer */}
+      {shouldShowFooter && <Footer />}
+    </>
+  );
+}
+
+/**
+ * ==========================================================
+ * COMPONENTE PRINCIPAL
+ * Envolve tudo no Router para permitir o uso de useLocation
+ * ==========================================================
+ */
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
 
-// Lógica para mostrar o Footer apenas na Home
-function ConditionalFooter() {
-  const location = useLocation();
-  return location.pathname === "/" ? <Footer /> : null;
-}
- 
 export default App;

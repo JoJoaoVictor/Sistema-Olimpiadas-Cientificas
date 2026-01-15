@@ -1,57 +1,160 @@
-.navbar{
-    background-color: #181818;
-    padding: 0.1em;
-    justify-content: space-between;
-    width: 100%;
-  min-width: 100vw;
-  
+/* Container principal da Navbar */
+.navbar {
+  background-color: #181818;
+  width: 100%;
+  /* Removemos o min-width: 100vw para evitar rolagem horizontal indesejada */
+  padding: 10px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 999;
 }
-.searchBar{
-    padding: 10px;
-    gap: 10px;
-}
-.list{
-    display: flex;
-    list-style: none ;
-    align-items: center;
-    margin-left: auto ;
-   
-}
-.item {
-    margin-right: 30px;
-    
-}
-.item a{
-    color: #fff;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 8px;
-    transition: 0.2s;
-    
-}
-.item a:hover {
 
-    background-color: rgb(255, 255, 255);
-    color:#000000;
+/* Wrapper interno para organizar Logo e Menu lado a lado */
+.flexWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
-.item_avatar{
-    display: flex;
-    align-items: center;
-    margin-right: 30px;
-    margin-left: -20px;
-  
+
+/* Estilo da Logo */
+.logo {
+  width: 50px; /* Tamanho fixo é melhor que vw para mobile */
+  height: auto;
+  margin-left: 10px;
+  transition: transform 0.2s;
 }
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* Ícone do menu mobile (Hambúrguer) */
+.mobileIcon {
+  display: none; /* Escondido no Desktop */
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+/* Lista de Links (Desktop) */
+.list {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 20px; /* Gap é mais moderno que margin-right */
+  margin: 0;
+  padding: 0;
+}
+
+/* Itens da lista */
+.item a {
+  color: #e0e0e0;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.item a:hover {
+  background-color: #ffffff;
+  color: #181818;
+}
+
+/* Área do Avatar */
+.item_avatar {
+  display: flex;
+  align-items: center;
+}
+
+.profileLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Texto "Meu Perfil" - Escondido no desktop, aparece no mobile */
+.profileTextMobile {
+  display: none; 
+  color: #fff;
+  margin-right: 10px;
+}
+
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-left: 15px;
-    border: 2px solid #ccc;
-    transition: 0.3s;
-  }
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #555;
+  transition: 0.3s;
+}
+
+.avatar:hover {
+  border-color: #4a90e2;
+}
+
+/* =========================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
   
-  .avatar:hover {
-    border-color: #4a90e2;
+  .mobileIcon {
+    display: block; /* Mostra o ícone no mobile */
   }
-  
+
+  .list {
+    display: flex;
+    flex-direction: column; /* Empilha os itens verticalmente */
+    position: absolute;
+    top: 100%; /* Começa logo abaixo da navbar */
+    left: 0;
+    width: 100%;
+    background-color: #181818; /* Mesma cor do fundo */
+    border-top: 1px solid #333;
+    
+    /* Animação de abrir/fechar */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Quando a classe .active é adicionada pelo React */
+  .list.active {
+    max-height: 500px; /* Altura suficiente para mostrar os itens */
+    padding-bottom: 20px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+  }
+
+  .item {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+  }
+
+  .item a {
+    display: block;
+    width: 100%;
+    padding: 15px 0;
+    border-bottom: 1px solid #222;
+  }
+
+  .item a:hover {
+    background-color: #252525;
+    color: #fff;
+  }
+
+  /* Ajustes do Avatar no Mobile */
+  .item_avatar {
+    margin-top: 15px;
+    flex-direction: column;
+  }
+
+  .profileTextMobile {
+    display: block; /* Mostra o texto no mobile */
+  }
+}

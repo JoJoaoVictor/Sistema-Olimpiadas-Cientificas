@@ -13,6 +13,51 @@ export function gerarPDF(questoes, projeto, preview = false) {
   const colunaLargura = 90;
   const margemEntreColunas = 1;
 
+  // === INÍCIO DA LÓGICA DE TÍTULO INTELIGENTE ===
+  
+  const anoAtual = new Date().getFullYear();
+  const faseTexto = projeto.fase ? projeto.fase.toUpperCase() : 'FASE INDEFINIDA';
+
+  // 1. Mapa simplificado: Apenas o ordinal, sem a palavra "Médio" ou "Ano"
+  // Isso permite montarmos frases como "4º e 5º Anos" ou "1º, 2º e 3º Anos do Ensino Médio"
+  const mapaAnos = {
+    '4': '4º', '5': '5º', '6': '6º', '7': '7º', '8': '8º', '9': '9º',
+    '1': '1º', '2': '2º', '3': '3º' // Assumindo que 1, 2 e 3 aqui são IDs do Médio
+  };
+
+  let anosTexto = 'Anos Diversos';
+  
+  if (projeto.anos && Array.isArray(projeto.anos) && projeto.anos.length > 0) {
+    // Ordena os anos para garantir que saia "4º e 5º" e não "5º e 4º"
+    const anosOrdenados = [...projeto.anos].sort();
+
+    // 2. Verifica se é Ensino Médio
+    // Lógica: Se incluir '1', '2' ou '3' (IDs do médio) assumimos que é prova de Ensino Médio
+    // (Ajuste essa verificação conforme seus IDs reais do banco de dados se houver conflito com 1º/2º/3º fundamental)
+    const ehEnsinoMedio = anosOrdenados.some(val => ['1', '2', '3'].includes(val));
+
+    // 3. Define o sufixo baseado no ciclo escolar
+    const sufixo = ehEnsinoMedio ? 'Anos do Ensino Médio' : 'Anos';
+
+    // 4. Cria a lista de labels (ex: ["1º", "2º", "3º"] ou ["4º", "5º"])
+    const labels = anosOrdenados.map(val => mapaAnos[val] || val);
+
+    // 5. Monta a string gramaticalmente correta
+    if (labels.length > 1) {
+      const ultimo = labels.pop(); 
+      anosTexto = `${labels.join(', ')} e ${ultimo} ${sufixo}`;
+    } else {
+      // Singular (Ex: "3º Ano do Ensino Médio" ou "5º Ano")
+      // Removemos o "s" de "Anos"
+      const sufixoSingular = sufixo.replace('Anos', 'Ano');
+      anosTexto = `${labels[0]} ${sufixoSingular}`;
+    }
+  }
+
+  const tituloCabecalho = `OLIMPÍADA DE MATEMÁTICA DA UNEMAT – ${anoAtual} – ${faseTexto}º Fase – ${anosTexto}`;
+  
+  // === FIM DA LÓGICA ===
+
   function aplicarCabecalhoRodape() {
     const imgCab = new Image();
     imgCab.src = cabecalho;
@@ -27,7 +72,10 @@ export function gerarPDF(questoes, projeto, preview = false) {
   aplicarCabecalhoRodape();
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text( 'OLIMPÍADA DE MATEMÁTICA DA UNEMAT – 2024 – 3ª FASE – 4º e 5º Anos', 34, 38);
+  
+  // Imprime o Título Gerado Automaticamente
+  doc.text(tituloCabecalho, 34, 38);
+  
   doc.setFont('helvetica', 'normal');
   doc.text('ALUNO(A): __________________________________________________________________________________', 14, 44);
   doc.text('ESCOLA: _____________________________________________', 14, 51);
@@ -81,7 +129,6 @@ export function gerarPDF(questoes, projeto, preview = false) {
       } else {
         y += 7;
         doc.setLineWidth(0.1);
-        // espaço para aluno responder
       }
 
       // Muda coluna/página
@@ -99,10 +146,8 @@ export function gerarPDF(questoes, projeto, preview = false) {
     });
   }
 
-  // Parte 1: sem resolução
   renderQuestoes(questoes, false);
 
-  // Parte 2: com resolução
   doc.addPage();
   aplicarCabecalhoRodape();
   doc.setFontSize(13);
@@ -110,7 +155,6 @@ export function gerarPDF(questoes, projeto, preview = false) {
   doc.text('Prova com Resoluções', 65, 40);
   renderQuestoes(questoes, true);
 
-  // Preview ou Download
   if (preview) {
     window.open(doc.output('bloburl'), '_blank');
   } else {

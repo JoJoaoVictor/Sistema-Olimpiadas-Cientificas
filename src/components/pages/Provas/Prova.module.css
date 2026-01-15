@@ -1,180 +1,307 @@
-.container{
-    background-color: white;
-    border-radius: 10px;
-    padding:  1.5em 1.5em;
-    margin: 1em 2em ;
+/* Container Principal */
+.container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+   min-height: 100vh;
     width: 100%;
-    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
-    font-size: 1em;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.container h2 {
-    margin: 1em;
-    color: rgb(0, 0, 0);
-    width: 100%;
 
-}   
-.provas_container{
-    margin-top: 2em;
-    width: 100% ;
- 
+.container h2 {
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
 }
-.prova_card{
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-bottom: 1px solid #ccc;
-  width: 100%;
-  list-style: none;
-  background-color: #f9f9f9;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-    
+
+/* Área de Filtros */
+.filters_wrapper {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  border: 1px solid #e9ecef;
 }
-.status {
+
+.search_container {
   display: flex;
   align-items: center;
-  gap: 8px; /* espaço entre o círculo e o texto */
-}
-
-.status span {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid rgb(0, 0, 0);
-  flex-shrink: 0; /* evita que o círculo encolha */
-}
-
-/* Classes específicas para cada categoria */
-.status span.pendente {
-  background-color: rgba(255, 87, 9, 0.932);
-}
-
-.status span.aprovada {
-  background-color: #38c03c;
-}
-
-.status span.aplicada {
-  background-color: #1967d2;
-}
-
-.status p {
-  margin: 0;
-  color: #555;
-}
-.provas_list{
-    border-radius: 1px solid #00000070;
-}
-.provas_button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1em;
-}
-.prova_card_item{
-
-    padding: auto;
-    width: 100%;
-    
-}
-.prova_card_buttons{
-    display: flex;
-    gap: 10px;
-}
-.filtros{
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1em;
-    margin-bottom: 10px;
-}
-.search_container{
-    align-items: center;
-    border: 1px solid #ccc;
-    padding: 10px ;
-    border-radius: 8px;
-    width: 100%;
-    display: flex;
-    background-color: white;
-    margin-bottom: 5px;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 .search_container:hover {
-    color: #000000;
-    border-color: #000000;
-    transition: 0.2s;
-    cursor: pointer;
+  border-color: #1967d2;
 }
+.search_container:focus-within {
+  border-color: #1967d2;
+  box-shadow: 0 0 0 3px rgba(25, 103, 210, 0.1);
+}
+
+.search_container input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  margin-left: 10px;
+  color: #495057;
+}
+
 .icon {
-    color: #666;
-    font-size: 18px;
-    margin: 3px;
-}
-.search_container .input {
-    flex: 1;
-    font-size: 1em;
-    padding: 10px;
-}
-.select_anos{
-  color: #797979;
-  width: 170px;
-
+  color: #6c757d;
+  font-size: 1.2rem;
 }
 
-.select{
-  margin-left: -5px;  
+/* Grid de Filtros (Selects e Dates) */
+.filters_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsivo automático */
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Estilização Genérica para Inputs e Selects Nativos */
+.native_select,
+.native_input {
+  width: 100%;
+  padding: 0 1rem;
+  height: 45px; /* Altura unificada */
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #495057;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+.native_select:hover,
+.native_input:hover {
+  border-color: #1967d2;
+}
+
+.native_select:focus,
+.native_input:focus {
+  outline: none;
+  border-color: #1967d2;
+}
+
+/* --- LISTA DE PROVAS --- */
+.provas_container {
   display: flex;
-  padding: 0.5em 1em;
-  font-size: 1em;
-  text-align: center;
-  gap: 2em;
+  flex-direction: column;
+  gap: 1rem;
 }
-.select select{
-    max-width: 200px;
-    padding: 0.8em;
-    color: #797979;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    border-radius: 1px solid #ccc   ;
+
+.section_title {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+  margin-left: 5px;
 }
-.select input{
-    color: #797979;
-    max-width: 200px;    
-    padding: 0.8em;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    border-radius: 1px solid #ccc   
+
+/* Card Moderno */
+.prova_card {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto; /* Conteúdo na esquerda, Botões na direita */
+  gap: 1.5rem;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
 }
-.select input:hover{
-    border: 1px solid #000000;
-    transition: 0.3s;
+
+.prova_card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #e9ecef; /* Cor padrão da borda lateral */
+  transition: background-color 0.3s;
 }
-.select select:hover{
-    border: 1px solid #000000;  
-    transition: 0.3s;
+
+.prova_card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #dee2e6;
 }
-.prova_card_buttons button{
-    padding: 1em ;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 1em;
+
+/* Conteúdo do Card */
+.card_content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
-.prova_card_buttons .edit_btn{
-      background-color: #ffffff00;
-  color: #1967d2;   
-    &:hover{
-        background-color: rgb(61, 161, 47);
-        color: rgb(255, 255, 255);
-        transition: 0.3s;
-    } 
-} 
-.view_btn{
-    background-color: #ffffff00;
-  color: #1967d2;   
-    &:hover{
-        background-color: rgb(25, 118, 210);
-        color: rgb(255, 255, 255);
-        transition: 0.3s;
-    }
-}  
+
+.card_header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #212529;
+  font-weight: 600;
+}
+
+.card_date {
+  font-size: 0.85rem;
+  color: #adb5bd;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Tags / Badges (Onde ficam Ano, Fase, Status) */
+.card_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.tag strong {
+  margin-right: 4px;
+  color: #212529;
+}
+
+/* Status Específico (Pill) */
+.status_pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Cores dos Status */
+.status_pill.pendente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.status_pill.pendente::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffc107;
+}
+
+.status_pill.aprovada {
+  background-color: #d4edda;
+  color: #155724;
+}
+.status_pill.aprovada::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #28a745;
+}
+
+.status_pill.aplicada {
+  background-color: #cce5ff;
+  color: #004085;
+}
+.status_pill.aplicada::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #007bff;
+}
+
+/* Mudança da borda lateral baseada no status */
+.prova_card:has(.status_pill.pendente)::before { background-color: #ffc107; }
+.prova_card:has(.status_pill.aprovada)::before { background-color: #28a745; }
+.prova_card:has(.status_pill.aplicada)::before { background-color: #007bff; }
+
+/* Botões de Ação */
+.card_actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.action_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.action_btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.edit_btn:hover {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+}
+
+.view_btn:hover {
+  background-color: #e6fcf5;
+  color: #0ca678;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 1rem auto;
+    width: 98%;
+  }
+  
+  .filters_wrapper {
+    padding: 1rem;
+  }
+
+  .prova_card {
+    grid-template-columns: 1fr; /* Empilha tudo */
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+
+  .card_actions {
+    justify-content: flex-end; /* Botões à direita no mobile */
+    border-top: 1px solid #f1f3f5;
+    padding-top: 1rem;
+    width: 100%;
+  }
+  
+  .action_btn {
+    width: 100%; /* Botões grandes no mobile para toque */
+    max-width: 100px;
+  }
+}

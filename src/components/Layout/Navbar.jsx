@@ -1,4 +1,6 @@
+import { useState } from "react"; // Importar useState
 import { Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa"; // Ícones para o menu mobile
 import Container from "./Container";
 import styles from "./Navbar.module.css";
 import logo from "./../../img/logov.png";
@@ -8,132 +10,126 @@ const DEFAULT_AVATAR = "https://www.w3schools.com/howto/img_avatar.png";
 
 function Navbar() {
   const { user, signed } = useAuth();
+  const [isOpen, setIsOpen] = useState(false); // Estado do menu mobile
 
   const profilePic = user?.picture || user?.avatar || DEFAULT_AVATAR;
 
-  // === DEFINIÇÃO DE PERFIS ===
-  // Professor/Admin: Monta provas e gerencia o sistema
+  // Lógica de perfis
   const isProfessor = user?.role === "PROFESSOR" || user?.role === "ADMIN";
-  
-  // Revisor: Pode revisar questões e provas
   const isRevisor = user?.role === "REVISOR";
-  
-  // Student (Estagiário): Cria questões para o banco
   const isEstagiario = user?.role === "STUDENT";
-  // Admin: Acesso total ao sistema
   const isAdmin = user?.role === "ADMIN";
+
+  // Função para fechar o menu ao clicar em um link (UX melhor no mobile)
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
 
   return (
     <nav className={styles.navbar}>
       <Container>
-        {/* === LOGO === */}
-        <Link to="/">
-          <img
-            src={logo}
-            alt="S.G.O.M"
-            style={{ padding: "0.2em", marginLeft: "5vw", width: "5vw" }}
-          />
-        </Link>
-
-        {/* === MENU === */}
-        <ul className={styles.list}>
+        {/* Wrapper flex para alinhar Logo (esquerda) e Menu (direita) */}
+        <div className={styles.flexWrapper}>
           
-          {/* 1. HOME (Acesso Geral para todos) */}
-          <li className={styles.item}>
-            <Link to="/">Home</Link>
-          </li>
+          {/* === LOGO === */}
+          <Link to="/" onClick={handleLinkClick}>
+            <img
+              src={logo}
+              alt="S.G.O.M"
+              className={styles.logo} // Movi o estilo inline para o CSS
+            />
+          </Link>
 
-          {/* ====================================================
-              ÁREA DO ESTAGIÁRIO (STUDENT)
-              Foco: Criar questões e ver suas próprias questões
-             ==================================================== */}
-          {signed && isEstagiario && (
-            <>
-              <li className={styles.item}>
-                {/* Onde ele cadastra uma nova pergunta */}
-                <Link to="/newproject">Criar Nova Questão</Link>
-              </li>
-              <li className={styles.item}>
-                {/* Onde ele vê as questões que ele fez */}
-                <Link to="/projects">Minhas Questões</Link>
-              </li>
-            </>
-          )}
+          {/* === ÍCONE HAMBURGUER (Mobile) === */}
+          <div className={styles.mobileIcon} onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </div>
 
-          {/* ====================================================
-              ÁREA DO PROFESSOR
-              Foco: Montar provas e gerenciar banco
-             ==================================================== */}
-          {signed && isProfessor && (
-            <>
-              <li className={styles.item}>
-                {/* Ferramenta para selecionar questões e criar a prova */}
-                <Link to="/montarProva">Montar Prova</Link>
-              </li>
-              <li className={styles.item}>
-                {/* Lista das provas já fechadas/criadas */}
-                <Link to="/Prova">Banco de Provas</Link>
-              </li>
-              <li className={styles.item}>
-                {/* Professor também precisa ver o banco de questões para selecionar */}
-                <Link to="/projects">Revisar Questões</Link>
-              </li>
-            </>
-          )}
+          {/* === MENU === */}
+          {/* Adiciona a classe 'active' se o menu estiver aberto */}
+          <ul className={`${styles.list} ${isOpen ? styles.active : ""}`}>
+            
+            {/* 1. HOME */}
+            <li className={styles.item}>
+              <Link to="/" onClick={handleLinkClick}>Home</Link>
+            </li>
 
-          {/* ====================================================
-              ÁREA DO REVISOR (NOVO)
-              Foco: Conferir qualidade das questões e provas
-             ==================================================== */}
-          {signed && isRevisor && (
-            <>
-              <li className={styles.item}>
-                {/* Acesso ao banco de questões para validação */}
-                <Link to="/projects">Revisar Questões</Link>
-              </li>
-              <li className={styles.item}>
-                {/* Acesso ao banco de provas para validação */}
-                <Link to="/Prova">Revisar Provas</Link>
-              </li>
-            </>
-          )}
+            {/* ÁREA DO ESTAGIÁRIO */}
+            {signed && isEstagiario && (
+              <>
+                <li className={styles.item}>
+                  <Link to="/newproject" onClick={handleLinkClick}>Criar Nova Questão</Link>
+                </li>
+                <li className={styles.item}>
+                  <Link to="/projects" onClick={handleLinkClick}>Minhas Questões</Link>
+                </li>
+              </>
+            )}
+
+            {/* ÁREA DO PROFESSOR */}
+            {signed && isProfessor && (
+              <>
+                <li className={styles.item}>
+                  <Link to="/montarProva" onClick={handleLinkClick}>Montar Prova</Link>
+                </li>
+                <li className={styles.item}>
+                  <Link to="/Prova" onClick={handleLinkClick}>Banco de Provas</Link>
+                </li>
+                <li className={styles.item}>
+                  <Link to="/projects" onClick={handleLinkClick}>Revisar Questões</Link>
+                </li>
+              </>
+            )}
+
+            {/* ÁREA DO REVISOR */}
+            {signed && isRevisor && (
+              <>
+                <li className={styles.item}>
+                  <Link to="/projects" onClick={handleLinkClick}>Revisar Questões</Link>
+                </li>
+                <li className={styles.item}>
+                  <Link to="/Prova" onClick={handleLinkClick}>Revisar Provas</Link>
+                </li>
+              </>
+            )}
+
+            {/* ADMIN */}
             {signed && isAdmin && (
               <li className={styles.item}>
-                <Link to="/admin/users" style={{ color: 'red' }}>Usuários</Link>
+                <Link to="/admin/users" style={{ color: "red" }} onClick={handleLinkClick}>
+                  Usuários
+                </Link>
               </li>
             )}
-          {/* ====================================================
-              LOGIN / PERFIL
-             ==================================================== */}
-          
-          {/* Se NÃO estiver logado */}
-          {!signed && (
-            <li className={styles.item}>
-              <Link to="/login">Entrar</Link>
-            </li>
-          )}
 
-          {/* Se ESTIVER logado */}
-          {signed && (
-            <li className={styles.item_avatar}>
-              <Link
-                to="/usuario"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                title="Meu Perfil"
-              >
-                <img
-                  src={profilePic}
-                  alt="Perfil"
-                  className={styles.avatar}
-                  onError={(e) => {
-                    e.target.src = DEFAULT_AVATAR;
-                  }}
-                />
-              </Link>
-            </li>
-          )}
-                   
-        </ul>
+            {/* LOGIN / PERFIL */}
+            {!signed && (
+              <li className={styles.item}>
+                <Link to="/login" onClick={handleLinkClick}>Entrar</Link>
+              </li>
+            )}
+
+            {/* AVATAR (Mostra diferente no mobile vs desktop) */}
+            {signed && (
+              <li className={styles.item_avatar}>
+                <Link
+                  to="/usuario"
+                  title="Meu Perfil"
+                  className={styles.profileLink}
+                  onClick={handleLinkClick}
+                >
+                  <span className={styles.profileTextMobile}>Meu Perfil</span>
+                  <img
+                    src={profilePic}
+                    alt="Perfil"
+                    className={styles.avatar}
+                    onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
+                  />
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
       </Container>
     </nav>
   );

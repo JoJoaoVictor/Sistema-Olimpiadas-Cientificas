@@ -1,397 +1,548 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
+// Importação dos seus componentes personalizados de layout/form
 import Input from '../../../form/Input.jsx';
-import Select from '../../../form/Select.jsx';
-import styles from './ProjectForme.module.css';
+import Select from '../../../form/Select.jsx'; // Usado para 'Situação da Questão'
 import SubmitButton from '../../../form/SubmitButton.jsx';
 import ImageUploader from '../../../form/ImageUploader.jsx';
-import LatexText from './../Components_project/LatexText.jsx' // Importa o componente LatexText
-import { BsFillInfoCircleFill } from 'react-icons/bs';
+// Importação do componente responsável por renderizar o LaTeX
+import LatexText from './../Components_project/LatexText.jsx';
 
-function ProjectForme({ handleSubmit,projectData, btnText }) {
-    // Definindo os estados para cada campo do formulário
-    const [name, setName] = useState(""); // Nome do projeto
-    const [professorName, setProfessorName] = useState(""); // Nome do professor
-    const [phaseLevel, setPhaseLevel] = useState(""); // Nível da fase
-    const [serieAno, setSerieAno] = useState(""); // Série/Ano escolar q as questões se referem
-    const location = useLocation(); // Captura a URL atual
-    const [difficultyLevel, setDifficultyLevel] = useState(""); // Nível de dificuldade
-    const [knowledgeObjects, setKnowledgeObjects] = useState(""); // Objetos do conhecimento
-    const [bnccTheme, setBnccTheme] = useState(""); // Tema da BNCC
-    const [abilityCode, setAbilityCode] = useState(""); // Código da habilidade
-    const [abilityDescription, setAbilityDescription] = useState(""); // Descrição da habilidade
-    const [questionStatement, setQuestionStatement] = useState(""); // Enunciado da questão
-    const [alternatives, setAlternatives] = useState(""); // Alternativas da questão
-    const [correctAlternative, setCorrectAlternative] = useState(""); // Alternativa correta
-    const [detailedResolution, setDetailedResolution] = useState(""); // Resolução detalhada
-    // Estado para a categoria selecionada
-    const [categoryId, setCategoryId] = useState(1); 
-    const [grauId, setGrauId] = useState(""); // ID do grau escolar
+// Ícones e Estilos CSS Modules
+import { BsFillInfoCircleFill, BsCardText, BsPersonBadge, BsBook } from 'react-icons/bs';
+import styles from './ProjectForme.module.css';
 
-    // Estado para mensagens de erro específicas 
-    const [error, setError] = useState("");
+function ProjectForme({ handleSubmit, projectData, btnText }) {
+    const location = useLocation();
+    
+    // --- LÓGICA DE MODO DE EDIÇÃO ---
+    // Verifica se estamos editando (se tem ID ou rota de edição)
+    const isEditMode = location.pathname.includes('/projetos/') || !!projectData?.id;
 
-    // Estado para mensagens de erro gerais (ex: campos não preenchidos)
-    const [formError, setFormError] = useState("");
+    // --- LISTA DE OPÇÕES PARA SÉRIE/ANO ---
+    const opcoesAno = [
+        { value: '2º Fundamental', label: '2º Fundamental' }, { value: '3º Fundamental', label: '3º Fundamental' },
+        { value: '4º Fundamental', label: '4º Fundamental' }, { value: '5º Fundamental', label: '5º Fundamental' },
+        { value: '6º Fundamental', label: '6º Fundamental' }, { value: '7º Fundamental', label: '7º Fundamental' },
+        { value: '8º Fundamental', label: '8º Fundamental' }, { value: '9º Fundamental', label: '9º Fundamental' },
+        { value: '1º Médio', label: '1º Médio' }, { value: '2º Médio', label: '2º Médio' }, { value: '3º Médio', label: '3º Médio' },
+    ];
 
-    // Estado para armazenar as categorias e graus de nivel escolar carregadas da API
-    const [categoris, setCategoris] = useState([]);
-    const [grauOptions, setGrauOptions] = useState([]);
+    // --- 1. LÓGICA DE PERMISSÃO (ROLE) ---
+    // Verifica quem é o usuário logado para saber se pode ver campos administrativos
+    const [currentUserRole, setCurrentUserRole] = useState("");
 
-    // Verifica se está no modo de edição
-    const isEditMode = location.pathname.includes('/projetos/'); 
-
-    // useEffect para carregar as categorias da API ao montar o componente
     useEffect(() => {
-        // Este useEffect executa duas operações principais:
-        // 1. Inicializa os campos do formulário quando projectData está disponível (para edição)
-        // 2. Carrega a lista de categorias da API
-        // ==============================================
-        //  INICIALIZAÇÃO DOS CAMPOS DO FORMULÁRIO
-        // ==============================================
-        if (projectData) {
-            // Se projectData existe (modo de edição), preenche os campos do formulário
-            // com os valores existentes. O operador || "" fornece um fallback vazio
-            // caso algum campo não exista no projectData
-            setName(projectData.name || "");                                // Nome da questão
-            setProfessorName(projectData.professorName || "");              // Nome do professor
-            setPhaseLevel(projectData.phaseLevel || "");                    // Nível da fase
-            setSerieAno(projectData.serieAno || "");                        // Série/Ano escolar
-            setGrauId(String(projectData.grauId || ""));                    // Conversão para string Grau escolar
-            setDifficultyLevel(projectData.difficultyLevel || "");          // Nível de dificuldade
-            setKnowledgeObjects(projectData.knowledgeObjects || "");        // Objetos de conhecimento
-            setBnccTheme(projectData.bnccTheme || "");                      // Tema da BNCC
-            setAbilityCode(projectData.abilityCode || "");                  // Código da habilidade
-            setAbilityDescription(projectData.abilityDescription || "");    // Descrição da habilidade
-            setQuestionStatement(projectData.questionStatement || "");      // Enunciado
-            setAlternatives(projectData.alternatives || "");                // Alternativas
-            setCorrectAlternative(projectData.correctAlternative || "");    // Alternativa correta
-            setDetailedResolution(projectData.detailedResolution || "");    // Resolução detalhada
-            setCategoryId(projectData.categoryId || "");                    // ID da categoria
-            
-            // o operador || para garantir que sempre teremos uma string
-            // mesmo que o campo não exista no projectData ou seja null/undefined
+        const storedData = localStorage.getItem("user_token");
+        if (storedData) {
+            try {
+                const parsedData = JSON.parse(storedData);
+                if (parsedData.user && parsedData.user.role) {
+                    setCurrentUserRole(parsedData.user.role);
+                }
+            } catch (error) {
+                console.error("Erro ao verificar permissões:", error);
+            }
         }
-    
-        //  CARREGAMENTO DAS CATEGORIAS DA API
-        // Faz uma requisição GET para obter a lista de categorias disponíveis
-  // Carrega categorias
-  fetch("http://localhost:5000/categoris")
-    .then((resp) => resp.json())
-    .then((data) => setCategoris(data))
-    .catch((err) => console.error("Erro ao carregar categorias:", err));
+    }, []);
 
-  // Carrega graus
- fetch("http://localhost:5000/grau")
-  .then((resp) => resp.json())
-  .then((data) => setGrauOptions(data))
-  .catch((err) => console.error("Erro ao carregar grau:", err));
+    const allowedRoles = ['ADMIN', 'REVISOR', 'PROFESSOR'];
+    // Define se o usuário pode ver a área de "Comentários do Revisor"
+    const canEditComments = currentUserRole && allowedRoles.includes(currentUserRole.toUpperCase());
 
-}, [projectData]);
-                      // Dependências do useEffect:
-                      // - Executa novamente sempre que projectData mudar
-                      // - Executa uma vez quando o componente é montado (projectData inicial é undefined)
-    
-    // Função para validar o nível de dificuldade
-    const handleDifficultyChange = (e) => {
-        const value = e.target.value;
-        // Verifica se o valor é um número entre 1 e 5
-        if (value === "" || (!isNaN(value) && Number(value) >= 1 && Number(value) <= 5)) {
-            setDifficultyLevel(value); // Atualiza o estado do nível de dificuldade
-            setError(""); // Limpa a mensagem de erro
+    // --- 2. ESTADO DO FORMULÁRIO (State Principal) ---
+    const [project, setProject] = useState({
+        name: "",
+        professorName: "",
+        phaseLevel: "",
+        serieAno: "", 
+        difficultyLevel: "",
+        knowledgeObjects: "",
+        bnccTheme: "",
+        abilityCode: "",
+        abilityDescription: "",
+        questionStatement: "",
+        alternatives: "", 
+        correctAlternative: "",
+        detailedResolution: "",
+        categoryId: "1",
+        reviewerComments: ""
+    });
+
+    // Estado separado para gerenciar as 5 alternativas (A, B, C, D, E) individualmente
+    const [alts, setAlts] = useState({ A: "", B: "", C: "", D: "", E: "" });
+
+    // Estados auxiliares para selects dinâmicos
+    const [categories, setCategories] = useState([]);
+    const [knowledgeOptionsList, setKnowledgeOptionsList] = useState([]);
+
+    // Estados de controle de erro e envio
+    const [formError, setFormError] = useState("");
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // --- 3. CARREGAMENTO DE DADOS (Fetch) ---
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Busca as categorias do banco (para o status da questão)
+                const catsRes = await fetch("http://localhost:5000/categoris");
+                const catsData = await catsRes.json();
+                setCategories(catsData);
+            } catch (err) {
+                console.error("Erro ao carregar opções:", err);
+                setFormError("Erro ao carregar dados do servidor.");
+            }
+        };
+
+        fetchData();
+
+        // Se estivermos editando, preenche o formulário com os dados existentes
+        if (projectData && Object.keys(projectData).length > 0) {
+            setProject((prev) => ({
+                ...prev,
+                ...projectData, 
+                categoryId: projectData.categoryId ? Number(projectData.categoryId) : "",
+                reviewerComments: projectData.reviewerComments || ""
+            }));
+
+            // Tenta processar o JSON das alternativas salvas
+            if (projectData.alternatives) {
+                try {
+                    const parsedAlts = JSON.parse(projectData.alternatives);
+                    setAlts(parsedAlts);
+                } catch (e) {
+                    console.log("Alternativas não formatadas como JSON.");
+                }
+            }
+        }
+    }, [projectData]);
+
+    // --- 4. LÓGICA DINÂMICA: OBJETOS DO CONHECIMENTO ---
+    // Roda sempre que o usuário muda o select "Série/Ano"
+    useEffect(() => {
+        if (project.serieAno) {
+            console.log(`Buscando objetos do conhecimento para o ano ID: ${project.serieAno}`);
+            
+            // Simulação baseada na escolha:
+            let mockOptions = [];
+            if(['1', '2', '3', '4', '5'].includes(project.serieAno)) {
+                 mockOptions = ["Números Naturais", "Geometria Básica", "Medidas de Tempo"];
+            } else {
+                 mockOptions = ["Álgebra Linear", "Funções", "Geometria Analítica", "Probabilidade"];
+            }
+
+            setKnowledgeOptionsList(mockOptions);
         } else {
-            setError("Nível de dificuldade deve ser entre 1 e 5"); // Exibe mensagem de erro
+            setKnowledgeOptionsList([]); // Limpa se não tiver ano selecionado
+        }
+    }, [project.serieAno]);
+
+
+    // --- 5. HANDLERS (Manipuladores de Eventos) ---
+    
+    // Atualiza qualquer campo simples do formulário
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProject((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+        
+        // Limpa erro do campo se o usuário começar a digitar/selecionar
+        if (fieldErrors[name]) {
+            setFieldErrors((prev) => ({ ...prev, [name]: null }));
+        }
+        if (formError) setFormError("");
+    };
+
+    // Atualiza especificamente os campos das Alternativas (A-E)
+    const handleAltChange = (e) => {
+        const { name, value } = e.target;
+        setAlts((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // Validação específica para números (Dificuldade)
+    const handleDifficultyChange = (e) => {
+        const val = e.target.value;
+        if (val === "" || (!isNaN(val) && Number(val) >= 1 && Number(val) <= 5)) {
+            handleChange(e);
         }
     };
 
-    // Função para lidar com o envio do formulário
-    const submitForm = (e) => {
-        e.preventDefault(); // Impede o comportamento padrão de recarregar a página
-        // Verifica se todos os campos obrigatórios foram preenchidos
-        if (
-            !name ||
-            !professorName ||
-            !serieAno ||
-            !grauId ||
-            !phaseLevel ||
-            !difficultyLevel ||
-            !knowledgeObjects ||
-            !bnccTheme ||
-            !abilityCode ||
-            !abilityDescription ||
-            !questionStatement ||
-            !correctAlternative ||
-            !detailedResolution  ||
-            !categoryId 
-            
-        ) {
-            setFormError("Por favor, preencha todos os campos."); // Exibe mensagem de erro
-            return; // Interrompe o envio do formulário
+    // --- 6. ENVIO DO FORMULÁRIO (Submit) ---
+    const submit = (e) => {
+        e.preventDefault();
+        
+        // Validações básicas
+        const errors = {};
+        if (!project.name) errors.name = "O título da questão é obrigatório.";
+        if (!project.professorName) errors.professorName = "O nome do professor é obrigatório.";
+        if (!project.serieAno) errors.serieAno = "Selecione a série/ano."; 
+        if (!project.difficultyLevel) errors.difficultyLevel = "Defina a dificuldade.";
+        if (!project.questionStatement) errors.questionStatement = "O enunciado da questão é obrigatório.";
+        
+        // Valida se todas as 5 alternativas foram preenchidas
+        if(!alts.A || !alts.B || !alts.C || !alts.D || !alts.E) {
+            errors.alternatives = "Preencha todas as 5 alternativas (A-E).";
         }
-        // Se todos os campos estiverem preenchidos, prossegue com o envio Cria o objeto do projeto
-         // Busca o nome do grau baseado no ID selecionado
-        const grauName = grauOptions.find(g => String(g.id) === String(grauId))?.name || 'Grau não encontrado';
 
-        // Monta o objeto do projeto para envio
-        const project = {
-            name,
-            professorName,
-            serieAno,
-            grauId: Number(grauId),
-            grauName,
-            phaseLevel,
-            difficultyLevel: Number(difficultyLevel),
-            knowledgeObjects,
-            bnccTheme,
-            abilityCode,
-            abilityDescription,
-            questionStatement,
-            alternatives,
-            correctAlternative,
-            detailedResolution,
-            categoryId: Number(categoryId),
-            categoryName: categoris.find(cat => String(cat.id) === String(categoryId))?.name || "Sem categoria",
-            createdAt: new Date().toISOString()
-        };
-        // Se estiver editando (projectData tem ID), faz PUT/PATCH
-        if (projectData?.id) {
-        // Chama a função handleSubmit passada como prop (que deve fazer a atualização)
-        handleSubmit(project);
-        return;
+        // Validação condicional para revisor
+        if (isEditMode && canEditComments && !project.categoryId) {
+            errors.categoryId = "Defina a situação da questão.";
         }
-        // Determina o endpoint com base na categoria selecionada depois de verificar se é edição ou criação
-        // Exibe mensagem de carregamento
-        // Criação do projeto
-            setFormError("Enviando projeto...");
-            fetch("http://localhost:5000/projects", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(project)
-            })
-            .then(resp => {
-                if (!resp.ok) throw new Error(`Erro HTTP: ${resp.status}`);
-                return resp.json();
-            })
-            .then(data => {
-                console.log("Projeto enviado com sucesso:", data);
-                alert(`Projeto "${name}" enviado com sucesso!`);
-                setFormError("");
-                // Limpa os campos do formulário após o envio
-                setName("");
-                setProfessorName("");
-                setSerieAno("");
-                setGrauId("");
-                setPhaseLevel("");
-                setDifficultyLevel("");
-                setKnowledgeObjects("");
-                setBnccTheme("");
-                setAbilityCode("");
-                setAbilityDescription("");
-                setQuestionStatement("");
-                setAlternatives("");
-                setCorrectAlternative("");
-                setDetailedResolution("");
-                setCategoryId("");
-            })
-            .catch((err) => {   
-                console.error("Erro ao enviar o projeto:", err);
-                setFormError(`Erro ao enviar o projeto: ${err.message}. Tente novamente.`);
+
+        // Se houver erros, para o envio e mostra mensagens
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setFormError("Existem campos obrigatórios não preenchidos.");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const selectedCategory = categories.find(c => String(c.id) === String(project.categoryId));
+
+        // Empacota as alternativas em JSON String para salvar no banco
+        const alternativesJSON = JSON.stringify(alts);
+
+        // Objeto final para envio
+        const finalData = {
+            ...project,
+            alternatives: alternativesJSON,
+            difficultyLevel: Number(project.difficultyLevel),
+            categoryId: Number(project.categoryId) || null,
+            categoryName: selectedCategory?.name || 'Sem categoria',
+            createdAt: project.createdAt || new Date().toISOString(),
+        };
+
+        // Decide se cria ou atualiza
+        if (projectData?.id) {
+            handleSubmit(finalData);
+            setIsSubmitting(false);
+        } else {
+            createProject(finalData);
+        }
+    };
+
+    // Função interna para criar novo projeto (POST)
+    const createProject = (data) => {
+        setFormError("Enviando projeto...");
+        fetch("http://localhost:5000/projects", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(resp => {
+            if (!resp.ok) throw new Error(`Erro HTTP: ${resp.status}`);
+            return resp.json();
+        })
+        .then(() => {
+            alert(`Projeto "${data.name}" criado com sucesso!`);
+            // Reset do formulário após sucesso
+            setProject({
+                name: "", professorName: "", phaseLevel: "", serieAno: "", 
+                difficultyLevel: "", knowledgeObjects: "", bnccTheme: "", 
+                abilityCode: "", abilityDescription: "", questionStatement: "", 
+                alternatives: "", correctAlternative: "", detailedResolution: "", 
+                categoryId: "1", reviewerComments: ""
             });
+            setAlts({ A: "", B: "", C: "", D: "", E: "" });
+            setFormError("");
+            setFieldErrors({});
+            setIsSubmitting(false);
+        })
+        .catch(err => {
+            console.error(err);
+            setFormError(`Erro ao criar projeto: ${err.message}`);
+            setIsSubmitting(false);
+        });
+    };
+
+    // Renderiza mensagem de erro abaixo do campo
+    const renderError = (fieldName) => {
+        if (fieldErrors[fieldName]) {
+            return <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '-10px', display: 'block', marginBottom: '10px' }}>{fieldErrors[fieldName]}</span>;
+        }
+        return null;
     };
 
     return (
-        // Renderiza o formulário do projeto
-        <form className={styles.form} onSubmit={submitForm}>
-            {/* Campo: Nome do Projeto */}
-            <Input
-                type="text"
-                text="Titulo da Questão"
-                name="name"
-                placeholder="Insira o nome"
-                value={name}
-                handleOnChange={(e) => setName(e.target.value)}
-            />
-            {/* Seção 1: Identificação do Professor */}
-            <b>1. Identificação do Professor</b>
-            <Input
-                type="text"
-                text="Nome do Professor"
-                name="professorName"
-                placeholder="Insira o nome do Professor"
-                value={professorName}
-                handleOnChange={(e) => setProfessorName(e.target.value)}
-            />
-            {/* Seção 2: Identificação das Questões */}
-            <b>2. Identificação das Questões: etapa de elaboração</b>
-            <Input 
-                type="text"
-                text="Série/Ano escolar a que se referem a questão"
-                name="serieAno"
-                placeholder="4° ano, 5° ou 5 etc."
-                value={serieAno}
-                handleOnChange={(e) => setSerieAno(e.target.value)}
-            />  
-            <Select
-                text="Informe o grau escolar Ano/Faixa"
-                name="grau"
-                options={grauOptions}
-                value={grauId}
-                handleOnChange={(e) => {
-                       console.log("Grau selecionado:", e.target.value);
-                    setGrauId(e.target.value);
-                }}
-            />
-            <Input
-                type="text"
-                text="Nível da Fase"
-                name="phaseLevel"
-                placeholder="Insira o nível da fase"
-                value={phaseLevel}
-                handleOnChange={(e) => setPhaseLevel(e.target.value)}
-            />
-            <Input
-                type="text"
-                text="Nível de Dificuldade"
-                name="difficultyLevel"
-                placeholder="Insira o nível de dificuldade (1 a 5)"
-                value={difficultyLevel}
-                handleOnChange={handleDifficultyChange}
-            />
-            {error && <p style={{ color: "red" }}>{error}</p>} {/* Exibe erro de nível de dificuldade */}
-          
-            {/* Seção 3: BNCC */}
-            <b>3. BNCC: principal habilidade que deve ser mobilizada pelo discente</b>
-            <Input
-                type="text"
-                text="Tema da BNCC"
-                name="bnccTheme"
-                placeholder="Insira o tema / unidade temática"
-                value={bnccTheme}
-                handleOnChange={(e) => setBnccTheme(e.target.value)}
-            />
-              <Input
-                type="text"
-                text="Objetos do conhecimento envolvidos"
-                name="knowledgeObjects"
-                placeholder="Insira o texto"
-                value={knowledgeObjects}
-                handleOnChange={(e) => setKnowledgeObjects(e.target.value)}
-            />
-            
-            <Input
-                type="text"
-                text="Código da habilidade"
-                name="abilityCode"
-                placeholder="Insira o código"
-                value={abilityCode}
-                handleOnChange={(e) => setAbilityCode(e.target.value)}
-            /> <BsFillInfoCircleFill/>
-            <Input
-                type="text"
-                text="Descrição da habilidade"
-                name="abilityDescription"
-                placeholder="Insira a descrição"
-                value={abilityDescription}
-                handleOnChange={(e) => setAbilityDescription(e.target.value)}
-            />
-            {/* Seção 4: Proposição da Habilidade */}
-            <b>4. Proposição da habilidade</b>
-            <p style={{ fontSize: '1rem', color: '#666',padding: '5px' }}>
-                Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use \(...\) e para fórmulas em bloco, use \[...\]. 
-                <br/>Exemplo: A área do círculo é \(\pi r^2\).
-                </p>
-                  <Input
-                    type="text"
-                    text="Enunciado da questão (máximo de 50 palavras)"
-                    name="questionStatement"
-                    placeholder="Insira o texto"
-                    value={questionStatement}
-                    handleOnChange={(e) => setQuestionStatement(e.target.value)}
-                />
-                {/* Instrução e pré-visualização para o enunciado */}
-                {questionStatement && (
-                    <div>
-                    <strong style={{padding:'5px'}}>Pré-visualização:</strong>
-                    <LatexText content={questionStatement} />
-                    </div>
-                )}
-                <br/>
-            {/* Seção: Upload de Imagem */}
-            <b>Área da imagem usada na questão (caso necessário)</b><br />
-            <b>Observação: a imagem deve ter boa resolução e tamanhos de letras e figuras adequados.</b>
-            <ImageUploader />
-            {/* Campo: Alternativas da Questão */}
-             <Input
-        type="text"
-        text="Apresentar 5 (cinco) alternativas (em ordem crescente, nos casos aplicáveis)"
-        name="alternatives"
-        placeholder="Insira o texto"
-        value={alternatives}
-        handleOnChange={(e) => setAlternatives(e.target.value)}
-      />
-      {alternatives && (
-        <div>
-          <strong>Pré-visualização:</strong>
-          <LatexText content={alternatives} />
-        </div>
-      )}
-            {/* Seção 5: Resolução da Questão */}
-            <b>5. Resolução da Questão</b>
-             <Input
-                    type="text"
-                    text="Indicar a alternativa correta"
-                    name="correctAlternative"
-                    placeholder="Insira o texto"
-                    value={correctAlternative}
-                    handleOnChange={(e) => setCorrectAlternative(e.target.value)}
-                />
-                <Input
-                    type="text"
-                    text="Resolução detalhada da questão (sem limite de linhas)"
-                    name="detailedResolution"
-                    placeholder="Insira o texto"
-                    value={detailedResolution}
-                    handleOnChange={(e) => setDetailedResolution(e.target.value)}
-                />
-                {/* Instrução e pré-visualização para a resolução detalhada */}
-                {detailedResolution && (
-                    <div>
-                    <strong>Pré-visualização:</strong>
-                    <LatexText content={detailedResolution} />
-                    </div>
-                )}
+        <form className={styles.form_container} onSubmit={submit}>
+            <div className={styles.form_header}>
+                <h2>{isEditMode ? "Editar Questão" : "Nova Questão"}</h2>
+                <p>Preencha os dados abaixo para cadastrar a questão no banco de dados.</p>
+            </div>
 
-            {/* Seção 6: Envio para Análise */}
+            {/* SEÇÃO 1: IDENTIFICAÇÃO */}
+            <section className={styles.form_section}>
+                <div className={styles.section_title}>
+                    <BsPersonBadge /> <span>Identificação</span>
+                </div>
+                <div className={styles.grid_row}>
+                    <div style={{width: '100%'}}>
+                        <Input
+                            type="text" text="Título da Questão" name="name"
+                            placeholder="Ex: Teorema de Pitágoras #01"
+                            value={project.name} handleOnChange={handleChange}
+                        />
+                        {renderError('name')}
+                    </div>
+                    <div style={{width: '100%'}}>
+                        <Input
+                            type="text" text="Nome do Professor" name="professorName"
+                            placeholder="Nome completo"
+                            value={project.professorName} handleOnChange={handleChange}
+                        />
+                        {renderError('professorName')}
+                    </div>
+                </div>
+            </section>
 
-            {/* Exibe a seção de envio para análise apenas se estiver no modo de edição*/}
-            {isEditMode && (
-                <>
-                    <b>6. Envio para Análise</b>
-                    <Select 
-                    name="category_id" 
-                    text="Selecione o tipo de estado da questão"
-                    options={categoris}
-                    value={categoryId}
-                    handleOnChange={(e) => {
-                        console.log("Categoria selecionada:", e.target.value);
-                        setCategoryId(e.target.value);
-                    }}
+            {/* SEÇÃO 2: DADOS PEDAGÓGICOS */}
+            <section className={styles.form_section}>
+                <div className={styles.section_title}>
+                    <BsBook /> <span>Dados Pedagógicos BNCC</span>
+                </div>
+                <div className={styles.grid_row_3}>
+                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%'  }}>
+                        <label className={styles.label} style={{marginBottom:'16px' }}>Série/Ano:</label>
+                        <select
+                            name="serieAno"
+                            className={styles.native_select || styles.input}
+                            value={project.serieAno}
+                            onChange={handleChange}
+                            style={{ padding: '0.9em', borderRadius: '8px', }}
+                        >
+                            <option value="">Selecione o Ano...</option>
+                            {opcoesAno.map((opcao) => (
+                                <option key={opcao.value} value={opcao.value}>
+                                    {opcao.label}
+                                </option>
+                            ))}
+                        </select>
+                        {renderError('serieAno')}
+                    </div>
+
+                    <Input
+                        type="text" text="Nível da Fase ou Categoria" name="phaseLevel"
+                        placeholder="Insira o nível" value={project.phaseLevel}
+                        handleOnChange={handleChange}
                     />
-                </>
+                </div>
+
+                <div className={styles.grid_row}>
+                    <div style={{width: '100%'}}>
+                        <Input
+                            type="number" text="Grau de Dificuldade (1-5)" name="difficultyLevel"
+                            placeholder="1 a 5" value={project.difficultyLevel}
+                            handleOnChange={handleDifficultyChange}
+                        />
+                        {renderError('difficultyLevel')}
+                    </div>
+                </div>
+
+                <div className={styles.grid_row}>
+                    {/* Objetos do Conhecimento */}
+                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <label className={styles.label}>Objetos do Conhecimento:</label>
+                        <select
+                            name="knowledgeObjects"
+                            className={styles.native_select || styles.input}
+                            value={project.knowledgeObjects}
+                            onChange={handleChange}
+                            style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
+                        >
+                            <option value="">Selecione um Objeto...</option>
+                            {!project.serieAno ? (
+                                <option value="" disabled>Preencha a Série/Ano acima primeiro</option>
+                            ) : (
+                                knowledgeOptionsList.map((opt, index) => (
+                                    <option key={index} value={opt}>{opt}</option>
+                                ))
+                            )}
+                        </select>
+                    </div>
+
+                    {/* Tema BNCC */}
+                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <label className={styles.label}>Tema BNCC:</label>
+                        <select 
+                            className={styles.native_select || styles.input}
+                            value={project.bnccTheme}
+                            name="bnccTheme"
+                            onChange={handleChange}
+                            style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
+                        >
+                            <option value="">Unidade Temática</option>
+                            <option value="Álgebra">Álgebra</option>
+                            <option value="Geometria">Geometria</option>
+                            <option value="Estatística">Estatística</option>
+                            <option value="Álgebra/Geometria">Álgebra / Geometria</option>
+                            <option value="Grandezas/Geometria">Grandezas / Geometria</option> 
+                            <option value="Grandezas/Medidas">Grandezas / Medidas</option>
+                            <option value="Números">Números</option>
+                            <option value="Números/Álgebra">Números e Álgebra</option>
+                            <option value="Probabilidade">Probabilidade</option>
+                            <option value="Probabilidade e Estatística">Probabilidade e Estatística</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.grid_row_auto}>
+                    <div className={styles.input_group_icon}>
+                        <Input
+                            type="text" text="Cód. Habilidade" name="abilityCode"
+                            placeholder="Ex: EF05MA12" value={project.abilityCode}
+                            handleOnChange={handleChange}
+                        />
+                        <span className={styles.icon_tooltip} title="Consulte a BNCC"><BsFillInfoCircleFill /></span>
+                    </div>
+                    <Input
+                        type="text" text="Descrição da Habilidade" name="abilityDescription"
+                        placeholder="Descrição completa" value={project.abilityDescription}
+                        handleOnChange={handleChange}
+                    />
+                </div>
+            </section>
+
+            {/* SEÇÃO 3: CONTEÚDO LATEX */}
+            <section className={styles.form_section}>
+                <div className={styles.section_title}>
+                    <BsCardText /> <span>Elaboração da Questão (LaTeX)</span>
+                </div>
+                <div className={styles.latex_tip}>
+                    💡 Dica: Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use <code>\(...\)</code> e para fórmulas em bloco, use <code>\[...\]</code>.
+                <br/>Exemplo: A área do círculo é <code>\(\pi r^2\)</code>
+                </div>
+                
+                {/* 1. ENUNCIADO COM PREVIEW */}
+                <div className={styles.editor_block}>
+                    <Input
+                        type="text" text="Enunciado" name="questionStatement"
+                        placeholder="Digite o enunciado..." value={project.questionStatement}
+                        handleOnChange={handleChange}
+                    />
+                    {renderError('questionStatement')}
+                    {project.questionStatement && (
+                        <div className={styles.preview_box}>
+                            <strong>Pré-visualização:</strong>
+                            <LatexText content={project.questionStatement} />
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.upload_area}>
+                     <label>Imagem (Opcional)</label>
+                     <ImageUploader />
+                </div>
+
+                {/* 2. ALTERNATIVAS COM PREVIEW (ATUALIZADO) */}
+                <div className={styles.editor_block}>
+                    <label style={{fontWeight:'bold', marginBottom:'10px', display:'block'}}>Apresente 5 Alternativas:</label>
+                    
+                    {/* Iteramos sobre as chaves A, B, C, D, E para gerar os campos com preview automaticamente */}
+                    {['A', 'B', 'C', 'D', 'E'].map((altKey) => (
+                        <div key={altKey} style={{ marginBottom: '15px' }}>
+                            <Input 
+                                type="text" 
+                                text={`${altKey})`} 
+                                name={altKey} 
+                                value={alts[altKey]} 
+                                handleOnChange={handleAltChange} 
+                                placeholder={`Alternativa ${altKey}`} 
+                            />
+                            
+                            {/* Bloco de pré-visualização da Alternativa (Se houver texto) */}
+                            {alts[altKey] && (
+                                <div className={styles.preview_box} style={{ marginTop: '5px' }}>
+                                    <strong>Pré-visualização ({altKey}):</strong>
+                                    <LatexText content={alts[altKey]} />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                    {renderError('alternatives')}
+                </div>
+
+                <div className={styles.grid_row}>
+                     <Input
+                        type="text" text="Alternativa Correta (Ex: A)" name="correctAlternative"
+                        placeholder="Ex: A" value={project.correctAlternative}
+                        handleOnChange={handleChange}
+                    />
+                </div>
+
+                {/* 3. RESOLUÇÃO COM PREVIEW */}
+                <div className={styles.editor_block}>
+                    <Input
+                        type="text" text="Resolução Detalhada" name="detailedResolution"
+                        placeholder="Explicação passo a passo..." value={project.detailedResolution}
+                        handleOnChange={handleChange}
+                    />
+                     {project.detailedResolution && (
+                        <div className={styles.preview_box}>
+                            <strong>Pré-visualização:</strong>
+                            <LatexText content={project.detailedResolution} />
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* SEÇÃO 4: STATUS E REVISÃO (Visível apenas para roles permitidos) */}
+            {isEditMode && canEditComments && (
+                <section className={`${styles.form_section} ${styles.admin_section}`}>
+                    <div className={styles.section_title}>Revisão e Status</div>
+                    
+                    <div style={{width: '100%'}}>
+                        <Select 
+                            text="Situação da Questão"
+                            name="categoryId" 
+                            options={categories}
+                            value={project.categoryId}
+                            handleOnChange={handleChange}
+                        />
+                        {renderError('categoryId')}
+                    </div>
+
+                    <div className={styles.editor_block}>
+                        <label>Comentários do Revisor:</label>
+                        <textarea
+                            name="reviewerComments"
+                            value={project.reviewerComments}
+                            onChange={handleChange}
+                            placeholder="Digite as correções necessárias..."
+                            className={styles.custom_textarea}
+                            style={{ width: '100%', minHeight: '80px', marginTop: '5px' }}
+                        />
+                    </div>
+                </section>
+            )}
+            
+            <div className={styles.form_footer}>
+                {formError && (
+                    <div className={styles.error_msg} style={{
+                        color: '#d9534f', backgroundColor: '#f9d6d5', padding: '10px', 
+                        borderRadius: '5px', marginBottom: '10px', border: '1px solid #d9534f'
+                    }}>
+                        {formError}
+                    </div>
                 )}
-            {/* Exibe mensagem de erro geral (campos não preenchidos)*/}
-            {formError && <p style={{ color: "red" }}>{formError}</p>}
-            {/* Botão de envio do formulário */}
-            <SubmitButton text={btnText} />
+                <SubmitButton text={isSubmitting ? "Enviando..." : btnText} />
+            </div>
         </form>
     );
 }
-// Validação da prop btnText (obrigatória e deve ser uma string)
+
 ProjectForme.propTypes = {
     btnText: PropTypes.string.isRequired,
     projectData: PropTypes.object,
-    handleSubmit: PropTypes.func.isRequired
+    handleSubmit: PropTypes.func.isRequired,
 };
 
 export default ProjectForme;

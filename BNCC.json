@@ -1397,7 +1397,7 @@
               {
             "id": "1",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT101) ",
             "abilityDescription": "Interpretar criticamente situações econômicas, sociais e fatos relativos às Ciências da Natureza que envolvam a variação de grandezas, pela análise dos gráficos das funções representadas e das taxas de variação, com ou sem apoio de tecnologias digitais."
               },
@@ -1415,7 +1415,7 @@
               },  {
             "id": "4",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT104) ",
             "abilityDescription": "Interpretar taxas e índices de natureza socioeconômica (índice de desenvolvimento humano, taxas de inflação, entre outros), investigando os processos de cálculo desses números, para analisar criticamente a realidade e produzir argumentos."
               },  {
@@ -1445,43 +1445,43 @@
               },  {
             "id": "9",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT203) ",
             "abilityDescription": "Aplicar conceitos matemáticos no planejamento, na execução e na análise de ações envolvendo a utilização de aplicativos e a criação de planilhas (para o controle de orçamento familiar, simuladores de cálculos de juros simples e compostos, entre outros), para tomar decisões."
               },  {
             "id": "10",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT301) ",
             "abilityDescription": "Resolver e elaborar problemas do cotidiano, da Matemática e de outras áreas do conhecimento, que envolvem equações lineares simultâneas, usando técnicas algébricas e gráficas, com ou sem apoio de tecnologias digitais."
               },  {
             "id": "11",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT302) ",
             "abilityDescription": "Construir modelos empregando as funções polinomiais de 1º ou 2º graus, para resolver problemas em contextos diversos, com ou sem apoio de tecnologias digitais."
               },  {
             "id": "12",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT303) ",
             "abilityDescription": "Interpretar e comparar situações que envolvam juros simples com as que envolvem juros compostos, por meio de representações gráficas ou análise de planilhas, destacando o crescimento linear ou exponencial de cada caso."
               },  {
             "id": "13",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT304) ",
             "abilityDescription": "Resolver e elaborar problemas com funções exponenciais nos quais seja necessário compreender e interpretar a variação das grandezas envolvidas, em contextos como o da Matemática Financeira, entre outros."
               },  {
             "id": "14",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT305) ",
             "abilityDescription": "Resolver e elaborar problemas com funções logarítmicas nos quais seja necessário compreender e interpretar a variação das grandezas envolvidas, em contextos como os de abalos sísmicos, pH, radioatividade, Matemática Financeira, entre outros."
               },  {
             "id": "15",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT306) ",
             "abilityDescription": "Resolver e elaborar problemas em contextos que envolvem fenômenos periódicos reais (ondas sonoras, fases da lua, movimentos cíclicos, entre outros) e comparar suas representações com as funções seno e cosseno, no plano cartesiano, com ou sem apoio de aplicativos de álgebra e geometria."
               },  {
@@ -1535,7 +1535,7 @@
               },{
             "id": "24",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT315) ",
             "abilityDescription": "Investigar e registrar, por meio de um fluxograma, quando possível, um algoritmo que resolve um problema."
               },{
@@ -1547,31 +1547,31 @@
               },{
             "id": "26",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT401) ",
             "abilityDescription": "Converter representações algébricas de funções polinomiais de 1º grau em representações geométricas no plano cartesiano, distinguindo os casos nos quais o comportamento é proporcional, recorrendo ou não a softwares ou aplicativos de álgebra e geometria dinâmica."
               },{
             "id": "27",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT402)",
             "abilityDescription": " Converter representações algébricas de funções polinomiais de 2º grau em representações geométricas no plano cartesiano, distinguindo os casos nos quais uma variável for diretamente proporcional ao quadrado da outra, recorrendo ou não a softwares ou aplicativos de álgebra e geometria dinâmica, entre outros materiais."
               },{
             "id": "28",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT403) ",
             "abilityDescription": "Analisar e estabelecer relações, com ou sem apoio de tecnologias digitais, entre as representações de funções exponencial e logarítmica expressas em tabelas e em plano cartesiano, para identificar as características fundamentais (domínio, imagem, crescimento) de cada função."
               },{
             "id": "29",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT404) ",
             "abilityDescription": "Analisar funções definidas por uma ou mais sentenças (tabela do Imposto de Renda, contas de luz, água, gás etc.), em suas representações algébrica e gráfica, identificando domínios de validade, imagem, crescimento e decrescimento, e convertendo essas representações de uma para outra, com ou sem apoio de tecnologias digitais."
               },{
             "id": "30",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT405) ",
             "abilityDescription": "Utilizar conceitos iniciais de uma linguagem de programação na implementação de algoritmos escritos em linguagem corrente e/ou matemática."
               },{
@@ -1589,19 +1589,19 @@
               },{
             "id": "33",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT501) ",
             "abilityDescription": "Investigar relações entre números expressos em tabelas para representá-los no plano cartesiano, identificando padrões e criando conjecturas para generalizar e expressar algebricamente essa generalização, reconhecendo quando essa representação é de função polinomial de 1º grau."
               },{
             "id": "34",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT502) ",
             "abilityDescription": "Investigar relações entre números expressos em tabelas para representá-los no plano cartesiano, identificando padrões e criando conjecturas para generalizar e expressar algebricamente essa generalização, reconhecendo quando essa representação é de função polinomial de 2º grau do tipo y = ax2."
               },{
             "id": "35",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT503) ",
             "abilityDescription": "Investigar pontos de máximo ou de mínimo de funções quadráticas em contextos envolvendo superfícies, Matemática Financeira ou Cinemática, entre outros, com apoio de tecnologias digitais."
               },{
@@ -1625,13 +1625,13 @@
               },{
             "id": "39",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT507)",
             "abilityDescription": " Identificar e associar progressões aritméticas (PA) a funções afins de domínios discretos, para análise de propriedades, dedução de algumas fórmulas e resolução de problemas."
               },{
             "id": "40",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT508)",
             "abilityDescription": " Identificar e associar progressões geométricas (PG) a funções exponenciais de domínios discretos, para análise de propriedades, dedução de algumas fórmulas e resolução de problemas."
               },{
@@ -1643,7 +1643,7 @@
               },{
             "id": "42",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Núemros e Álgebra",
+            "unidadeTematica": "Números e Álgebra",
             "habilidade": "(EM13MAT510)" ,
             "abilityDescription":"Investigar conjuntos de dados relativos ao comportamento de duas variáveis numéricas, usando ou não tecnologias da informação, e, quando apropriado, levar em conta a variação e utilizar uma reta para descrever a relação observada."
               },{

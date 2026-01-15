@@ -1,45 +1,32 @@
 import { useState, useEffect } from "react";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importar ícones de olho
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-// Hook de autenticação (centraliza login / estado global)
-import useAuth from "../../../../../hooks/useAuth";
-
-// Service direto (Google Login passa pelo backend)
+import logo from "../../../../../img/logov2-fotor.png";
+import useAuth from "../../../../../hooks/useAuth"; 
 import { authService } from "../../../../../services/authService";
 
 const Login = () => {
-  const { login } = useAuth(); // login(email, password)
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Estados do formulário
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar senha
 
-  // UX
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Login tradicional (email + senha)
-   */
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
-    // Validação básica
     if (!email || !password) {
       setError("Preencha todos os campos");
       return;
     }
 
     setLoading(true);
-
-    /**
-     * useAuth.login retorna:
-     * - null → sucesso
-     * - string → mensagem de erro
-     */
     const errorMessage = await login(email, password);
 
     if (errorMessage) {
@@ -48,31 +35,20 @@ const Login = () => {
       return;
     }
 
-    // Login OK
     navigate("/");
-     window.location.reload();
+    window.location.reload();
   };
 
-  /**
-   * Login com Google (OAuth via BACKEND)
-   * credentialResponse.credential vem do Google Identity
-   */
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       setError("");
       setLoading(true);
-
-      const result = await authService.loginWithGoogle(
-        credentialResponse.credential //  enviado ao backend
-      );
-      // Verifica erros
+      const result = await authService.loginWithGoogle(credentialResponse.credential);
       if (!result.success) {
         setError(result.error);
         setLoading(false);
         return;
       }
-
-      // Login OK
       navigate("/");
       window.location.reload();
     } catch (err) {
@@ -80,100 +56,96 @@ const Login = () => {
       setLoading(false);
     }
   };
-  // Inicializa o botão do Google Identity
-    useEffect(() => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: "1095631680198-osc0a7pdlkler2napk9iakp42p3r3if2.apps.googleusercontent.com",
-          callback: handleGoogleLogin,
-        });
 
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-btn"),
-          {
-            theme: "outline",
-            size: "large",
-            width: 250,
-          }
-        );
-      }
-    }, []);
+  useEffect(() => {
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: "1095631680198-osc0a7pdlkler2napk9iakp42p3r3if2.apps.googleusercontent.com",
+        callback: handleGoogleLogin,
+      });
 
-// Renderização do componente
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-btn"),
+        {
+          width:"365px", /* Opcional: Tenta forçar uma largura específica */
+          theme:"filled_black", /* Opcional: Estilo do botão */
+          shape:"pill", /* Opcional: Arredondado */
+          fontWeight: "600"
+          
+
+        }
+      );
+    }
+  }, []);
+
   return (
-    <div className="background">
-      <div
-        className="container"
-        style={{ marginInline: "auto", marginTop: "90px" }}
-      >
+    <div className="login-page">
+      {/* Se tiver uma logo do seu sistema, coloque aqui fora do card */}
+      <h1 className="brand-logo"><img src={logo} alt="Logo" /></h1> 
+
+      <div className="login-card">
+        <h2>Iniciar sessão</h2>
+
         <form onSubmit={handleSubmit}>
-          <h1>Acessar sistema</h1>
+          {error && <div className="error-message">{error}</div>}
 
-          {/* Mensagem de erro */}
-          {error && <p className="error-message">{error}</p>}
-
-          {/* Email */}
-          <div className="input-field">
+          {/* Input Email */}
+          <div className="input-group">
+            <label htmlFor="email">Endereço de e-mail <span className="required">*</span></label>
             <input
+              id="email"
               type="email"
-              placeholder="E-mail"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               required
             />
-            <FaUser className="icon" />
           </div>
 
-          {/* Senha */}
-          <div className="input-field">
-            <input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
-              disabled={loading}
-              required
-            />
-            <FaLock className="icon" />
+          {/* Input Senha */}
+          <div className="input-group">
+            <label htmlFor="password">Senha <span className="required">*</span></label>
+            <div className="password-wrapper">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
-          {/* Lembrar / Esqueceu senha */}
-          <div className="recall-forget">
-            <label>
-              <input type="checkbox" disabled={loading} /> Lembre de mim
-            </label>
-            <Link to="/forgot-password">Esqueceu a senha?</Link>
-          </div>
-
-          {/* Botão Login */}
-          <button type="submit" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
+          {/* Botão Principal */}
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Entrando..." : "Iniciar sessão"}
           </button>
 
-          {/* Google Login (renderizado via script Google Identity) */}
-          {/* Aqui você só liga o callback handleGoogleLogin */}
-          {/* O botão em si vem do Google */}
-          {/* Exemplo: google.accounts.id.initialize(...) */}
-              {/* 🔐 Login com Google */}
-            <div
-                id="google-btn"
-                style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}
-              ></div>
-          {/* Cadastro */}
-          <div className="signup-link">
-            <p>
-              Ainda não possui uma conta?
-              <Link to="/register">&nbsp;Cadastre-se</Link>
-            </p>
+          {/* Divisor OU */}
+          <div className="divider">
+            <span>OU</span>
+          </div>
+
+          {/* Google Login Wrapper */}
+          <div className="social-login">
+            <div id="google-btn" style={{ width: "100%" }}></div>
+            {/* Se tiver botão da Apple, adicione aqui */}
           </div>
         </form>
+      </div>
+
+      {/* Links do Rodapé (Fora do Card) */}
+      <div className="login-footer-links">
+        <Link to="/register">Crie uma conta</Link>
+        <Link to="/forgot-password">Esqueci minha senha</Link>
       </div>
     </div>
   );

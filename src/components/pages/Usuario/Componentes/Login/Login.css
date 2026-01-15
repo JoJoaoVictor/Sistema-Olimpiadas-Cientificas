@@ -1,156 +1,195 @@
-.container {
-  width: 450px;
-  background: rgba(148, 147, 147, 0.226);
-  backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0);
-  border-radius: 10px;
-  padding: 40px;
-
-  
-}
-.background {
-  position: fixed;
-  width: 100%;
+/* Reset básico para garantir que o fundo preencha tudo */
+html, body {
+  margin: 0;
+  padding: 0;
   height: 100%;
-  background-image: url("./img/Oli.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-}
-.container h1 {
-  text-align: center;
-  font-size: 30px;
-  color: #ffff;
 }
 
-.container .input-field {
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  /* Cor de fundo Bege claro igual da imagem */
+  background-color: #FDFBF7; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Logo acima do card */
+.brand-logo {
+  font-size: 20px;
+  height: auto;
+  margin-bottom: 30px;
+  width: 100%;  
+  max-width: 200px; 
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* O Card Branco Central */
+.login-card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 450px; /* Largura similar à imagem */
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra muito suave */
+  border: 1px solid #e0e0e0;
+}
+
+.login-card h2 {
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+/* Grupos de Input */
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.required {
+  color: #d32f2f;
+  margin-left: 3px;
+}
+
+.input-group input {
+  height: 45px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 15px;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+.input-group input:focus {
+  border-color: #333; /* Fica preto ao focar, igual imagem */
+}
+
+/* Wrapper da Senha para o ícone do olho */
+.password-wrapper {
   position: relative;
   width: 100%;
-  height: 50px;
-  margin: 30px auto;
 }
 
-.input-field input {
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  outline: none;
-  border: 2px solid rgba(255, 255, 255, 0.644);
-  border-radius: 40px;
-  font-size: 16px;
-  color: #fff;
-  padding: 20px 45px 20px 25px;
-}
-
-.input-field input::placeholder {
-  color: #fff;
-}
-
-.input-field .icon {
+.toggle-password {
   position: absolute;
-  right: 25px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 16px;
-  color: #fff;
-}
-
-.container .recall-forget {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14.5px;
-  margin: -15px 0 15px;
-  color: #fff;
-}
-
-.recall-forget label input {
-  accent-color: #00fc4c;
-  margin-right: 40px;
-  
-  
-}
-
-.recall-forget a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.recall-forget a:hover {
-  text-decoration: underline;
-}
-
-.container button {
-  width: 100%;
-  height: 45px;
-  background: #1f1e1e65;
-  
-  transition: 0.2s;
+  background: none;
   border: none;
-  outline: none;
-  border-radius: 40px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.295);
-  
   cursor: pointer;
-  text-decoration: none;
-  font-size: 16px;
-  color: #ffffff;
-  font-weight: 700;
-  text-shadow: none;
-  
-  &:hover {
-    background: #ffffff6c;
-    color: rgba(0, 0, 0, 0.644);
-    
-  }
+  color: #666;
+  font-size: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
-.container .signup-link {
-  font-size: 14.5px;
-  text-align: center;
-  margin: 20px 0 15px;
-  color: #fff;
-
-}
-
-.signup-link p a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.signup-link p a:hover {
-  text-decoration: underline;
-}
-.error-message {
-  color: rgba(255, 0, 0, 0.623);
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-.password-toggle {
-  position: absolute;
-  right: 25px;
-  top: 55%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: #fff;
-}
-
-.password-toggle:hover {
-  color: #000;
-}
-.google-button {
+/* Botão Preto "Iniciar Sessão" */
+.login-btn {
   width: 100%;
-  height: 50px;
-  padding: 1em;
-
-
-
+  height: 48px;
+  background-color: #191919; /* Preto quase absoluto */
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px; /* Bordas bem arredondadas no botão */
   cursor: pointer;
-  text-decoration: none;
-  font-size: 15px;
-  color: #000000;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
 
+.login-btn:hover {
+  background-color: #333;
+}
 
+.login-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Divisor "OU" */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 25px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider::before {
+  margin-right: 10px;
+}
+
+.divider::after {
+  margin-left: 10px;
+}
+
+/* Área Social (Google) */
+.social-login {
+  display: flex;
+  flex-direction: column; /* Empilha os botões um em cima do outro */
+  align-items: center;    /* <--- O SEGREDO: Centraliza horizontalmente */
+  justify-content: center;
+  width: 100%;            /* Garante que o container ocupe toda a largura */
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* Mensagem de Erro */
+.error-message {
+  background-color: #fce4e4;
+  border: 1px solid #fcc2c3;
+  color: #cc0033;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Links do Rodapé (Fora do card) */
+.login-footer-links {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.login-footer-links a {
+  color: #1f1f1f;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-footer-links a:hover {
+  color: #000;
 }

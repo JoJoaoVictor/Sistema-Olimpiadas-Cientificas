@@ -1,162 +1,288 @@
-.project_datails {
+/* Container que cobre a tela ou área central */
+.page_wrapper {
+    
+    background-color: #f4f6f9; /* Fundo cinza bem claro para destacar o "papel" */
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Botão de voltar discreto */
+.back_btn {
+    align-self: flex-start;
+    margin-bottom: 15px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+.back_btn:hover { color: #333; }
+
+/* O "Cartão" principal (Modal Like) */
+.card_container {
     background-color: #ffffff;
     width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 10px 14px rgba(0, 0, 0, 0.377);
-    margin: 2em;
-  }
-
-  .project_datails h2{
-    margin: 1em;
-    padding: 1em;
-  }
-  .title {
-  font-size: 2rem;
-  margin: 1em;
-  margin-left: 5px;
-  padding: 1em;
-  color: rgb(255, 255, 255);
-  padding: 0.4em;
-  border-radius: 4px;
-  
+    max-width: 1000px; /* Largura máxima boa para leitura */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra suave e moderna */
+    overflow: hidden; /* Para o header não vazar bordas */
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Aumentando a especificidade para sobrescrever o .project_datails h1 */
-.project_datails h1.title_pendente {
-    color:white; /* laranja para questões pendentes (projects) */
-    background-color:   rgba(255, 88, 11, 0.904);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.project_datails h1.title_aprovada {
-    color: white; /* verde para questões aprovadas */
-    background-color: #4CAF50;
-}
-    .project_datails p {
-    font-size: 1em;
-    margin-bottom: 1em;
-    color: #495057;
-    padding: 12px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-    margin-top: 5px;
-    line-height: 1.6;
-    min-height: 40px;
-    }
-.project_datails span {
-    font-weight: bold;
-    font-size: 1.5  em;
-  }
-.details_container,
-.service_form_container {
-    font-size: 1em;
-    padding-bottom: 1.2em;
+/* === HEADER DO CARD === */
+.card_header {
+    background-color: #fff;
+    padding: 25px 30px;
+    border-bottom: 1px solid #eee;
     display: flex;
-    justify-content: space-between;;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    width: 100%;
-    
+    gap: 15px;
 }
-  
-.project_info {
-    border: 1px solid #ccc;
-    width: 100%;
+
+.header_content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* Badges de Status */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.status_approved {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.status_pending {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+/* Botões de Ação */
+.action_btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    border: none;
+}
+
+.btn_edit {
+    background-color: #2c3e50;
+    color: white;
+}
+.btn_edit:hover { background-color: #1a252f; transform: translateY(-1px); }
+
+.btn_cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn_cancel:hover { background-color: #c0392b; }
+
+/* === CORPO DO CARD === */
+.card_body {
+    padding: 30px;
+}
+
+/* Modo Visualização */
+.view_mode {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Grid de Informações Básicas */
+.info_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.info_box {
+    background-color: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
-    margin: 15px 0;
-    
-}
-.project_info span {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 8px;
-  color: #333;
-}
-.project_edit {
-    border: none;
-    width: 100%;
-    font-size: 1em;
-    margin-top: -20px;
-    
-  
-
-}
-/* BOTÕES CORRIGIDOS PARA CORRESPONDER AO STATUS */
-.button {
-    font-size: 1em;
-    color: white;
-    padding: 1em;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 3em;
-    transition: 0.2s;
+    border: 1px solid #e9ecef;
 }
 
-/* Botão para questões PENDENTES/REVISÃO (LARANJA) */
-.button_pendente {
-    background-color: rgba(255, 88, 11, 0.904);
+.label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
 }
 
-.button_pendente:hover {
-    background-color: #fffefe;
-    color:  rgba(255, 88, 11, 0.904);
-    border: 1px solid rgba(255, 87, 9, 0.932);
-    box-shadow: 4px 8px rgba(0, 0, 0, 0.226);
+.info_box p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
 }
 
-/* Botão para questões APROVADAS (VERDE) */
-.button_aprovada {
-    background-color: #4CAF50;
+.difficulty_badge {
+    color: #d35400 !important; /* Laranja escuro */
+    font-weight: bold;
 }
 
-.button_aprovada:hover {
-    background-color: #fffefe;
-    color: #38c03c;
-    border: 1px solid #38c03c;
-    box-shadow: 4px 8px rgba(0, 0, 0, 0.226);
+.divider {
+    border: 0;
+    height: 1px;
+    background: #eee;
+    margin: 0;
 }
 
-/* Estilo quando o formulário está aberto */
-.button_active {
-    opacity: 0.8;
-    transform: scale(0.98);
-}
-.latex_field {
-  margin: 15px 0;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+/* Seção de Detalhes (Texto corrido) */
+.details_section h3, 
+.latex_section h3 {
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.latex_field span {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 8px;
-  color: #333;
+.details_row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.desc_text {
+    line-height: 1.6;
+    color: #555;
+    background-color: #fafafa;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #ddd;
+}
+
+/* Seção LaTeX */
+.latex_block {
+    margin-bottom: 25px;
+}
+
+.latex_label {
+    display: block;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
 }
 
 .latex_content {
-  padding: 12px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  border: 1px solid #e9ecef;
-  margin-top: 5px;
-  min-height: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    /*box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);*/
 }
 
-
-
-.latex_content .katex-display {
-  margin: 15px 0;
-  padding: 10px;
-  background-color: white;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
+/* Destaque para a resposta correta */
+.correct_block {
+    background-color: #e8f5e9;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Garantir que o texto normal tenha boa apresentação */
-.latex_content span:not(.katex *) {
-  line-height: 1.6;
-  color: #495057;
+.correct_block .latex_label {
+    margin: 0;
+    color: #1b5e20;
+}
+
+.image_block img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+}
+
+/* Loading Spinner */
+.loading {
+    padding: 50px;
+    text-align: center;
+    color: #666;
+}
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card_header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .action_btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .info_grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .details_row {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

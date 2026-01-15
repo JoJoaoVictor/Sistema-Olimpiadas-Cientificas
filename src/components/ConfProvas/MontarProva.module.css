@@ -1,263 +1,271 @@
-.container{
-    background-color: white;
+/* Container Principal: Fundo limpo, centralizado e com sombra suave */
+.container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 100vh;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Imagem do Tema */
+.tema {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Títulos das Seções */
+.sectionTitle {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    border-left: 5px solid #007bff; /* Detalhe visual à esquerda */
+    padding-left: 10px;
+    margin-top: 1.5rem;
+}
+
+/* --- ÁREA DE FILTROS (Modernizada com CSS Grid) --- */
+/* Isso substitui o flexbox confuso. Cria colunas automáticas. */
+.filtersContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background-color: #f8f9fa;
+    padding: 1.5rem;
     border-radius: 10px;
-    padding: 0.5em 1em;
-    margin: 1em 2em;
+    border: 1px solid #e9ecef;
+}
+
+/* Estilização padrão para Inputs e Selects Nativos */
+.filterInput,
+.filterSelect {
     width: 100%;
-   
-    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
-
+    height: 45px; /* Altura consistente */
+    padding: 0 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #495057;
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 }
 
-.tema{
-    box-sizing: border-box; /* Inclui padding na largura total */
-    max-width: 1200px; /* Largura máxima do container */
-    width: 100%; /* Ocupa toda largura do container */
-    height: auto; /* Mantém proporção da imagem */
-    max-width: 100%; /* Não ultrapassa o container */
-    display: block; /* Remove espaço extra embaixo */
-    border-radius: 5px; /* Opcional: deixa a imagem com cantos arredondados */
-    object-fit: cover; /* Opcional: ajusta como a imagem se comporta */
-    
+.filterInput:focus,
+.filterSelect:focus {
+    border-color: #007bff;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-/* Responsividade para telas menores */
-@media (max-width: 768px) {
-    .container {
-        margin: 0.5em 1em;
-        padding: 0.5em;
-    }
-    
-    .tema {
-        border-radius: 3px;
-    }
+/* Container específico para a barra de busca (full width em mobile) */
+.searchContainer {
+    grid-column: 1 / -1; /* Faz a busca ocupar a largura total do grid */
+    margin-bottom: 0.5rem;
 }
 
-@media (max-width: 480px) {
-    .container {
-        margin: 0.5em;
-        padding: 0.3em;
-    }
-}
-.container h1{
-    text-align: center;
-    margin-bottom: 1em;
-}
-.container h2{
-    width: 100%;
-    margin: 0.5em;
-}
-.select_container{
-    font-size: 1.2em;
+/* --- LISTA DE QUESTÕES (Cards) --- */
+.questoesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    padding: 5px;
-    border-radius: 5px;
+    flex-direction: column;
+    gap: 1rem; /* Espaço entre os cards */
+}
+
+/* O Card da Questão */
+.questionCard {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between; /* Conteúdo na esq, botões na dir */
+    align-items: flex-start;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+/* Efeito ao passar o mouse no card */
+.questionCard:hover {
+    transform: translateY(-3px); /* Levanta levemente */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-color: #b8daff;
+}
+
+.cardContent {
+    flex: 1; /* Ocupa todo o espaço disponível */
+    margin-right: 1rem;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.cardTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* --- TAGS (Pílulas de informação) --- */
+.tagsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background-color: #f1f3f5;
+    color: #636e72;
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+}
+
+.tag strong {
+    margin-right: 4px;
+    color: #2d3436;
+}
+
+/* Variações de cor para as tags (opcional) */
+.tagDifficulty { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+.tagCode { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+
+/* --- BOTÕES DE AÇÃO --- */
+.actionsGroup {
+    display: flex;
+    flex-direction: column; /* Botões empilhados na direita */
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+/* Botões Genéricos */
+.btn {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+/* Botão de Adicionar (+) */
+.btnAdd {
+    background-color: #e7f1ff;
+    color: #007bff;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 1.2rem;
+}
+.btnAdd:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Botão Info (i) */
+.btnInfo {
+    background: transparent;
+    color: #17a2b8;
+    padding: 4px;
+    font-size: 1.1rem;
+}
+.btnInfo:hover { color: #138496; transform: scale(1.1); }
+
+/* Botão Remover (Lixeira) */
+.btnRemove {
+    background-color: #fff5f5;
+    color: #dc3545;
+    border: 1px solid #f5c6cb;
+}
+.btnRemove:hover {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+/* Botões de Mover (Setas) */
+.moveButtons {
+    display: flex;
+    gap: 2px;
+}
+.btnMove {
+    background: transparent;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.btnMove:hover { background-color: #e9ecef; color: #333; }
+
+/* --- BARRA DE AÇÕES INFERIOR (Salvar/PDF) --- */
+.bottomActions {
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 5px; /* Espaçamento consistente entre elementos */
-    flex-wrap: wrap; 
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
 }
 
-.selct_ano {
-    width: 220px;
-    min-width: 200px;
-    font-size: 1em;
-    margin: 5px;
+.btnSave {
+    background-color: #28a745;
+    color: white;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+}
+.btnSave:hover { background-color: #218838; transform: translateY(-2px); }
+
+.btnPdf {
+    background-color: #6c757d;
+    color: white;
+    padding: 0.8rem 1.5rem;
+}
+.btnPdf:hover { background-color: #5a6268; }
+
+/* Mensagem de vazio */
+.emptyState {
+    text-align: center;
+    color: #adb5bd;
+    font-style: italic;
+    padding: 2rem;
 }
 
-.select_container select{
-    color: #797979;
-    width: auto; /* Largura fixa */
-    min-width: 200px; /* Largura mínima */
-    height: 50px; /* Altura fixa */
-    margin: 5px;
-    padding: 0.6em;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    box-sizing: border-box;
-    transition: border 0.3s;
-}
-
-.select_container select:hover{
-    border: 1px solid #000000;
-}
-
-.select_container input{
-    color: #797979;
-    width: auto; /* Largura fixa para o input de busca */
-    min-width: 200px;
-    height: 50px; /* Altura fixa */
-    margin: 5px;
-    padding: 0.6em;
-    border-radius: 5px; 
-    font-size: 1em;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    transition: border 0.3s;
-}
-
-.select_container input:hover{
-    border: 1px solid #000000;
-}
-
-/* Responsividade para telas menores */
+/* Responsividade Mobile */
 @media (max-width: 768px) {
-    .select_container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .selct_ano,
-    .select_container select,
-    .select_container input {
-        width: 100%;
-        max-width: 100%;
-    }
+    .container { padding: 1rem; width: 100%; margin: 1rem 0; }
+    .questionCard { flex-direction: column; }
+    .actionsGroup { flex-direction: row; width: 100%; justify-content: flex-end; margin-top: 1rem; }
+    .bottomActions { flex-direction: column; gap: 1rem; }
+    .btnSave, .btnPdf { width: 100%; }
 }
-.questoes_container{
-    margin-top: 1.5em;
-    padding: 1em;
-    border-radius: 5px;
-}
-.list_item{
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border: 1px solid #a3a3a38c;
-  width: 100%;
-  background-color: #cecccc11;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;  
-}
-.list_content {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-}
-.actions {
-  display: flex;
-  gap: 0.5rem;
-}
-.categori_text {
-    display: flex;
-    align-items: center;
-}
-.categori_text span {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid rgb(0, 0, 0);
-  }
-
-.tema{
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-/*Botões de ação*/
-.save_btn,
-.remove_btn,
-.add_bnt,
-.visu_btn,
-.gera_btn {
-  border-radius: 5px;
-  padding: 0.5em 1em;
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  border: none;
-  transition: 0.2s ease;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 1em;
-  color: white;
-}
-/*salva prova*/
-.save_btn{
-    color: #218838;
-    background-color: rgba(255, 255, 255, 0);
-}
-.save_btn:hover {
-    color: #ffffff;
-  background-color: #218838;
-}
-/*Remove questão*/
-.remove_btn {
-  color: #000000;
-  background-color: #fdfdfd00;
-  font-size: 1em;
-}
-.remove_btn:hover {
-  color: #e9031a;
-}
-/*Visualiza questão*/
-.info_btn {
-  padding: 0px 5px;
-  align-items: center;
-  gap: 0.4em;
-  border: none;
-  transition: 0.2s ease;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 1em;    
-  color: #007bffc2;
-  background-color: rgba(255, 255, 255, 0);
-}
-.info_btn:hover {
-  color: #000000;
-}
-/*Gera prova*/
-.gera_btn {
-  background-color: #007bff;
-}
-.gera_btn:hover {
-  background-color: #0056b3;
-}
-/*Visualiza prova*/
-.visu_btn {
-    display: flex;
-  color: #007bff;
-  background-color: rgba(255, 255, 255, 0);
-}
-.visu_btn:hover {
-    color: #ffffff;
-    background-color: #007bff;
-}
-/*Adiciona questão hover*/
-.add_bnt {
-    background-color: #007bff00;
-    color: black;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    justify-content: center;
-    font-size: 1.1em;
-}
-.add_bnt:hover{
-     background-color: #007bff;
-     color: white;
-}
-
-.setaBtn {
-  padding: 2px 8px;
-  font-size: 16px;
-  margin-left: 5px;
-  border:none;
-  background-color: #f0f0f000;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.setaBtn:hover {
-  background-color: #dcdcdc;
-}
-
-
-
-    
-    
-  

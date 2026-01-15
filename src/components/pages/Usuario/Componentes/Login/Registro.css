@@ -1,132 +1,180 @@
-.container {
-width: 450px;
-background: rgba(148, 147, 147, 0.226);
-backdrop-filter: blur(15px);
-border: 2px solid rgba(255, 255, 255, 0);
-border-radius: 10px;
-padding: 40px;
-}
-.background {
-position: fixed;
-width: 100%;
-height: 100%;
-background-image: url("./img/Oli.png");
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-
-}
-.container h1 {
-text-align: center;
-font-size: 30px;
-color: #ffff;
-}
-
-.container .input-field {
-position: relative;
-width: 100%;
-height: 50px;
-margin: 30px auto;
-}
-
-.input-field input {
-width: 100%;
-height: 100%;
-background: transparent;
-outline: none;
-border: 2px solid rgba(255, 255, 255, 0.644);
-border-radius: 40px;
-font-size: 16px;
-color: #fff;
-padding: 20px 45px 20px 25px;
-}
-
-.input-field input::placeholder {
-color: #fff;
-}
-
-.input-field .icon {
-position: absolute;
-right: 25px;
-top: 50%;
-transform: translateY(-50%);
-font-size: 16px;
-color: #fff;
-}
-
-.container .recall-forget {
-display: flex;
-justify-content: space-between;
-font-size: 14.5px;
-margin: -15px 0 15px;
-}
-
-.recall-forget label input {
-accent-color: #00fc4c;
-margin-right: 4px;
-
-}
-
-.recall-forget a {
-color: #fff;
-text-decoration: none;
-}
-
-.recall-forget a:hover {
-text-decoration: underline;
-}
-
-.container button {
-width: 100%;
-height: 45px;
-background: #1f1e1e65;
-
-transition: 0.2s;
-border: none;
-outline: none;
-border-radius: 40px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.295);
-
-cursor: pointer;
-text-decoration: none;
-font-size: 16px;
-color: #ffffff;
-font-weight: 700;
-text-shadow: none;
-
-&:hover {
-  background: #ffffff6c;
-  color: rgba(0, 0, 0, 0.644);
+/* Layout da Página Completa */
+.register-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #FDFBF7; /* Bege claro (Brevo style) */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+  }
   
-}
-}
-
-.container .signup-link {
-font-size: 14.5px;
-text-align: center;
-margin: 20px 0 15px;
-color: #fff;
-
-}
-
-.signup-link p a {
-color: #fff;
-text-decoration: none;
-font-weight: 600;
-}
-
-.signup-link p a:hover {
-text-decoration: underline;
-}
-.password-toggle {
-  position: absolute;
-  right: 25px;
-  top: 55%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: #fff;
-}
-
-.password-toggle:hover {
-  color: #000;
-}
+  /* O Card Branco Central */
+  .register-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 480px; /* Um pouco mais largo que o login pois tem mais campos */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+  }
+  
+  .register-card h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #1f1f1f;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+  
+  /* Grupos de Input */
+  .input-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f1f1f;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+  
+  .required {
+    color: #d32f2f;
+    margin-left: 3px;
+  }
+  
+  /* Estilo padrão para Inputs e Selects */
+  .input-group input, 
+  .input-group .custom-select {
+    height: 45px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0 15px;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff; /* Garante fundo branco */
+  }
+  
+  .input-group input:focus,
+  .input-group .custom-select:focus {
+    border-color: #333; /* Fica preto ao focar */
+  }
+  
+  .input-group input::placeholder {
+    color: #aaa;
+    font-size: 14px;
+  }
+  
+  /* Wrapper da Senha para o ícone do olho */
+  .password-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .toggle-password:hover {
+    color: #000;
+  }
+  
+  /* Botão de Cadastro */
+  .register-btn {
+    width: 100%;
+    height: 48px;
+    background-color: #191919;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+  }
+  
+  .register-btn:hover {
+    background-color: #333;
+  }
+  
+  .register-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Mensagem de Erro */
+  .error-message {
+    background-color: #fce4e4;
+    border: 1px solid #fcc2c3;
+    color: #cc0033;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* Link de Rodapé */
+  .register-footer-link {
+    margin-top: 25px;
+    text-align: center;
+  }
+  
+  .register-footer-link p {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .register-footer-link a {
+    color: #1f1f1f;
+    text-decoration: underline;
+    font-weight: 600;
+    margin-left: 5px;
+  }
+  
+  .register-footer-link a:hover {
+    color: #000;
+  }
+  
+  /* Responsividade Mobile */
+  @media (max-width: 500px) {
+    .register-card {
+      padding: 25px;
+      width: 100%;
+    }
+    
+    .register-card h2 {
+      font-size: 20px;
+    }
+  }

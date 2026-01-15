@@ -2,7 +2,7 @@
 import styles from './ProjectList.module.css';
 
 // Ícones para edição e exclusão
-import { BsPencil, BsFillTrashFill } from 'react-icons/bs';
+import { BsPencil, BsFillTrashFill, BsCalendar3, BsBarChart, BsCodeSlash } from 'react-icons/bs';
 
 // React Router para navegação
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom';
 // Tipagem com PropTypes
 import PropTypes from 'prop-types';
 
-// Componente de item de projeto no formato de lista
 function ProjectList({
   id,
   name,
@@ -18,59 +17,86 @@ function ProjectList({
   abilityCode,
   createdAt,
   handleRemove,
-  categoryName = '',    
+  categoryName = 'Sem Categoria',    
   serieAno,
   phaseLevel,
   bnccTheme
 }) {
-  // Função que chama o handler de remoção quando o botão for clicado
+
   const remove = (e) => {
     e.preventDefault();
     handleRemove(id);
   };
 
-  // Formata a data ISO para o padrão dd/mm/yyyy
   const formatDate = (isoString) => {
+    if (!isoString) return 'Data indefinida';
     const date = new Date(isoString);
-    const dia = String(date.getDate()).padStart(2, '0');
-    const mes = String(date.getMonth() + 1).padStart(2, '0');
-    const ano = date.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+    return date.toLocaleDateString('pt-BR');
+  };
+
+  // Lógica de Estilo: Transforma "Correção Solicitada" em "correcao_solicitada"
+  // para usar como classe no CSS sem dar erro.
+  const getStatusClass = (status) => {
+      if (!status) return styles.default_status;
+      const normalized = status.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, "") // Remove acentos
+          .replace(/\s+/g, '_'); // Troca espaço por underline
+      return styles[normalized] || styles.default_status;
   };
 
   return (
-    <li className={styles.list_item}>
-      <div className={styles.list_content}>
-        <div>
-          {/* Nome do projeto em negrito */}
-          <strong>{name}</strong>  
-          <br />
+    <li className={styles.project_card}>
+      
+      {/* 1. Cabeçalho do Card: Título e Tema */}
+      <div className={styles.card_header}>
+         <h3 className={styles.title}>{name}</h3>
+         {bnccTheme && <span className={styles.theme_badge}>{bnccTheme}</span>}
+      </div>
 
-          {/* Informações adicionais como dificuldade, código da habilidade e tema BNCC */}
-          <span style={{ fontSize: '0.90em', color: '#555' }}>
-            Dificuldade: {difficultyLevel}/5 - Código: {abilityCode}
-            {bnccTheme ? ` - Tema: ${bnccTheme}` : ''}
-          </span>
-
-          {/* Informações complementares como categoria, data e série */}
-          <span className={styles.date}>
-            <p className={styles.categori_text}>
-              {/* Círculo colorido da categoria (estilizado pelo nome em minúsculo) */}
-              <span className={`${styles[categoryName.toLowerCase()]}`}></span>
-              {categoryName} -
-            </p>
-            Última modificação {formatDate(createdAt)} 
-            {serieAno ? ` - Série/Ano: ${serieAno}` : ''}
-            {phaseLevel ? ` - Fase: ${phaseLevel}` : ''}
-          </span>
+      {/* 2. Corpo do Card: Grid de Informações */}
+      <div className={styles.card_body}>
+        <div className={styles.info_group}>
+           <span className={styles.info_label}><BsBarChart /> Dificuldade</span>
+           <span className={styles.info_value}>{difficultyLevel}/5</span>
+        </div>
+        
+        <div className={styles.info_group}>
+           <span className={styles.info_label}><BsCodeSlash /> Código</span>
+           <span className={styles.info_value}>{abilityCode}</span>
         </div>
 
-        {/* Botões de ação: Editar e Excluir */}
+        <div className={styles.info_group}>
+           <span className={styles.info_label}>Série/Ano</span>
+           <span className={styles.info_value}>{serieAno || '-'}</span>
+        </div>
+
+        {phaseLevel && (
+            <div className={styles.info_group}>
+               <span className={styles.info_label}>Nivel/Categoria</span>
+               <span className={styles.info_value}>{phaseLevel}</span>
+            </div>
+        )}
+      </div>
+
+      {/* 3. Rodapé do Card: Data, Status e Botões */}
+      <div className={styles.card_footer}>
+        <div className={styles.meta_data}>
+            {/* Tag de Status Colorida */}
+            <span className={`${styles.status_badge} ${getStatusClass(categoryName)}`}>
+               {categoryName}
+            </span>
+            
+            <span className={styles.date_text}>
+               <BsCalendar3 /> {formatDate(createdAt)}
+            </span>
+        </div>
+
+        {/* Botões de Ação */}
         <div className={styles.actions}>
-          <Link className={styles.edit_btn} to={`/projetos/${id}`}>
+          <Link className={styles.edit_btn} to={`/projetos/${id}`} title="Editar">
             <BsPencil />
           </Link>
-          <button className={styles.delete_btn} onClick={remove}>
+          <button className={styles.delete_btn} onClick={remove} title="Excluir">
             <BsFillTrashFill /> 
           </button>
         </div>
@@ -79,7 +105,6 @@ function ProjectList({
   );
 }
 
-// Tipagem das props esperadas no componente
 ProjectList.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   name: PropTypes.string.isRequired,

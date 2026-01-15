@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./Registro.css";
 import { authService } from "../../../../../services/authService";
@@ -29,13 +29,18 @@ const Registro = () => {
     setError("");
 
     // ===== VALIDAÇÕES FRONT =====
-    if (!name || !email || !password ) {
+    if (!name || !email || !password || !confirmPassword) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
 
     if (password.length < 8) {
       setError("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem");
       return;
     }
 
@@ -54,9 +59,8 @@ const Registro = () => {
         return;
       }
 
-      // Backend faz login automático
+      // Sucesso
       navigate("/");
-
     } catch (err) {
       console.error("Erro no registro:", err);
       setError("Erro ao conectar com o servidor");
@@ -65,136 +69,110 @@ const Registro = () => {
     }
   };
 
-  // =========================
-  // TOGGLE VISIBILIDADE SENHA
-  // =========================
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
   return (
-    <div className="background">
-      <div className="container" style={{ marginInline: "auto", marginTop: "40px" }}>
-        <form onSubmit={handleRegistro}>
-          <h1>Cadastro</h1>
+    <div className="register-page">
+      <div className="register-card">
+        <h2>Criar uma conta</h2>
+        <p className="subtitle">Preencha seus dados para começar</p>
 
+        <form onSubmit={handleRegistro}>
           {/* ERRO */}
-          {error && <p className="error-message">{error}</p>}
+          {error && <div className="error-message">{error}</div>}
 
           {/* NOME */}
-          <div className="input-field">
+          <div className="input-group">
+            <label htmlFor="name">Nome completo <span className="required">*</span></label>
             <input
+              id="name"
               type="text"
-              placeholder="Nome completo"
               value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => setName(e.target.value)}
               disabled={loading}
               required
             />
-            <FaUser className="icon" />
           </div>
 
           {/* EMAIL */}
-          <div className="input-field">
+          <div className="input-group">
+            <label htmlFor="email">E-mail <span className="required">*</span></label>
             <input
+              id="email"
               type="email"
-              placeholder="Digite seu e-mail"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               required
             />
-            <FaUser className="icon" />
           </div>
 
           {/* SENHA */}
-          <div className="input-field">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Senha (mín. 8 caracteres)"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
-              disabled={loading}
-              required
-            />
-            <span
-              className="password-toggle"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+          <div className="input-group">
+            <label htmlFor="password">Senha <span className="required">*</span></label>
+            <div className="password-wrapper">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Mínimo 8 caracteres"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex="-1"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           {/* CONFIRMAR SENHA */}
-          <div className="input-field">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirmar senha"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                setError("");
-              }}
-              disabled={loading}
-              required
-            />
+          <div className="input-group">
+            <label htmlFor="confirmPassword">Confirmar senha <span className="required">*</span></label>
+            <div className="password-wrapper">
+              <input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+                required
+              />
+               {/* Opcional: Repetir o ícone ou deixar sem, já que o de cima controla ambos ou individualmente */}
+            </div>
           </div>
 
           {/* PERFIL */}
-          <div className="input-field select-field">
+          <div className="input-group">
+            <label htmlFor="role">Eu sou... <span className="required">*</span></label>
             <select
+              id="role"
+              className="custom-select"
               value={role}
               onChange={(e) => setRole(e.target.value)}
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "14px 20px",
-                borderRadius: "40px",
-                border: "2px solid rgba(255, 255, 255, 0.6)",
-                backgroundColor: "transparent",
-                color: "white",
-                fontSize: "16px",
-            
-                outline: "none",
-                cursor: loading ? "not-allowed" : "pointer",
-              }}
             >
-              <option value="" disabled style={{ color: "#555" }}>
-                Selecione o tipo de perfil
-              </option>
-
-              <option value="PROFESSOR" style={{ color: "black" }}>
-                Professor
-              </option>
-              <option value="STUDENT" style={{ color: "black" }}>
-                Estudante
-              </option>
-              <option value="REVISOR" style={{ color: "black" }}>
-                Revisor
-              </option>
+              <option value="STUDENT">Estudante</option>
+              <option value="PROFESSOR">Professor</option>
+              <option value="REVISOR">Revisor</option>
             </select>
           </div>
 
           {/* BOTÃO */}
-          <button type="submit" disabled={loading}>
-            {loading ? "Cadastrando..." : "Cadastrar"}
-          </button> 
-           {/* LINK LOGIN */}
-          <div className="signup-link">
-            <p>
-              Já possui conta? <Link to="/login">Login</Link>
-            </p>
-          </div>
+          <button type="submit" className="register-btn" disabled={loading}>
+            {loading ? "Criando conta..." : "Cadastrar"}
+          </button>
         </form>
+      </div>
+
+      {/* LINK LOGIN - Fora do card */}
+      <div className="register-footer-link">
+        <p>
+          Já possui uma conta? <Link to="/login">Fazer Login</Link>
+        </p>
       </div>
     </div>
   );

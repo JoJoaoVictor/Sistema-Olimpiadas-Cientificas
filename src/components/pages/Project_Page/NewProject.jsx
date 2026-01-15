@@ -11,7 +11,7 @@ function NewProject() {
         
         // Validação antecipada da categoria
         if (!["1", "2"].includes(categoryId)) {
-            alert('Selecione uma categoria válida (Revisão,Aprovada)');
+            alert('Selecione uma categoria válida ');
             return; // Sai da função se a categoria for inválida
         }
 
@@ -49,7 +49,6 @@ function NewProject() {
     
     return (
         <div className={styles.newproject_container}>
-            <h1> Criar Questão</h1>
             <ProjectForme handleSubmit={createPost} btnText="Submeter Questão"/>  
         </div>
     );

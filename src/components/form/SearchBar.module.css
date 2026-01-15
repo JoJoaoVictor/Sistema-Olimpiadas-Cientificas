@@ -10,9 +10,7 @@
     
 }
 .searchBar:hover {
-  color: #000000;
-    border-color: #000000;
-    transition: 0.2s;
+    border-color: #1967d2;
   }
   
   .icon {

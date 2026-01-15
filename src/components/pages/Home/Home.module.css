@@ -1,50 +1,231 @@
-/*Principal*/
-.home_container{
-    width: 1200px;
+/* Container Principal da Página */
+.home_wrapper {
+    width: 100%;
+    max-width: 1200px; /* Limita a largura em telas gigantes */
+    margin: 0 auto;    /* Centraliza na tela */
+    padding: 20px;     /* Espaçamento lateral para mobile */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    margin: 0 auto;
+    gap: 40px;         /* Espaço entre as seções */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/*Titulo*/
-.home_container h1{
+/* === HEADER (Bem-vindo) === */
+.hero_header {
     background-color: #fff;
     text-align: center;
-    font-size: 2em;
-    margin: 0.5em;
-    padding: 20px;
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.hero_header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.hero_header span {
+    background-color: #181818;
+    color: #fff;
+    padding: 0 10px;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.hero_header p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* === CARTÕES DE CONTEÚDO (Geral) === */
+.content_card {
+    display: flex;
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 50px;           /* Espaço entre texto e imagem */
+    padding: 50px;
     border-radius: 20px;
-    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.356);*/
-   
-  
-    &
-    :p{
-    padding: 0.5em;
-    text-align: center;
-    color: #383838;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+}
+
+/* Fundo Branco */
+.bg_white {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Fundo Escuro */
+.bg_dark {
+    background-color: #181818; /* Cor sólida é melhor para leitura */
+    color: #f5f5f5;
+}
+
+/* Coluna de Texto */
+.text_column {
+    flex: 1; /* Ocupa o espaço disponível */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.text_column h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+/* Detalhe embaixo do titulo */
+.text_column h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #4a90e2; /* Azul destaque */
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.text_column p {
+    line-height: 1.6;
+    font-size: 1.05em;
+    text-align: justify;
+}
+
+.bg_dark .text_column p {
+    color: #ddd; /* Texto cinza claro no fundo escuro */
+}
+
+/* Coluna de Imagem */
+.image_column {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.image_column img {
+    width: 100%;
+    max-width: 500px;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* === LISTA DE FUNCIONALIDADES === */
+.feature_list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.feature_list li {
+    margin-bottom: 12px;
+    font-size: 0.95em;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #444;
+}
+
+/* Bolinha com número */
+.feature_list li span {
+    background-color: #181818;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: bold;
+    flex-shrink: 0; /* Não deixa a bolinha amassar */
+}
+
+.highlight_text {
+    font-weight: 600;
+    color: #1967d2;
+    margin-top: 10px;
+}
+
+/* === CARD CTA (Call To Action) === */
+.cta_card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 60px;
+    border-radius: 20px;
+    gap: 30px;
+}
+
+.cta_text {
+    flex: 1;
+}
+
+.cta_text h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.cta_button_wrapper {
+    margin-top: 20px;
+}
+
+.cta_image img {
+    width: 400px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* ================================================== 
+   RESPONSIVIDADE (MOBILE E TABLET)
+   ================================================== */
+@media (max-width: 900px) {
+    .home_wrapper {
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* Transforma cards horizontais em verticais */
+    .content_card, .cta_card {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 30px;
+        text-align: center; /* Centraliza texto no mobile */
+    }
+
+    /* Inverte a ordem na seção escura para a imagem ficar em cima no mobile */
+    .bg_dark {
+        flex-direction: column-reverse;
+    }
+
+    .text_column h2::after {
+        margin: 8px auto; /* Centraliza o sublinhado */
+    }
     
+    .text_column p {
+        text-align: center; /* Texto centralizado no mobile fica melhor */
+    }
+
+    .image_column img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+    }
+
+    .feature_list li {
+        justify-content: flex-start;
+        text-align: left; /* Lista deve continuar alinhada à esquerda */
+    }
+
+    .cta_image {
+        display: none; /* Opcional: Esconder imagem do CTA no mobile para economizar espaço */
+    }
     
+    .hero_header h1 {
+        font-size: 1.8em;
     }
 }
-.home_container h1 span {
-    color:#fff;
-    padding: 0 0.4em;
-    background-color:  #222;;
-    border-radius: 8px;
-}
-.home_container h2{
-    padding: 1em;
-    
-}
-
-
-/*Imgs*/
-.home_container img{
-    width: 500px;
-    height: 300px;
-    margin: 1em 0;
-    filter:brightness(95%);
-    border-Radius: 20px;
-}
-

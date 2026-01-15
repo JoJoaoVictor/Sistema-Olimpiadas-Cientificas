@@ -1,9 +1,8 @@
-// Prova.jsx
 import { useState, useEffect } from 'react';
 import styles from './Prova.module.css';
 import { gerarPDF } from '../../ConfProvas/pdfUtils'; 
-import { FiSearch } from 'react-icons/fi';
-import { BsPencil } from 'react-icons/bs';
+import { FiSearch, FiCalendar, FiLayers, FiCheckCircle } from 'react-icons/fi'; // Adicionei ícones extras para modernizar
+import { BsPencil, BsBook } from 'react-icons/bs';
 import Select from 'react-select';
 
 function Prova() {
@@ -29,14 +28,12 @@ function Prova() {
   useEffect(() => {
     let filtradas = [...provas];
 
-    // Filtro pelo nome
     if (searchName.trim() !== '') {
       filtradas = filtradas.filter(p =>
         p.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
-    // Filtro por data
     if (searchDate) {
       const dataSelecionada = new Date(searchDate).toLocaleDateString('pt-BR');
       filtradas = filtradas.filter(p =>
@@ -44,7 +41,6 @@ function Prova() {
       );
     }
 
-    // Filtro por anos escolares (array de objetos)
     if (anosSelecionados.length > 0) {
       filtradas = filtradas.filter(p => {
         const anosDaProva = p.anos || []; 
@@ -52,11 +48,10 @@ function Prova() {
       });
     }
 
-    // Filtro por fase
     if (faseSelecionada) {
       filtradas = filtradas.filter(p => String(p.fase) === faseSelecionada);
     }
-    // Filtro por Status
+
     if (statusSelecionado) {
       filtradas = filtradas.filter(p =>
         p.status === statusSelecionado
@@ -70,7 +65,7 @@ function Prova() {
     gerarPDF(prova.questoes, prova, true);
   }
 
-  // Lista fixa de anos
+  // Listas fixas
   const opcoesAno = [
     { value: '4', label: '4º' },
     { value: '5', label: '5º' },
@@ -83,188 +78,183 @@ function Prova() {
     { value: '3', label: '3º Médio' },
   ];
 
-  // Lista fixa de fases
   const listaFases = [
     { value: '1', label: 'Fase 1' },
     { value: '2', label: 'Fase 2' },
     { value: 'Final', label: 'Final' }
   ];
 
-  // Lista fixa de status
   const listaStatus = ['Aplicada', 'Pendente', 'Aprovada'];
+
+    // Estilos personalizados para o React Select ficarem iguais ao CSS Module
+    const customSelectStyles = {
+      control: (base, state) => ({
+        ...base,
+        minHeight: '45px',
+        height: '45px',
+        border: state.isFocused ? '1px solid #1967d2' : '1px solid #ced4da',
+        borderRadius: '6px',
+        boxShadow: state.isFocused ? '0 0 0 1px #1967d2' : 'none',
+        '&:hover': {
+          border: '1px solid #1967d2',
+        },
+      }),
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+      valueContainer: (base) => ({
+          ...base,
+          height: '45px',
+          padding: '0 8px',
+          overflow: 'auto',
+      }),
+      indicatorsContainer: (base) => ({
+          ...base,
+          height: '45px',
+      }),
+      multiValue: (base) => ({
+          ...base,
+          backgroundColor: '#e9ecef',
+          borderRadius: '4px',
+      }),
+      multiValueLabel: (base) => ({
+          ...base,
+          color: '#495057',
+      }),
+    };
 
   return (
     <div className={styles.container}>
       <h2>Provas Salvas</h2>
-      {/* Buscar pelo nome */}
-      <div className={styles.search_container}>
-        <FiSearch className={styles.icon} />
-        <input
-          style={{ border: 'none', outline: 'none', fontSize: '1em' }}
-          type="text"
-          placeholder="Buscar prova..." 
-          value={searchName}
-          onChange={e => setSearchName(e.target.value)}
-        />
-      </div>
       
-      {/* --- CORREÇÃO APLICADA AQUI: notranslate e translate="no" --- */}
-      <div className={`${styles.select} notranslate`} translate="no">
+      {/* Área de Filtros Modernizada */}
+      <div className={styles.filters_wrapper}>
         
-        {/* Filtro por ano */}
-        <Select
-    /* --- A CORREÇÃO DE OURO ESTÁ AQUI EMBAIXO --- */
-    className={`${styles.select_anos} notranslate`} 
-    menuPortalTarget={document.body} 
-    /* ------------------------------------------- */
-    
-    isSearchable
-    options={opcoesAno}
-    isMulti
-    placeholder="Ano"
-    value={anosSelecionados}
-    onChange={selected => setAnosSelecionados(selected || [])}
-    closeMenuOnSelect={false}
-    isClearable
-    
-    /* Estilos para o menu flutuante funcionar direito */
-    styles={{
-        menuPortal: (base) => ({ ...base, zIndex: 9999 }), // Garante que fica por cima de tudo
-        control: base => ({
-            ...base,        
-            minHeight: '45px',
-            height: '50px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            outline: 'none', 
-            boxShadow: 'none',
-            '&:hover': {
-                border: '1px solid #000000', 
-                transition: '0.3s',
-            }, 
-        }),
-        valueContainer: (base) => ({
-            ...base,
-            height: '45px',
-            padding: '0 0.6em',
-            overflow: 'auto',
-        }),
-        input: (base) => ({
-            ...base,
-            margin: 0,
-            padding: 0,
-        }),
-        indicatorsContainer: (base) => ({
-            ...base,
-            height: '45px',
-        }),
-        multiValue: (base) => ({
-            ...base,
-            backgroundColor: '#e0e0e0',
-        }),
-        multiValueLabel: (base) => ({
-            ...base,
-            color: '#797979',
-        }),
-        placeholder: (base) => ({
-            ...base,
-            color: '#797979',
-        }),
-        menu: (base) => ({
-            ...base,
-            zIndex: 9999,
-        }),
-    }}
-/>
-        {/* Filtro por fase */}
-        <Select 
-          /* --- CORREÇÃO APLICADA AQUI: Remove componentes conflitantes --- */
-          components={{ A11yText: () => null, LiveRegion: () => null }}
-          className={styles.select_anos}
-          options={listaFases}
-          placeholder="Fase"
-          value={listaFases.find(f => f.value === faseSelecionada) || null}
-          onChange={selected => setFaseSelecionada(selected?.value || '')}
-          isClearable
-          styles={{
-            control: base => ({
-              ...base,
-              minHeight: '45px',
-              height: '50px',
-              border: '1px solid #ccc',
-              borderRadius: '5px',
-              outline: 'none', 
-              boxShadow: 'none',
-              '&:hover': {
-                border: '1px solid #000000', 
-                transition: '0.3s',
-              }, 
-            }),
-          }}
-        />
+        {/* Barra de Busca */}
+        <div className={styles.search_container}>
+          <FiSearch className={styles.icon} />
+          <input
+            type="text"
+            placeholder="Buscar prova pelo nome..." 
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+          />
+        </div>
 
-        {/* Filtro por status */}
-        <select style={{ fontSize: '1em' }}
-          value={statusSelecionado}
-          onChange={e => setStatusSelecionado(e.target.value)}
-        >
-          <option value="">Todos os status</option>
-          {listaStatus.map(status => (
-            <option key={status} value={status}>{status}</option>
-          ))}
-        </select>
+        {/* Grid de Seletores */}
+        <div className={`${styles.filters_grid} notranslate`} translate="no">
+          
+          {/* Select de Anos */}
+          <Select
+            menuPortalTarget={document.body} 
+            isSearchable
+            options={opcoesAno}
+            isMulti
+            placeholder="Selecionar Anos"
+            value={anosSelecionados}
+            onChange={selected => setAnosSelecionados(selected || [])}
+            closeMenuOnSelect={false}
+            isClearable
+            styles={customSelectStyles}
+            className="notranslate"
+          />
 
-        {/* Filtro por data */}
-        <input style={{ fontSize: '1em', padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
-          type="date"
-          value={searchDate}
-          onChange={e => setSearchDate(e.target.value)}
-        />
+          {/* Select de Fase */}
+          <Select 
+            components={{ A11yText: () => null, LiveRegion: () => null }}
+            options={listaFases}
+            placeholder="Selecionar Fase"
+            value={listaFases.find(f => f.value === faseSelecionada) || null}
+            onChange={selected => setFaseSelecionada(selected?.value || '')}
+            isClearable
+            styles={customSelectStyles}
+          />
+
+          {/* Select de Status (Nativo) */}
+          <select 
+            className={styles.native_select}
+            value={statusSelecionado}
+            onChange={e => setStatusSelecionado(e.target.value)}
+          >
+            <option value="">Todos os status</option>
+            {listaStatus.map(status => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+
+          {/* Input de Data (Nativo) */}
+          <input 
+            className={styles.native_input}
+            type="date"
+            value={searchDate}
+            onChange={e => setSearchDate(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Lista de provas */}
+      {/* Lista de Provas */}
       <div className={styles.provas_container}>
-        <div className={styles.provas_list}>
-          <h2 style={{ padding: '5px', marginTop: '20px', marginLeft: '10px' }}>
-            Resultados da busca
-          </h2>
-          {provasFiltradas.length === 0 ? (
-            <p>Nenhuma prova encontrada.</p>
-          ) : (
-            provasFiltradas.map(prova => (
-              <div key={prova.id} className={styles.prova_card}>
-                <div className={styles.prova_card_item}>
-                  {/* Nome da prova */}
+        <div className={styles.section_title}>
+           {provasFiltradas.length} {provasFiltradas.length === 1 ? 'prova encontrada' : 'provas encontradas'}
+        </div>
+
+        {provasFiltradas.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#999' }}>
+            Nenhuma prova encontrada com os filtros atuais.
+          </div>
+        ) : (
+          provasFiltradas.map(prova => (
+            <div key={prova.id} className={styles.prova_card}>
+              
+              {/* Esquerda: Informações */}
+              <div className={styles.card_content}>
+                <div className={styles.card_header}>
                   <h3>{prova.name}</h3>
-                 
-                  {/* Informações adicionais */}
-                  <span>
-                    <p style={{ color: '#555' }}> 
-                      <strong>Ano escolar:</strong> {(prova.anos || []).join(', ') || 'Não informado'}
-                      <strong> - Fase:</strong> {prova.fase || 'Não informada'}
-                    </p>
-                  </span>
-                  <span className={styles.status}>
-                    <span className={styles[prova.status?.toLowerCase()]}></span> 
-                    <p style={{ color: '#555' }}>
-                      <strong> Status:</strong> {prova.status || 'Não informado'}
-                      <strong> - Última modificação:</strong> {prova.createdAt || 'Não informada'}
-                    </p>
+                  <span className={styles.card_date}>
+                    Criado em: {prova.createdAt || 'Data desconhecida'}
                   </span>
                 </div>
-                <div className={styles.prova_card_buttons}>
-                  <button
-                    className={styles.edit_btn}
-                    onClick={() => window.location.href = `/provas/${prova.id}`}
-                  >
-                    <BsPencil />
-                  </button>
-                  <button className={styles.view_btn} onClick={() => visualizarPDF(prova)}><FiSearch /></button>
+                
+                {/* Tags de Informação (Visual Limpo) */}
+                <div className={styles.card_tags}>
+                    {/* Tag de Ano */}
+                    <div className={styles.tag} title="Anos Escolares">
+                        <BsBook style={{ marginRight: '6px' }} />
+                        {(prova.anos || []).join(', ') || 'Sem ano'}
+                    </div>
+
+                    {/* Tag de Fase */}
+                    <div className={styles.tag} title="Fase da Prova">
+                        <FiLayers style={{ marginRight: '6px' }} />
+                        {prova.fase ? `Fase ${prova.fase}` : 'Sem fase'}
+                    </div>
+
+                    {/* Pill de Status */}
+                    <div className={`${styles.status_pill} ${styles[prova.status?.toLowerCase()] || ''}`}>
+                        {prova.status || 'Pendente'}
+                    </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+
+              {/* Direita: Botões de Ação */}
+              <div className={styles.card_actions}>
+                <button
+                  className={`${styles.action_btn} ${styles.edit_btn}`}
+                  onClick={() => window.location.href = `/provas/${prova.id}`}
+                  title="Editar Prova"
+                >
+                  <BsPencil />
+                </button>
+                <button 
+                  className={`${styles.action_btn} ${styles.view_btn}`} 
+                  onClick={() => visualizarPDF(prova)}
+                  title="Gerar/Visualizar PDF"
+                >
+                  <FiSearch />
+                </button>
+              </div>
+
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

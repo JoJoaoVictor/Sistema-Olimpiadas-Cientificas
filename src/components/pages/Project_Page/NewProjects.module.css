@@ -1,10 +1,6 @@
 .newproject_container{
     width: 850px;
-    margin: 0 auto;
-    padding:1em;
-
-    
-    
+    margin: 0 auto;  
 }
 .newproject_container h1{
   background-color: white;
