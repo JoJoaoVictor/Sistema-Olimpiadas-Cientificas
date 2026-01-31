@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import styles from './ModalSalvarProva.module.css';
 
-// Opções de anos escolares (Idêntico ao filtro do pai para consistência)
 const opcoesAno = [
   { value: '4', label: '4º Ano' },
   { value: '5', label: '5º Ano' },
@@ -31,22 +30,60 @@ function ModalSalvarProva({
 }) {
   const [error, setError] = useState('');
 
-  // Limpa erros sempre que o modal for aberto
+  // ESTADO LOCAL: Todos os campos agora são controlados localmente para garantir a validação
+  const [localNome, setLocalNome] = useState('');
+  const [localFase, setLocalFase] = useState('');
+  const [localAnos, setLocalAnos] = useState([]); // Novo estado local para Anos
+
+  // Carrega os dados iniciais APENAS quando o modal abre
   useEffect(() => {
-    if (isOpen) setError('');
-  }, [isOpen]);
+    if (isOpen) {
+      setLocalNome(nomeProva || '');
+      setLocalFase(fase || '');
+      setLocalAnos(anosSelecionados || []); // Sincroniza anos iniciais
+      setError('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]); 
 
   if (!isOpen) return null;
 
-  // Função de validação e confirmação
+  // Atualiza Nome Local e avisa o pai
+  const handleChangeNome = (e) => {
+    const valor = e.target.value;
+    setLocalNome(valor);
+    if (setNomeProva) setNomeProva(valor);
+  };
+
+  // Atualiza Fase Local e avisa o pai
+  const handleChangeFase = (e) => {
+    const valor = e.target.value;
+    setLocalFase(valor);
+    if (setFase) setFase(valor);
+  };
+
+  // Atualiza Anos Locais e avisa o pai (CORREÇÃO DO ERRO DE VALIDAÇÃO)
+  const handleChangeAnos = (selected) => {
+    const valor = selected || [];
+    setLocalAnos(valor); // Atualiza visualmente e para validação imediata
+    if (setAnosSelecionados) setAnosSelecionados(valor);
+  };
+
   const handleConfirm = () => {
-    // Validação simples para garantir consistência dos dados
-    if (!nomeProva.trim() || !fase.trim() || !anosSelecionados || anosSelecionados.length === 0) {
+    // Valida usando EXCLUSIVAMENTE os estados locais (o que você vê na tela)
+    // Isso impede que atrasos do pai causem falso erro de "campo vazio"
+    if (!localNome.trim() || !localFase.trim() || !localAnos || localAnos.length === 0) {
       setError('⚠️ Por favor, preencha todos os campos obrigatórios.');
       return;
     }
+    
+    // Garante sincronia final antes de salvar
+    if (setNomeProva) setNomeProva(localNome);
+    if (setFase) setFase(localFase);
+    if (setAnosSelecionados) setAnosSelecionados(localAnos);
+
     setError('');
-    onConfirm(); // Executa a função de salvar do componente pai
+    onConfirm(); 
   };
 
   return (
@@ -65,13 +102,13 @@ function ModalSalvarProva({
                   id="nomeProva"
                   type="text" 
                   className={styles.input}
-                  value={nomeProva} 
-                  onChange={(e) => setNomeProva(e.target.value)} 
-                  placeholder="Ex: olimpíadas de matemática 2024 - 1ª fase"
+                  value={localNome} 
+                  onChange={handleChangeNome} 
+                  placeholder="Ex: OM_2024_NÍVEL I_FASE 1"
                 />
             </div>
 
-            {/* Grupo: Fase e Status (Lado a Lado) */}
+            {/* Grupo: Fase e Status */}
             <div className={styles.row}>
                 <div className={styles.formGroup}>
                     <label htmlFor="fase">Fase / Etapa <span className={styles.required}>*</span></label>
@@ -79,9 +116,9 @@ function ModalSalvarProva({
                       id="fase"
                       type="text" 
                       className={styles.input}
-                      value={fase} 
-                      onChange={(e) => setFase(e.target.value)} 
-                      placeholder="Ex: 1ª Fase"
+                      value={localFase} 
+                      onChange={handleChangeFase} 
+                      placeholder="Ex: 1ª FASE"
                     />
                 </div>
 
@@ -109,8 +146,8 @@ function ModalSalvarProva({
                   options={opcoesAno}
                   isMulti
                   placeholder="Selecione os anos..."
-                  value={anosSelecionados}
-                  onChange={(selected) => setAnosSelecionados(selected || [])}
+                  value={localAnos} // AGORA USA O ESTADO LOCAL
+                  onChange={handleChangeAnos} // AGORA CHAMA O HANDLER LOCAL
                   closeMenuOnSelect={false}
                   styles={{
                     control: (base, state) => ({
@@ -127,7 +164,6 @@ function ModalSalvarProva({
                 />
             </div>
             
-            {/* Mensagem de Erro */}
             {error && <div className={styles.errorBanner}>{error}</div>}
         </div>
 
