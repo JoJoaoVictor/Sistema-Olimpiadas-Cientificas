@@ -286,3 +286,22 @@
         gap: 10px;
     }
 }
+/* Caixa de Pré-visualização */
+.preview_box {
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 5px;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.preview_box strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #adb5bd;
+    letter-spacing: 1px;
+}

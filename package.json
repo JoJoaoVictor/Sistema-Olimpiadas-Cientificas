@@ -23,7 +23,7 @@
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
-    "katex": "^0.16.27",
+    "katex": "^0.16.28",
     "mathjax": "^3.2.2",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",

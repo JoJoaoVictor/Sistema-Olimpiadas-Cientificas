@@ -269,3 +269,176 @@
     .bottomActions { flex-direction: column; gap: 1rem; }
     .btnSave, .btnPdf { width: 100%; }
 }
+/* === NOVOS ESTILOS PARA O CABEÇALHO DE RESULTADOS === */
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.resultsHeaderControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.resultsCount {
+  font-size: 0.95rem;
+  color: #6c757d;
+  font-weight: 500;
+  background-color: #f8f9fa;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #e9ecef;
+}
+
+/* Botão "Selecionar todas" */
+.btnSelectAll {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.btnSelectAll:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btnSelectAll:active {
+  transform: translateY(0);
+}
+
+.btnSelectAll:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Estilo para o número de questões selecionadas na seção inferior */
+.selectedCount {
+  font-size: 0.9rem;
+  color: #007bff;
+  font-weight: 600;
+  background-color: #e7f1ff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  margin-left: 0.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  
+  .resultsHeaderControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .btnSelectAll {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}
+/* === ESTILOS PARA O CABEÇALHO DE QUESTÕES SELECIONADAS === */
+
+.selectedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.selectedHeaderControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.selectedCount {
+  font-size: 0.95rem;
+  color: #007bff;
+  font-weight: 500;
+  background-color: #e7f1ff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #b8daff;
+}
+
+/* Botão "Limpar questões" */
+.btnClearAll {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btnClearAll:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btnClearAll:active {
+  transform: translateY(0);
+}
+
+.btnClearAll:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .selectedHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  
+  .selectedHeaderControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .btnClearAll {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}

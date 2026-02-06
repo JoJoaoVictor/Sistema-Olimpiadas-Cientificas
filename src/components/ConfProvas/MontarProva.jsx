@@ -3,8 +3,7 @@ import { BsFillTrashFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import styles from './MontarProva.module.css'; 
-import SearchBar from '../form/SearchBar';
-
+import SearchBar from '.././../components/form/SearchBar';
 // IMAGENS
 import tema from '../../img/tema.png'; 
 
@@ -153,6 +152,44 @@ function MontarProva() {
     }
   };
 
+  // === FUNÇÃO PARA SELECIONAR TODAS AS QUESTÕES FILTRADAS ===
+  const selecionarTodasQuestoes = () => {
+    if (questoesFiltradas.length === 0) {
+      alert('Não há questões para selecionar!');
+      return;
+    }
+
+    // Filtrar questões que ainda não foram selecionadas
+    const novasQuestoes = questoesFiltradas.filter(
+      questaoFiltrada => 
+        !questoesSelecionadas.some(
+          questaoSelecionada => questaoSelecionada.id === questaoFiltrada.id
+        )
+    );
+
+    if (novasQuestoes.length === 0) {
+      alert('Todas as questões já estão selecionadas!');
+      return;
+    }
+
+    setQuestoesSelecionadas([...questoesSelecionadas, ...novasQuestoes]);
+    
+    // Feedback visual
+    alert(`${novasQuestoes.length} questão(ões) adicionada(s) à prova!`);
+  };
+
+    // === FUNÇÃO PARA LIMPAR TODAS AS QUESTÕES SELECIONADAS ===
+  const limparTodasQuestoes = () => {
+    if (questoesSelecionadas.length === 0) {
+      alert('Não há questões para limpar!');
+      return;
+    }
+    
+    if (window.confirm(`Tem certeza que deseja remover todas as ${questoesSelecionadas.length} questões selecionadas?`)) {
+      setQuestoesSelecionadas([]);
+      alert('Todas as questões foram removidas!');
+    }
+  };
   // === FILTROS ===
   const opcoesAno = [
       { value: '2', label: '2º Fundamental' }, { value: '3', label: '3º Fundamental' },
@@ -346,7 +383,7 @@ function MontarProva() {
                       ...base,
                       height: '40px',
                       padding: '0 0.5em',
-                      overflow: 'auto', // Permite scroll se tiver muitos itens selecionados
+                      overflow: 'auto',
                     }),
               input: (base) => ({
                       ...base,
@@ -436,7 +473,25 @@ function MontarProva() {
       <div className={styles.resultsSection}>
         {mostrarQuestoes && (
           <>
-            <h2 className={styles.sectionTitle}>Resultados da busca</h2>
+            {/*Cabeçalho com contador e botão Selecionar Todas */}
+            <div className={styles.resultsHeader}>
+              <h2 className={styles.sectionTitle}>Resultados da busca</h2>
+              <div className={styles.resultsHeaderControls}>
+                <span className={styles.resultsCount}>
+                  {questoesFiltradas.length} questões 
+                </span>
+                {questoesFiltradas.length > 0 && (
+                  <button 
+                    className={`${styles.btn} ${styles.btnSelectAll}`} 
+                    onClick={selecionarTodasQuestoes}
+                    title="Adicionar todas as questões filtradas à prova"
+                  >
+                    Selecionar todas
+                  </button>
+                )}
+              </div>
+            </div>
+            
             <ul className={styles.questoesList}>
               {questoesFiltradas.map((questao) => (
                 <li className={styles.questionCard} key={questao.id}>
@@ -470,10 +525,28 @@ function MontarProva() {
         )}
       </div>
 
-      <div className={styles.selectedSection}>
-         <h2 className={styles.sectionTitle}>Questões Selecionadas</h2>
-         <ul className={styles.questoesList}>
-            {questoesSelecionadas.length === 0 && <p className={styles.emptyState}>Sua prova ainda está vazia. Adicione questões acima.</p>}
+            <div className={styles.selectedSection}>
+            {/* NOVO: Cabeçalho com título e botão Limpar */}
+            <div className={styles.selectedHeader}>
+              <h2 className={styles.sectionTitle}>Questões Selecionadas</h2>
+              <div className={styles.selectedHeaderControls}>
+                <span className={styles.selectedCount}>
+                  {questoesSelecionadas.length} questões
+                </span>
+                {questoesSelecionadas.length > 0 && (
+                  <button 
+                    className={`${styles.btn} ${styles.btnClearAll}`} 
+                    onClick={limparTodasQuestoes}
+                    title="Remover todas as questões da prova"
+                  >
+                    Limpar questões
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <ul className={styles.questoesList}>
+              {questoesSelecionadas.length === 0 && <p className={styles.emptyState}>Sua prova ainda está vazia. Adicione questões acima.</p>}
             
             {questoesSelecionadas.map((questao, index) => (
               <li className={styles.questionCard} key={questao.id}>
@@ -486,7 +559,7 @@ function MontarProva() {
                           </button>
                       </div>
                       
-                      {/* ALTERAÇÃO SOLICITADA: Tags inseridas aqui igual aos Resultados da Busca */}
+                      {/* Tags inseridas aqui igual aos Resultados da Busca */}
                       <div className={styles.tagsWrapper}>
                         <span className={`${styles.tag} ${styles.tagDifficulty}`}> <strong>Grau. Dificuldade:</strong> {questao.difficultyLevel}/5</span>
                         <span className={`${styles.tag} ${styles.tagCode}`}><strong>Cód. Habilidade:</strong> {questao.abilityCode}</span>
