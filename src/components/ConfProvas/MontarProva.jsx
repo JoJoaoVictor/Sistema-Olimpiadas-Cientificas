@@ -1,143 +1,152 @@
-import { useState, useEffect, useRef } from 'react';
+// src/components/ConfProvas/MontarProva.jsx
+import { useState, useEffect } from 'react';
 import { BsFillTrashFill, BsFillInfoCircleFill } from 'react-icons/bs';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
-import styles from './MontarProva.module.css'; 
-import SearchBar from '.././../components/form/SearchBar';
-// IMAGENS
-import tema from '../../img/tema.png'; 
+import styles from './MontarProva.module.css';
+import SearchBar from '../form/SearchBar';
+import tema from '../../img/tema.png';
 
-// MODAIS
-import ModalSalvarProva from './modal/ModalSalvarProva'; 
+// Modais
+import ModalSalvarProva from './modal/ModalSalvarProva';
 import ModalInfoQuestao from './modal/ModalInfoQuestao';
 
-// === HELPER: AUTENTICAÇÃO (BACKEND 8000) ===
-const getAuthHeaders = () => {
-  const tokenString = localStorage.getItem('user_token');
-  if (tokenString) {
-    try {
-      const tokenObj = JSON.parse(tokenString);
-      const token = tokenObj.access_token || tokenObj.token; 
-      return { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-    } catch (e) {
-      console.error("Erro ao ler token", e);
-    }
-  }
-  return { 'Content-Type': 'application/json' };
-};
+// Serviços de API
+import api from '../../services/api';
+import { authService } from '../../services/authService';
 
-// === PARSER (MANTIDO PARA A BUSCA) ===
-const safeParseAlternatives = (rawAlt) => {
-  if (typeof rawAlt !== 'string') return rawAlt;
-  try {
-    return JSON.parse(rawAlt);
-  } catch (e) {
-    // Ignora
-  }
-  try {
-    const fixed = rawAlt.replace(/\\\\/g, '\\');
-    return JSON.parse(fixed);
-  } catch (e) {}
-
-  const alternatives = {};
-  const regex = /([a-eA-E])\)\s*(.*?)(?=\s*[a-eA-E]\)|$)/g;
-  let match;
-  let found = false;
-  
-  while ((match = regex.exec(rawAlt)) !== null) {
-    found = true;
-    alternatives[match[1].toLowerCase()] = match[2].trim();
-  }
-  
-  if (found) return alternatives;
-  return { "Opções": rawAlt };
+// Helper para extrair número do ano a partir do nome do grau
+const extrairNumeroAno = (nomeAno) => {
+  const match = String(nomeAno || '').match(/\d+/);
+  return match ? match[0] : '';
 };
 
 function MontarProva() {
-  // === ESTADOS ===
-  const [projeto, setProjeto] = useState({});
-  const [questoes, setQuestoes] = useState([]); 
-  const [questoesSelecionadas, setQuestoesSelecionadas] = useState([]); 
-  const { id } = useParams(); 
+  const { id } = useParams(); // ID da prova (se for edição)
+
+  // Estados
+  const [questoes, setQuestoes] = useState([]);
+  const [questoesSelecionadas, setQuestoesSelecionadas] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // === FILTROS ===
+  const [mostrarQuestoes, setMostrarQuestoes] = useState(false);
+
+  // Filtros
   const [habilidade, setHabilidade] = useState('');
-  const [phaseLevel, setPhaseLevel] = useState(''); 
-  const [status, setStatus] = useState('Pendente'); 
-  const [anosSelecionados, setAnosSelecionados] = useState([]);
+  const [phaseLevel, setPhaseLevel] = useState('');
   const [dificuldade, setDificuldade] = useState('');
   const [temaSelecionado, setTemaSelecionado] = useState('');
-  const [mostrarQuestoes, setMostrarQuestoes] = useState(false); 
+  const [anosSelecionadosFiltro, setAnosSelecionadosFiltro] = useState([]);
+
+  // Dados da prova (para o modal)
+  const [nomeProva, setNomeProva] = useState('');
+  const [faseProva, setFaseProva] = useState('');
+  const [anosSelecionados, setAnosSelecionados] = useState([]); // anos da prova
+  const [status, setStatus] = useState('PENDENTE');
 
   // Modais
-  const [modalSalvarAberto, setModalSalvarAberto] = useState(false); 
+  const [modalSalvarAberto, setModalSalvarAberto] = useState(false);
   const [modalInfoAberto, setModalInfoAberto] = useState(false);
   const [questaoSelecionada, setQuestaoSelecionada] = useState(null);
 
-  // Dados da Prova
-  const [nomeProva, setNomeProva] = useState('');
-  const [faseProva, setFaseProva] = useState('');
-
-  // Estados PDF
+  // Estados de carregamento
+  const [loadingQuestoes, setLoadingQuestoes] = useState(false);
   const [gerandoPDF, setGerandoPDF] = useState(false);
+  const [salvando, setSalvando] = useState(false);
 
-  // === SEARCH & EFFECT ===
+  // Opções de filtro (mesmas usadas no modal)
+  const opcoesAnoFiltro = [
+    { value: '2', label: '2º Fundamental' },
+    { value: '3', label: '3º Fundamental' },
+    { value: '4', label: '4º Fundamental' },
+    { value: '5', label: '5º Fundamental' },
+    { value: '6', label: '6º Fundamental' },
+    { value: '7', label: '7º Fundamental' },
+    { value: '8', label: '8º Fundamental' },
+    { value: '9', label: '9º Fundamental' },
+    { value: '1', label: '1º Médio' },
+    { value: '2', label: '2º Médio' },
+    { value: '3', label: '3º Médio' },
+  ];
+
+  // Carregar questões aprovadas do backend
+  useEffect(() => {
+    const fetchQuestoes = async () => {
+      setLoadingQuestoes(true);
+      try {
+        const response = await api.get('/api/v1/questions/', {
+          params: { category_id: 2, per_page: 100 }
+        });
+        const data = response.data?.data?.questions || [];
+        // Mapeia para incluir serieAno a partir do grau e URL absoluta da imagem
+        const mapped = data.map(q => ({
+          ...q,
+          serieAno: q.grau?.name || q.serie_ano,
+          imageURL: q.image?.url ? new URL(q.image.url, api.defaults.baseURL).href : null,
+        }));
+        setQuestoes(mapped);
+      } catch (err) {
+        console.error('Erro ao carregar questões:', err);
+      } finally {
+        setLoadingQuestoes(false);
+      }
+    };
+    fetchQuestoes();
+  }, []);
+
+  // Carregar prova existente (se estiver editando)
+  useEffect(() => {
+    if (id) {
+      const fetchProva = async () => {
+        try {
+          const response = await api.get(`/api/v1/exams/${id}`);
+          const data = response.data?.data?.exam;
+          if (data) {
+            setNomeProva(data.name || '');
+            setFaseProva(data.fase || '');
+            setStatus(data.status || 'PENDENTE');
+            // Converter anos para o formato do select
+            const anosOptions = (data.anos || []).map(a => {
+              const num = extrairNumeroAno(a);
+              return { value: num, label: a };
+            });
+            setAnosSelecionados(anosOptions);
+            // As questões já vêm completas no objeto – adicionar imageURL também
+            const questoesComUrl = (data.questions || []).map(q => ({
+              ...q,
+              imageURL: q.image?.url ? new URL(q.image.url, api.defaults.baseURL).href : null,
+            }));
+            setQuestoesSelecionadas(questoesComUrl);
+          }
+        } catch (err) {
+          console.error('Erro ao carregar prova:', err);
+        }
+      };
+      fetchProva();
+    }
+  }, [id]);
+
+  // Função de busca (acionada pelo SearchBar)
   const handleSearch = (term) => {
     setSearchTerm(term);
     setMostrarQuestoes(true);
   };
 
-  useEffect(() => {
-    // 1. Carregar Prova Existente
-    if (id) {
-      fetch(`http://localhost:5000/provasMontadas/${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error(`Prova com ID ${id} não encontrada`);
-          return res.json();
-        })
-        .then(data => {
-          setProjeto(data);
-          setQuestoesSelecionadas(data.questoes || []);
-          if (data.fase) setFaseProva(data.fase);
-          if (data.name) setNomeProva(data.name);
-        })
-        .catch(err => console.log(err));
+  // Funções de seleção/remoção de questões
+  const handleSelecionarQuestao = (questao) => {
+    if (!questoesSelecionadas.find(q => q.id === questao.id)) {
+      setQuestoesSelecionadas([...questoesSelecionadas, questao]);
     }
-    
-    // 2. Carregar Banco de Questões
-    fetch('http://localhost:5000/questõesAprovadas')
-      .then(res => res.json())
-      .then(response => {
-        let listaValida = [];
-        if (Array.isArray(response)) listaValida = response;
-        else if (response.data && Array.isArray(response.data)) listaValida = response.data;
-        else if (response.data?.questoes) listaValida = response.data.questoes;
-        else if (response.data?.results) listaValida = response.data.results;
-        else if (response.questoes) listaValida = response.questoes;
+  };
 
-        if (Array.isArray(listaValida)) {
-            setQuestoes(listaValida);
-        } else {
-            setQuestoes([]); 
-        }
-      })
-      .catch(err => {
-          console.error("Erro fetch questoes:", err);
-          setQuestoes([]);
-      });
-  }, [id]);
+  const handleRemoverQuestao = (idQuestao) => {
+    setQuestoesSelecionadas(questoesSelecionadas.filter(q => q.id !== idQuestao));
+  };
 
-  // === MOVIMENTAÇÃO ===
+  // Movimentação (reordenação) das questões selecionadas
   const moverQuestaoParaCima = (index) => {
     if (index > 0) {
       const novaLista = [...questoesSelecionadas];
-      const temp = novaLista[index - 1];
-      novaLista[index - 1] = novaLista[index];
-      novaLista[index] = temp;
+      [novaLista[index - 1], novaLista[index]] = [novaLista[index], novaLista[index - 1]];
       setQuestoesSelecionadas(novaLista);
     }
   };
@@ -145,212 +154,158 @@ function MontarProva() {
   const moverQuestaoParaBaixo = (index) => {
     if (index < questoesSelecionadas.length - 1) {
       const novaLista = [...questoesSelecionadas];
-      const temp = novaLista[index + 1];
-      novaLista[index + 1] = novaLista[index];
-      novaLista[index] = temp;
+      [novaLista[index], novaLista[index + 1]] = [novaLista[index + 1], novaLista[index]];
       setQuestoesSelecionadas(novaLista);
     }
   };
 
-  // === FUNÇÃO PARA SELECIONAR TODAS AS QUESTÕES FILTRADAS ===
+  // Selecionar todas as questões filtradas
   const selecionarTodasQuestoes = () => {
     if (questoesFiltradas.length === 0) {
       alert('Não há questões para selecionar!');
       return;
     }
-
-    // Filtrar questões que ainda não foram selecionadas
     const novasQuestoes = questoesFiltradas.filter(
-      questaoFiltrada => 
-        !questoesSelecionadas.some(
-          questaoSelecionada => questaoSelecionada.id === questaoFiltrada.id
-        )
+      q => !questoesSelecionadas.some(s => s.id === q.id)
     );
-
     if (novasQuestoes.length === 0) {
       alert('Todas as questões já estão selecionadas!');
       return;
     }
-
     setQuestoesSelecionadas([...questoesSelecionadas, ...novasQuestoes]);
-    
-    // Feedback visual
     alert(`${novasQuestoes.length} questão(ões) adicionada(s) à prova!`);
   };
 
-    // === FUNÇÃO PARA LIMPAR TODAS AS QUESTÕES SELECIONADAS ===
+  // Limpar todas as questões selecionadas
   const limparTodasQuestoes = () => {
-    if (questoesSelecionadas.length === 0) {
-      alert('Não há questões para limpar!');
-      return;
-    }
-    
-    if (window.confirm(`Tem certeza que deseja remover todas as ${questoesSelecionadas.length} questões selecionadas?`)) {
+    if (questoesSelecionadas.length === 0) return;
+    if (window.confirm(`Remover todas as ${questoesSelecionadas.length} questões?`)) {
       setQuestoesSelecionadas([]);
-      alert('Todas as questões foram removidas!');
     }
   };
-  // === FILTROS ===
-  const opcoesAno = [
-      { value: '2', label: '2º Fundamental' }, { value: '3', label: '3º Fundamental' },
-      { value: '4', label: '4º Fundamental' }, { value: '5', label: '5º Fundamental' },
-      { value: '6', label: '6º Fundamental' }, { value: '7', label: '7º Fundamental' },
-      { value: '8', label: '8º Fundamental' }, { value: '9', label: '9º Fundamental' },
-      { value: '1', label: '1º Médio' }, { value: '2', label: '2º Médio' }, { value: '3', label: '3º Médio' },
-  ];
 
-  const handleAnoSelecionado = (selected) => {
-    setMostrarQuestoes(true);
-    setAnosSelecionados(selected || []); 
-  };
+  // Salvar prova (chamado pelo modal)
+  const salvarProva = async () => {
+    const question_ids = questoesSelecionadas.map(q => q.id);
+    const anos = anosSelecionados.map(a => a.value);
 
-  const normalizarAno = (valor) =>
-  String(valor || '').toLowerCase().replace(/º|°|ano|\s/g, '').trim();
-
-  function handleSelecionarQuestao(questao) {
-    if (!questoesSelecionadas.find(q => q.id === questao.id)) {
-      setQuestoesSelecionadas([...questoesSelecionadas, questao]);
-    }
-  }
-
-  function handleRemoverQuestao(idQuestao) {
-    setQuestoesSelecionadas(questoesSelecionadas.filter(q => q.id !== idQuestao));
-  }
-
-  // === SALVAR PROVA (Porta 5000) ===
-  function salvarProva() {
-    const agora = new Date();
-    const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {
-      hour: '2-digit', minute: '2-digit'
-    });
-
-    const novaProva = {
-      ...projeto,
-      id: projeto.id || Date.now(),
-      name: nomeProva || `Prova ${Date.now()}`,
+    const payload = {
+      name: nomeProva,
       fase: faseProva,
-      questoes: questoesSelecionadas,
-      createdAt: projeto.createdAt || dataFormatada,
-      anos: anosSelecionados.map(a => a.value), 
-      status
+      anos,
+      status,
+      question_ids,
     };
+    
+    console.log('Iniciando salvamento, setSalvando(true)');
+    setSalvando(true);
+    
+    try {
+      if (id) {
+        await api.patch(`/api/v1/exams/${id}`, {
+          name: nomeProva,
+          fase: faseProva,
+          anos,
+          status,
+        });
+        await api.patch(`/api/v1/exams/${id}/questions`, { question_ids });
+      } else {
+        await api.post('/api/v1/exams', payload);
+      }
+      alert('Prova salva com sucesso!');
+      setModalSalvarAberto(false);
+    } catch (err) {
+      console.error('Erro completo:', err);
+      let errorMsg = 'Erro ao salvar prova';
+      if (err.response && err.response.data) {
+        if (typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        } else if (err.response.data.detail) {
+          errorMsg = err.response.data.detail;
+        } else if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join('; ');
+        } else {
+          errorMsg = JSON.stringify(err.response.data);
+        }
+      } else {
+        errorMsg = err.message;
+      }
+      alert('Erro ao salvar prova: ' + errorMsg);
+    } finally {
+      setSalvando(false); // ← ESSENCIAL: reseta o estado de carregamento
+    }
+};
 
-    const method = projeto.id ? 'PUT' : 'POST';
-    const endpoint = projeto.id
-      ? `http://localhost:5000/provasMontadas/${projeto.id}`
-      : `http://localhost:5000/provasMontadas`;
-
-    fetch(endpoint, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(novaProva),
-    })
-      .then(resp => {
-        if (!resp.ok) throw new Error('Erro ao salvar prova');
-        return resp.json();
-      })
-      .then(() => {
-        alert('Prova salva com sucesso!');
-        setModalSalvarAberto(false);
-      })
-      .catch(err => console.error('Erro ao salvar prova:', err));
-  }
-
-  // === LÓGICA DE FILTRAGEM ===
-  const questoesFiltradas = mostrarQuestoes && Array.isArray(questoes)
-  ? questoes.filter(q =>
-      q.name?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (!temaSelecionado || q.bnccTheme?.toLowerCase().includes(temaSelecionado.toLowerCase())) &&
-      (!habilidade || q.abilityCode?.toLowerCase().includes(habilidade.toLowerCase())) &&
-      (!phaseLevel || q.phaseLevel?.toLowerCase().includes(phaseLevel.toLowerCase())) &&
-      (dificuldade === '' || String(q.difficultyLevel) === dificuldade) &&
-      (anosSelecionados.length === 0 || anosSelecionados.some(a => normalizarAno(q.serieAno).includes(normalizarAno(a.value)))) 
-    )
-  : [];
-
-  // ==================================================================================
-  // === GERAÇÃO DE PDF VIA BACKEND (PORTA 8000) ===
-  // ==================================================================================
-  
-  async function gerarPDF(e) {
-    if (e && e.preventDefault) e.preventDefault();
-
+  // Gerar PDF
+  const gerarPDF = async (e) => {
+    e?.preventDefault();
     if (questoesSelecionadas.length === 0) {
       alert('Selecione pelo menos uma questão.');
       return;
     }
-
     setGerandoPDF(true);
-
     try {
-        const payload = {
-            name: nomeProva || 'Prova Sem Título',
-            fase: faseProva,
-            anos: anosSelecionados.map(a => a.label).join(', '),
-            questoes: questoesSelecionadas
-        };
-
-        const response = await fetch('http://127.0.0.1:8000/api/v1/exams/generate_pdf', {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            let errorText = response.statusText;
-            try {
-               const errJson = await response.json();
-               if(errJson.detail) errorText = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
-            } catch(e) {}
-            throw new Error(`Erro ${response.status}: ${errorText}`);
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
+      const payload = {
         
-        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-
-    } catch (error) {
-        console.error("Falha ao gerar PDF:", error);
-        alert(`Não foi possível gerar o PDF.\nCertifique-se de que o backend Python está rodando na porta 8000.\n\nDetalhes: ${error.message}`);
+        name: nomeProva || 'Prova Sem Título',
+        fase: faseProva,
+        anos: anosSelecionados.map(a => a.label),
+        questoes: questoesSelecionadas.map(questao => ({
+          ...questao,
+          image: questao.imageURL,
+          image_role: questao.image_role,
+        })),
+        
+      };
+      console.log('Payload:', payload);
+      const response = await api.post('/api/v1/exams/generate_pdf', payload, {
+        responseType: 'blob',
+        timeout: 30000, // 30 segundos (primeira execução pode demorar mais)
+      });
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch (err) {
+      console.error('Erro ao gerar PDF:', err);
+      const errorMsg = authService._handleError(err);
+      alert('Erro ao gerar PDF: ' + errorMsg);
     } finally {
-        setGerandoPDF(false);
+      setGerandoPDF(false);
     }
-  }
-
+  };
+  // Abrir modal de informações da questão
   const abrirModalInfo = (questao) => {
     setQuestaoSelecionada(questao);
     setModalInfoAberto(true);
   };
 
-  const fecharModalInfo = () => {
-    setModalInfoAberto(false);
-    setQuestaoSelecionada(null);
-  };
+  // Filtragem das questões (baseada nos filtros atuais)
+  const questoesFiltradas = mostrarQuestoes
+    ? questoes.filter(q => {
+        const nomeMatch = q.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const temaMatch = !temaSelecionado || q.bncc_theme?.toLowerCase().includes(temaSelecionado.toLowerCase());
+        const habMatch = !habilidade || q.ability_code?.toLowerCase().includes(habilidade.toLowerCase());
+        const phaseMatch = !phaseLevel || q.phase_level?.toLowerCase().includes(phaseLevel.toLowerCase());
+        const difMatch = dificuldade === '' || String(q.difficulty_level) === dificuldade;
+        const anoMatch =
+          anosSelecionadosFiltro.length === 0 ||
+          anosSelecionadosFiltro.some(a =>
+            extrairNumeroAno(q.serieAno).includes(extrairNumeroAno(a.value))
+          );
+        return nomeMatch && temaMatch && habMatch && phaseMatch && difMatch && anoMatch;
+      })
+    : [];
 
   return (
     <div className={styles.container}>
       <img src={tema} alt="Tema" className={styles.tema} />
-
-      {/* Loading Simples */}
-      {gerandoPDF && (
-          <div style={{
-              position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-              backgroundColor: 'rgba(0,0,0,0.7)', 
-              zIndex: 9999,
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff'
-          }}>
-              <h3>Gerando PDF no Servidor...</h3>
-              <p>Aguarde...</p>
-          </div>
-      )}
-
       <h2 className={styles.sectionTitle}>Buscar Questões</h2>
 
+      {/* Barra de busca e filtros */}
       <div className={styles.filtersContainer}>
         <div className={styles.searchContainer}>
-          <SearchBar 
+          <SearchBar
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             onDebouncedChange={handleSearch}
@@ -359,130 +314,108 @@ function MontarProva() {
           />
         </div>
 
-      <Select 
-              className={styles.react_select}
-              isSearchable
-              options={opcoesAno}
-              isMulti
-              placeholder="Ano"
-              value={anosSelecionados}
-              onChange={(selected) => {
-              setAnosSelecionados(selected || []);
-              }}
-              closeMenuOnSelect={false}
-              isClearable
-              styles={{
-              control: (base, state) => ({ 
-                      ...base,
-                      height: '45px',
-                      borderColor: state.isFocused ? '#007bff' : '#ccc',
-                      outline: 0,
-                
-                    }),
-              valueContainer: (base) => ({
-                      ...base,
-                      height: '40px',
-                      padding: '0 0.5em',
-                      overflow: 'auto',
-                    }),
-              input: (base) => ({
-                      ...base,
-                      margin: 0,
-                      padding:0,
-                    }),
-              indicatorsContainer: (base) => ({
-                      ...base,
-                    }),
-              multiValue: (base) => ({
-                      ...base,
-                      backgroundColor: '#e0e0e0',
-                      
-                    }),
-              multiValueLabel: (base) => ({
-                      ...base,
-                      color: '#797979',
-                    }),
-              placeholder: (base) => ({
-                      ...base,
-                      color: '#797979',
-                    }),
-              menu: (base) => ({
-                      ...base,
-                      zIndex: 9999,
-                    }),
-              }}
-          />
-        <select 
-            className={styles.filterSelect}
-            value={temaSelecionado}
-            onChange={(e) => {
-                setTemaSelecionado(e.target.value);
-                setMostrarQuestoes(true);
-            }}
+        <Select
+          className={styles.react_select}
+          isSearchable
+          options={opcoesAnoFiltro}
+          isMulti
+          placeholder="Ano"
+          value={anosSelecionadosFiltro}
+          onChange={(selected) => setAnosSelecionadosFiltro(selected || [])}
+          closeMenuOnSelect={false}
+          isClearable
+          styles={{
+            control: (base, state) => ({
+              ...base,
+              height: '45px',
+              borderColor: state.isFocused ? '#007bff' : '#ccc',
+              outline: 0,
+            }),
+            valueContainer: (base) => ({ ...base, height: '40px', padding: '0 0.5em', overflow: 'auto' }),
+            input: (base) => ({ ...base, margin: 0, padding: 0 }),
+            indicatorsContainer: (base) => ({ ...base }),
+            multiValue: (base) => ({ ...base, backgroundColor: '#e0e0e0' }),
+            multiValueLabel: (base) => ({ ...base, color: '#797979' }),
+            placeholder: (base) => ({ ...base, color: '#797979' }),
+            menu: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+        />
+
+        <select
+          className={styles.filterSelect}
+          value={temaSelecionado}
+          onChange={(e) => {
+            setTemaSelecionado(e.target.value);
+            setMostrarQuestoes(true);
+          }}
         >
-            <option value="">Unidade Temática</option>
-            <option value="Álgebra">Álgebra</option>
-            <option value="Geometria">Geometria</option> 
-            <option value="Grandezas e Medidas">Grandezas e Medidas</option>
-            <option value="Números">Números</option>
-            <option value="Probabilidade e estatística">Probabilidade e estatística</option>
-            <option value="Álgebra / Geometria">Álgebra / Geometria</option>
-            <option value="Probabilidade">Probabilidade</option>
-            <option value="Estatística">Estatística</option>
-        </select>
-            
-        <select className={styles.filterSelect}>
-            <option value="">Objetos de Conhecimento</option>
+          <option value="">Unidade Temática</option>
+          <option value="Álgebra">Álgebra</option>
+          <option value="Geometria">Geometria</option>
+          <option value="Grandezas e Medidas">Grandezas e Medidas</option>
+          <option value="Números">Números</option>
+          <option value="Probabilidade e estatística">Probabilidade e estatística</option>
+          <option value="Álgebra / Geometria">Álgebra / Geometria</option>
+          <option value="Probabilidade">Probabilidade</option>
+          <option value="Estatística">Estatística</option>
         </select>
 
-        <select 
-            className={styles.filterSelect}
-            value={dificuldade}
-            onChange={(e) => {
+        <select className={styles.filterSelect}>
+          <option value="">Objetos de Conhecimento</option>
+        </select>
+
+        <select
+          className={styles.filterSelect}
+          value={dificuldade}
+          onChange={(e) => {
             setDificuldade(e.target.value);
             setMostrarQuestoes(true);
-            }}
+          }}
         >
-            <option value="">Grau de Dificuldade</option>
-            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          <option value="">Grau de Dificuldade</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
         </select>
 
-        <input 
-            type="text"
-            className={styles.filterInput}
-            placeholder="Buscar por Habilidade (Cód.)"
-            value={habilidade}
-            onChange={(e) => {
+        <input
+          type="text"
+          className={styles.filterInput}
+          placeholder="Buscar por Habilidade (Cód.)"
+          value={habilidade}
+          onChange={(e) => {
             setHabilidade(e.target.value);
             setMostrarQuestoes(true);
-            }}
-        />  
+          }}
+        />
 
-        <input  
-            type="text"
-            className={styles.filterInput}
-            placeholder="Nível de Categoria"
-            value={phaseLevel}
-            onChange={(e) => {
+        <input
+          type="text"
+          className={styles.filterInput}
+          placeholder="Nível de Categoria"
+          value={phaseLevel}
+          onChange={(e) => {
             setPhaseLevel(e.target.value);
             setMostrarQuestoes(true);
-            }} 
+          }}
         />
       </div>
-      
+
+      {/* Lista de questões encontradas */}
       <div className={styles.resultsSection}>
         {mostrarQuestoes && (
           <>
-            {/*Cabeçalho com contador e botão Selecionar Todas */}
             <div className={styles.resultsHeader}>
               <h2 className={styles.sectionTitle}>Resultados da busca</h2>
               <div className={styles.resultsHeaderControls}>
                 <span className={styles.resultsCount}>
-                  {questoesFiltradas.length} questões 
+                  {questoesFiltradas.length} questões
                 </span>
                 {questoesFiltradas.length > 0 && (
-                  <button 
-                    className={`${styles.btn} ${styles.btnSelectAll}`} 
+                  <button
+                    className={`${styles.btn} ${styles.btnSelectAll}`}
                     onClick={selecionarTodasQuestoes}
                     title="Adicionar todas as questões filtradas à prova"
                   >
@@ -491,124 +424,186 @@ function MontarProva() {
                 )}
               </div>
             </div>
-            
+
             <ul className={styles.questoesList}>
               {questoesFiltradas.map((questao) => (
                 <li className={styles.questionCard} key={questao.id}>
                   <div className={styles.cardContent}>
                     <div className={styles.cardHeader}>
-                        <strong className={styles.cardTitle}>{questao.name}</strong>
-                        <button className={`${styles.btn} ${styles.btnInfo}`} onClick={() => abrirModalInfo(questao)} title="Ver detalhes">
-                             <BsFillInfoCircleFill />
-                        </button>
+                      <strong className={styles.cardTitle}>{questao.name}</strong>
+                      <button
+                        className={`${styles.btn} ${styles.btnInfo}`}
+                        onClick={() => abrirModalInfo(questao)}
+                        title="Ver detalhes"
+                      >
+                        <BsFillInfoCircleFill />
+                      </button>
                     </div>
-                    {/* Tags Visíveis na Busca */}
                     <div className={styles.tagsWrapper}>
-                        <span className={`${styles.tag} ${styles.tagDifficulty}`}> <strong>Grau. Dificuldade:</strong> {questao.difficultyLevel}/5</span>
-                        <span className={`${styles.tag} ${styles.tagCode}`}><strong>Cód. Habilidade:</strong> {questao.abilityCode}</span>
-                        <span className={styles.tag}><strong>Unidade Temática:</strong> {questao.bnccTheme}</span>
-                        <span className={styles.tag}><strong>Ano:</strong> {questao.serieAno}</span>
-                        <span className={styles.tag}><strong>Nivel de Categoria:</strong> {questao.phaseLevel}</span>
+                      <span className={`${styles.tag} ${styles.tagDifficulty}`}>
+                        <strong>Grau. Dificuldade:</strong> {questao.difficulty_level}/5
+                      </span>
+                      <span className={`${styles.tag} ${styles.tagCode}`}>
+                        <strong>Cód. Habilidade:</strong> {questao.ability_code}
+                      </span>
+                      <span className={styles.tag}>
+                        <strong>Unidade Temática:</strong> {questao.bncc_theme}
+                      </span>
+                      <span className={styles.tag}>
+                        <strong>Ano:</strong> {questao.serieAno}
+                      </span>
+                      <span className={styles.tag}>
+                        <strong>Nível de Categoria:</strong> {questao.phase_level}
+                      </span>
                     </div>
                   </div>
-                  
                   <div className={styles.actionsGroup}>
-                    <button className={`${styles.btn} ${styles.btnAdd}`} onClick={() => handleSelecionarQuestao(questao)} title="Adicionar à prova">
-                          + 
+                    <button
+                      className={`${styles.btn} ${styles.btnAdd}`}
+                      onClick={() => handleSelecionarQuestao(questao)}
+                      title="Adicionar à prova"
+                    >
+                      +
                     </button>
                   </div>
                 </li>
               ))}
             </ul>
-            {questoesFiltradas.length === 0 && <p className={styles.emptyState}>Nenhuma questão encontrada com os filtros atuais.</p>}
+            {questoesFiltradas.length === 0 && (
+              <p className={styles.emptyState}>Nenhuma questão encontrada com os filtros atuais.</p>
+            )}
           </>
         )}
       </div>
 
-            <div className={styles.selectedSection}>
-            {/* NOVO: Cabeçalho com título e botão Limpar */}
-            <div className={styles.selectedHeader}>
-              <h2 className={styles.sectionTitle}>Questões Selecionadas</h2>
-              <div className={styles.selectedHeaderControls}>
-                <span className={styles.selectedCount}>
-                  {questoesSelecionadas.length} questões
-                </span>
-                {questoesSelecionadas.length > 0 && (
-                  <button 
-                    className={`${styles.btn} ${styles.btnClearAll}`} 
-                    onClick={limparTodasQuestoes}
-                    title="Remover todas as questões da prova"
+      {/* Lista de questões selecionadas */}
+      <div className={styles.selectedSection}>
+        <div className={styles.selectedHeader}>
+          <h2 className={styles.sectionTitle}>Questões Selecionadas</h2>
+          <div className={styles.selectedHeaderControls}>
+            <span className={styles.selectedCount}>
+              {questoesSelecionadas.length} questões
+            </span>
+            {questoesSelecionadas.length > 0 && (
+              <button
+                className={`${styles.btn} ${styles.btnClearAll}`}
+                onClick={limparTodasQuestoes}
+                title="Remover todas as questões da prova"
+              >
+                Limpar questões
+              </button>
+            )}
+          </div>
+        </div>
+
+        <ul className={styles.questoesList}>
+          {questoesSelecionadas.length === 0 && (
+            <p className={styles.emptyState}>Sua prova ainda está vazia. Adicione questões acima.</p>
+          )}
+          {questoesSelecionadas.map((questao, index) => (
+            <li className={styles.questionCard} key={questao.id}>
+              <div className={styles.cardContent}>
+                <div className={styles.cardHeader}>
+                  <span style={{ marginRight: '10px', fontWeight: 'bold', color: '#007bff' }}>
+                    #{index + 1}
+                  </span>
+                  <strong className={styles.cardTitle}>{questao.name}</strong>
+                  <button
+                    className={`${styles.btn} ${styles.btnInfo}`}
+                    onClick={() => abrirModalInfo(questao)}
                   >
-                    Limpar questões
+                    <BsFillInfoCircleFill />
                   </button>
-                )}
+                </div>
+                <div className={styles.tagsWrapper}>
+                  <span className={`${styles.tag} ${styles.tagDifficulty}`}>
+                    <strong>Grau. Dificuldade:</strong> {questao.difficulty_level}/5
+                  </span>
+                  <span className={`${styles.tag} ${styles.tagCode}`}>
+                    <strong>Cód. Habilidade:</strong> {questao.ability_code}
+                  </span>
+                  <span className={styles.tag}>
+                    <strong>Unidade Temática:</strong> {questao.bncc_theme}
+                  </span>
+                  <span className={styles.tag}>
+                    <strong>Ano:</strong> {questao.serieAno}
+                  </span>
+                  <span className={styles.tag}>
+                    <strong>Nível de Categoria:</strong> {questao.phase_level}
+                  </span>
+                </div>
               </div>
-            </div>
-            
-            <ul className={styles.questoesList}>
-              {questoesSelecionadas.length === 0 && <p className={styles.emptyState}>Sua prova ainda está vazia. Adicione questões acima.</p>}
-            
-            {questoesSelecionadas.map((questao, index) => (
-              <li className={styles.questionCard} key={questao.id}>
-                  <div className={styles.cardContent}>
-                      <div className={styles.cardHeader}>
-                          <span style={{marginRight: '10px', fontWeight: 'bold', color: '#007bff'}}>#{index + 1}</span>
-                          <strong className={styles.cardTitle}>{questao.name}</strong>
-                          <button className={`${styles.btn} ${styles.btnInfo}`} onClick={() => abrirModalInfo(questao)}>
-                              <BsFillInfoCircleFill />
-                          </button>
-                      </div>
-                      
-                      {/* Tags inseridas aqui igual aos Resultados da Busca */}
-                      <div className={styles.tagsWrapper}>
-                        <span className={`${styles.tag} ${styles.tagDifficulty}`}> <strong>Grau. Dificuldade:</strong> {questao.difficultyLevel}/5</span>
-                        <span className={`${styles.tag} ${styles.tagCode}`}><strong>Cód. Habilidade:</strong> {questao.abilityCode}</span>
-                        <span className={styles.tag}><strong>Unidade Temática:</strong> {questao.bnccTheme}</span>
-                        <span className={styles.tag}><strong>Ano:</strong> {questao.serieAno}</span>
-                        <span className={styles.tag}><strong>Nivel de Categoria:</strong> {questao.phaseLevel}</span>
-                      </div>
-                  </div>
-
-                  <div className={styles.actionsGroup}>
-                      <div className={styles.moveButtons}>
-                          <button className={styles.btnMove} onClick={() => moverQuestaoParaCima(index)} title="Mover para cima">⬆</button>
-                          <button className={styles.btnMove} onClick={() => moverQuestaoParaBaixo(index)} title="Mover para baixo">⬇</button>
-                      </div>
-                      <button className={`${styles.btn} ${styles.btnRemove}`} onClick={() => handleRemoverQuestao(questao.id)} title="Remover questão">
-                           <BsFillTrashFill /> Remover
-                      </button>
-                  </div>
-              </li>
-            ))}
-          </ul>
+              <div className={styles.actionsGroup}>
+                <div className={styles.moveButtons}>
+                  <button
+                    className={styles.btnMove}
+                    onClick={() => moverQuestaoParaCima(index)}
+                    title="Mover para cima"
+                  >
+                    ⬆
+                  </button>
+                  <button
+                    className={styles.btnMove}
+                    onClick={() => moverQuestaoParaBaixo(index)}
+                    title="Mover para baixo"
+                  >
+                    ⬇
+                  </button>
+                </div>
+                <button
+                  className={`${styles.btn} ${styles.btnRemove}`}
+                  onClick={() => handleRemoverQuestao(questao.id)}
+                  title="Remover questão"
+                >
+                  <BsFillTrashFill /> Remover
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
+      {/* Botões de ação */}
       <div className={styles.bottomActions}>
-         <button className={`${styles.btn} ${styles.btnSave}`} onClick={() => setModalSalvarAberto(true)} disabled={gerandoPDF}>
-            Salvar Prova
+        <button
+          className={`${styles.btn} ${styles.btnSave}`}
+          onClick={() => setModalSalvarAberto(true)}
+          disabled={gerandoPDF || salvando}
+        >
+          Salvar Prova
         </button>
-        <button className={`${styles.btn} ${styles.btnPdf}`} onClick={(e) => gerarPDF(e)} disabled={gerandoPDF}>
-            Visualizar PDF
+        <button
+          className={`${styles.btn} ${styles.btnPdf}`}
+          onClick={gerarPDF}
+          disabled={gerandoPDF || salvando}
+        >
+          Visualizar PDF
         </button>
+        {(gerandoPDF || salvando) && (
+          <div className={styles.loadingOverlay}>
+            <h3>{gerandoPDF ? 'Gerando PDF...' : 'Salvando...'}</h3>
+            <p>Aguarde, isso pode levar alguns segundos na primeira vez.</p>
+          </div>
+        )}
       </div>
-      
-      {modalSalvarAberto && (
-         <ModalSalvarProva 
-           isOpen={modalSalvarAberto}
-           onClose={() => setModalSalvarAberto(false)}
-           onConfirm={salvarProva}
-           nome={nomeProva} setNomeProva={setNomeProva}
-           fase={faseProva} setFase={setFaseProva}
-           setAnosSelecionados={setAnosSelecionados}
-           setStatus={setStatus}
-         />
-      )}
+
+      {/* Modais */}
+      <ModalSalvarProva
+        isOpen={modalSalvarAberto}
+        onClose={() => setModalSalvarAberto(false)}
+        onConfirm={salvarProva}
+        nomeProva={nomeProva}
+        setNomeProva={setNomeProva}
+        fase={faseProva}
+        setFase={setFaseProva}
+        anosSelecionados={anosSelecionados}
+        setAnosSelecionados={setAnosSelecionados}
+        status={status}
+        setStatus={setStatus}
+      />
 
       {modalInfoAberto && questaoSelecionada && (
-         <ModalInfoQuestao 
-           questao={questaoSelecionada} 
-           onClose={fecharModalInfo} 
-         />
+        <ModalInfoQuestao questao={questaoSelecionada} onClose={() => setModalInfoAberto(false)} />
       )}
     </div>
   );

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 // Importação de Componentes
-// Certifique-se que o caminho está correto para o seu ProjectForme atualizado
 import ProjectForm from '../../Project_Forme/ProjectForme.jsx';
 import LatexText from '../LatexText.jsx'; 
 
@@ -11,14 +10,18 @@ import LatexText from '../LatexText.jsx';
 import { FaEdit, FaArrowLeft, FaCheckCircle, FaClock, FaTimes, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { BsBook, BsPersonBadge, BsCardText, BsLayers } from 'react-icons/bs';
 
+// Serviços de API
+import api from '../../../../../services/api.js';
+import { authService } from '../../../../../services/authService.jsx';
+
 function Projetos() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   // --- ESTADOS PRINCIPAIS ---
   const [projeto, setProjeto] = useState({});
-  const [showProjetoForm, setShowProjetoForm] = useState(false); // Alterna entre Visualizar e Editar
-  const [tipoQuestao, setTipoQuestao] = useState('projects'); // Controla a origem ('projects' ou 'questõesAprovadas')
+  const [showProjetoForm, setShowProjetoForm] = useState(false);
+  const [tipoQuestao, setTipoQuestao] = useState('projects'); // 'projects' ou 'questõesAprovadas'
   const [carregando, setCarregando] = useState(true);
 
   // --- ESTADO DE PERMISSÃO ---
@@ -29,19 +32,12 @@ function Projetos() {
   // =========================================================================
   useEffect(() => {
     const storedData = localStorage.getItem("user_token");
-
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
-        
         if (parsedData.user) {
-           const user = parsedData.user;
-           // Verifica se a role é Revisor ou Admin para lógicas específicas desta tela
-           if (['Revisor', 'revisor', 'admin', 'Admin'].includes(user.role)) {
-               setIsRevisor(true);
-           } else {
-               setIsRevisor(false);
-           }
+          const user = parsedData.user;
+          setIsRevisor(['Revisor', 'revisor', 'admin', 'Admin'].includes(user.role));
         }
       } catch (error) {
         console.error("Erro ao ler permissões do usuário:", error);
@@ -50,39 +46,54 @@ function Projetos() {
   }, []);
 
   // =========================================================================
-  // 2. LÓGICA DE BUSCA (Procura em todas as tabelas)
+  // 2. LÓGICA DE BUSCA (API real)
   // =========================================================================
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
 
     async function buscarProjeto() {
+      if (!id) return;
       setCarregando(true);
-      // Lista de endpoints onde a questão pode estar
-      const fontes = ['projects', 'questõesAprovadas'];
-      let encontrou = false;
-
-      // Itera sobre os endpoints para achar a questão
-      for (const endpoint of fontes) {
-        try {
-          const res = await fetch(`http://localhost:5000/${endpoint}/${id}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (isMounted) {
-              setProjeto(data);
-              setTipoQuestao(endpoint); // Salva de onde veio para saber onde salvar depois
-              setCarregando(false);
-              encontrou = true;
-            }
-            return;
-          }
-        } catch (error) {
-          // Continua silenciosamente para o próximo endpoint se falhar
+      try {
+        const response = await api.get(`/api/v1/questions/${id}`);
+        if (isMounted && response.data.success) {
+          const q = response.data.data.question;
+          // Mapeia os campos do backend (snake_case) para camelCase (usado no frontend)
+          const projetoData = {
+              id: q.id,
+              name: q.name,
+              professorName: q.professor_name,
+              phaseLevel: q.phase_level,
+              grauId: q.grau?.id,
+              grauName: q.grau?.name,
+              difficultyLevel: q.difficulty_level,
+              knowledgeObjects: q.knowledge_objects,
+              bnccTheme: q.bncc_theme,
+              abilityCode: q.ability_code,
+              abilityDescription: q.ability_description,
+              questionStatement: q.question_statement,
+              alternatives: q.alternatives,
+              correctAlternative: q.correct_alternative,
+              detailedResolution: q.detailed_resolution,
+              categoryId: q.category_id,
+              categoryName: q.category?.name,
+              reviewerComments: q.reviewer_comments,
+              imageURL: q.image?.url ? new URL(q.image.url, api.defaults.baseURL).href : null,
+              imageRole: q.image_role,
+              imageId: q.image?.id,
+              createdAt: q.created_at,
+              updatedAt: q.updated_at,
+          };
+          console.log('reviewer_comments vindo do backend:', q.reviewer_comments);
+          console.log('projeto após setProjeto:', projetoData);
+          setProjeto(projetoData);
+          // Define tipoQuestao baseado no categoryId (2 = aprovada, 1 = pendente)
+          setTipoQuestao(projetoData.categoryId === 2 ? 'questõesAprovadas' : 'projects');
         }
-      }
-
-      if (!encontrou && isMounted) {
+      } catch (err) {
+        console.error("Erro ao buscar questão:", err);
+      } finally {
         setCarregando(false);
-        console.error("Projeto não encontrado.");
       }
     }
 
@@ -93,105 +104,126 @@ function Projetos() {
 
   // =========================================================================
   // 3. LÓGICA DE EDIÇÃO E SALVAMENTO
-  // Esta função é passada como prop 'handleSubmit' para o componente filho
   // =========================================================================
   async function editPost(dadosDoFormulario) {
-    
-    // 1. Força a data atualizada
-    const dataAgora = new Date().toISOString();
-    
-    // 2. Lógica de Negócio: Professor vs Revisor
-    // Se NÃO for revisor (é professor) e estiver editando uma questão que estava com "Correção Solicitada" (ID 3),
-    // ela deve voltar automaticamente para "Em Revisão" (ID 1)
-    if (!isRevisor && String(dadosDoFormulario.categoryId) === '3') {
-        dadosDoFormulario.categoryId = 1;
-        dadosDoFormulario.categoryName = "Revisão";
-        // Opcional: Limpar comentários antigos ao reenviar
-        // dadosDoFormulario.reviewerComments = ""; 
+    // 1. Lógica de Negócio: se não for revisor e a questão estava com categoryId 3 (Correção Solicitada), volta para 1
+    let categoryId = dadosDoFormulario.categoryId;
+    if (!isRevisor && String(categoryId) === '3') {
+      categoryId = 1;
+      dadosDoFormulario.categoryName = "Revisão";
     }
 
-    // 3. Define destino (Se virou 'Aprovado', muda de tabela)
-    let novoEndpoint = (dadosDoFormulario.categoryName === 'Aprovado') ? 'questõesAprovadas' : 'projects';
-
-    // 4. Monta o objeto final preservando ID
-    const updatedProject = { 
-        ...dadosDoFormulario, 
-        id: projeto.id, 
-        updatedAt: dataAgora 
+    // 2. Monta payload no formato snake_case esperado pelo backend
+    const payload = {
+      name: dadosDoFormulario.name,
+      professor_name: dadosDoFormulario.professorName,
+      phase_level: dadosDoFormulario.phaseLevel,
+      grau_id: dadosDoFormulario.grauId,
+      difficulty_level: Number(dadosDoFormulario.difficultyLevel),
+      knowledge_objects: dadosDoFormulario.knowledgeObjects,
+      bncc_theme: dadosDoFormulario.bnccTheme,
+      ability_code: dadosDoFormulario.abilityCode,
+      ability_description: dadosDoFormulario.abilityDescription,
+      question_statement: dadosDoFormulario.questionStatement,
+      alternatives: dadosDoFormulario.alternatives, // já é string JSON
+      correct_alternative: dadosDoFormulario.correctAlternative.toUpperCase(),
+      detailed_resolution: dadosDoFormulario.detailedResolution,
+      category_id: Number(categoryId) || null,
+      reviewer_comments: dadosDoFormulario.reviewerComments || "",
+      image_id: dadosDoFormulario.image?.id || null,
+      image_role: dadosDoFormulario.image?.role || null,
     };
 
     try {
-      // Cenário A: Mudou de Tabela (Ex: Revisão -> Aprovado)
-      if (novoEndpoint !== tipoQuestao) {
-        
-        // Cria na nova tabela
-        await fetch(`http://localhost:5000/${novoEndpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProject)
-        });
-
-        // Deleta da tabela antiga para não duplicar
-        await fetch(`http://localhost:5000/${tipoQuestao}/${projeto.id}`, {
-          method: 'DELETE'
-        });
-
-        setTipoQuestao(novoEndpoint);
-      } else {
-        // Cenário B: Atualiza na mesma tabela (PUT)
-        await fetch(`http://localhost:5000/${tipoQuestao}/${projeto.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProject)
-        });
+      // Usa o ID do projeto do estado (projeto.id) em vez de projectData
+      const response = await api.patch(`/api/v1/questions/${projeto.id}`, payload);
+     
+      if (response.data.success) {
+        const updated = response.data.data.question;
+        // Atualiza o estado local com os novos dados
+        const projetoAtualizado = {
+            ...projeto,
+            name: payload.name,
+            professorName: payload.professor_name,
+            phaseLevel: payload.phase_level,
+            grauId: payload.grau_id,
+            grauName: updated.grau?.name || projeto.grauName,
+            difficultyLevel: payload.difficulty_level,
+            knowledgeObjects: payload.knowledge_objects,
+            bnccTheme: payload.bncc_theme,
+            abilityCode: payload.ability_code,
+            abilityDescription: payload.ability_description,
+            questionStatement: payload.question_statement,
+            alternatives: payload.alternatives,
+            correctAlternative: payload.correct_alternative,
+            detailedResolution: payload.detailed_resolution,
+            categoryId: payload.category_id,
+            categoryName: updated.category?.name || (payload.category_id === 2 ? 'Aprovado' : 'Revisão'),
+            reviewerComments: payload.reviewer_comments,
+            imageURL: updated.image?.url ? new URL(updated.image.url, api.defaults.baseURL).href : null,
+            imageRole: payload.image_role,
+            imageId: updated.image?.id,
+            updatedAt: updated.updated_at,
+        };
+        setProjeto(projetoAtualizado);
+        setTipoQuestao(payload.category_id === 2 ? 'questõesAprovadas' : 'projects');
+        setShowProjetoForm(false);
+        alert("Questão atualizada com sucesso!");
       }
-
-      // Atualiza a tela com os novos dados
-      setProjeto(updatedProject);
-      setShowProjetoForm(false);
-      alert("Questão atualizada com sucesso!");
-      
     } catch (err) {
       console.error('Erro ao salvar:', err);
-      alert("Erro ao salvar as alterações.");
+      const errorMsg = authService._handleError(err);
+      alert("Erro ao salvar as alterações: " + errorMsg);
     }
   }
 
-  // Helper para formatar data para o padrão BR
+  // Helper para formatar data
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleString('pt-BR');
   };
 
-  // Helper para renderizar as Alternativas (Lida com JSON ou String legada)
+  // Helper para renderizar as alternativas (lida com string no formato "a) texto\nb) texto...")
   const renderAlternatives = (alternativesData) => {
     if (!alternativesData) return "Sem alternativas cadastradas.";
-
-    try {
-        // Tenta fazer o parse do JSON (formato novo: {"A": "...", "B": "..."})
-        const altsObj = JSON.parse(alternativesData);
-        const keys = ['A', 'B', 'C', 'D', 'E'];
-
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {keys.map((key) => (
-                    altsObj[key] ? (
-                        <div key={key} style={{ display: 'flex', alignItems: 'flex-start' }}>
-                            <strong style={{ marginRight: '8px', minWidth: '25px' }}>{key})</strong>
-                            <div><LatexText content={altsObj[key]} /></div>
-                        </div>
-                    ) : null
-                ))}
-            </div>
-        );
-    } catch (e) {
-        // Se der erro no JSON.parse, assume que é o formato antigo (texto puro)
-        return <LatexText content={alternativesData} />;
+    // Tenta dividir por linhas e extrair letras
+    const lines = alternativesData.split('\n');
+    const altObj = {};
+    lines.forEach(line => {
+      const match = line.match(/^([a-e])\)\s*(.*)$/i);
+      if (match) {
+        altObj[match[1].toUpperCase()] = match[2].trim();
+      }
+    });
+    if (Object.keys(altObj).length === 5) {
+      const keys = ['A', 'B', 'C', 'D', 'E'];
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {keys.map((key) => (
+            altObj[key] ? (
+              <div key={key} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <strong style={{ marginRight: '8px', minWidth: '25px' }}>{key})</strong>
+                <div><LatexText content={altObj[key]} /></div>
+              </div>
+            ) : null
+          ))}
+        </div>
+      );
+    } else {
+      // Fallback: exibe como texto puro
+      return <LatexText content={alternativesData} />;
     }
   };
 
   const isApproved = tipoQuestao === 'questõesAprovadas';
   const statusColor = isApproved ? styles.status_approved : styles.status_pending;
+
+  // Prepara os dados para o formulário de edição
+  const projectDataForForm = {
+    ...projeto,
+    serieAno: projeto.grauId, // o select do ProjectForme espera o ID
+    image: projeto.imageURL ? { url: projeto.imageURL, role: projeto.imageRole, id: projeto.imageId } : null,
+  };
 
   // =========================================================================
   // 4. RENDERIZAÇÃO
@@ -260,10 +292,10 @@ function Projetos() {
                     </div>
                     <div className={styles.info_box}>
                       <span className={styles.label}>Série/Ano</span>
-                      <p>{projeto.serieAno}</p>
+                      <p>{projeto.grauName}</p>
                     </div>
                     <div className={styles.info_box}>
-                      <span className={styles.label}><BsLayers/> Nivel/Categoria</span>
+                      <span className={styles.label}><BsLayers/> Nível/Categoria</span>
                       <p>{projeto.phaseLevel}</p>
                     </div>
                     <div className={styles.info_box}>
@@ -297,7 +329,7 @@ function Projetos() {
                         </div>
                     )}
 
-                    {/* Alternativas (RENDERIZADAS DO JSON) */}
+                    {/* Alternativas */}
                     <div className={styles.latex_block}>
                         <span className={styles.latex_label}>Alternativas:</span>
                         <div className={styles.latex_content}>
@@ -319,10 +351,10 @@ function Projetos() {
                         </div>
                     </div>
 
-                    {/* Comentários do Revisor (Visualização Geral) */}
+                    {/* Comentários do Revisor */}
                     {projeto.reviewerComments && (
                         <div className={styles.latex_block}>
-                            <span className={styles.latex_label}>Histórico de Comentários:</span>
+                            <span className={styles.latex_label}>Comentários:</span>
                             <div className={styles.latex_content} style={{fontStyle: 'italic', color: '#666'}}>
                                 <LatexText content={projeto.reviewerComments} />
                             </div>
@@ -336,11 +368,9 @@ function Projetos() {
                 // =========================================================
                 <div className={styles.edit_mode}>
                   <ProjectForm
-                    handleSubmit={editPost} // Passa a função de salvar
+                    handleSubmit={editPost}
                     btnText="Salvar Alterações"
-                    projectData={projeto}   // Passa os dados atuais para preencher os campos
-                    // Nota: O ProjectForme já calcula permissões internamente, 
-                    // então passamos apenas os dados necessários.
+                    projectData={projectDataForForm}
                   />
                 </div>
               )}

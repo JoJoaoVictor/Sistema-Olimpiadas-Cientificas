@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 import styles from './Prova.module.css';
-import { gerarPDF } from '../../ConfProvas/pdfUtils'; 
-import { FiSearch, FiCalendar, FiLayers, FiCheckCircle } from 'react-icons/fi'; // Adicionei ícones extras para modernizar
+import { FiSearch, FiCalendar, FiLayers, FiCheckCircle } from 'react-icons/fi';
 import { BsPencil, BsBook } from 'react-icons/bs';
 import Select from 'react-select';
+
+// Serviços de API
+import api from '../../../services/api';
+import { authService } from '../../../services/authService';
 
 function Prova() {
   const [provas, setProvas] = useState([]);
   const [provasFiltradas, setProvasFiltradas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [gerandoPDF, setGerandoPDF] = useState(false);
 
   // Estados dos filtros
   const [searchName, setSearchName] = useState('');
@@ -16,15 +21,27 @@ function Prova() {
   const [faseSelecionada, setFaseSelecionada] = useState('');
   const [statusSelecionado, setStatusSelecionado] = useState('');
 
-  // Carrega todas as provas montadas
+  // Carrega todas as provas do backend
   useEffect(() => {
-    fetch('http://localhost:5000/provasMontadas')
-      .then(res => res.json())
-      .then(data => setProvas(data))
-      .catch(err => console.log(err));
+    const fetchProvas = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get('/api/v1/exams', {
+          params: { per_page: 100 } // ou usar paginação se necessário
+        });
+        const data = response.data?.data?.exams || [];
+        setProvas(data);
+      } catch (err) {
+        console.error('Erro ao carregar provas:', err);
+        alert('Erro ao carregar provas. Tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProvas();
   }, []);
 
-  // Aplica todos os filtros
+  // Aplica todos os filtros localmente (já que o backend não tem filtros avançados)
   useEffect(() => {
     let filtradas = [...provas];
 
@@ -36,36 +53,85 @@ function Prova() {
 
     if (searchDate) {
       const dataSelecionada = new Date(searchDate).toLocaleDateString('pt-BR');
-      filtradas = filtradas.filter(p =>
-        p.createdAt?.split(' ')[0] === dataSelecionada
-      );
+      filtradas = filtradas.filter(p => {
+        const createdAt = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '';
+        return createdAt === dataSelecionada;
+      });
     }
 
     if (anosSelecionados.length > 0) {
       filtradas = filtradas.filter(p => {
-        const anosDaProva = p.anos || []; 
+        const anosDaProva = p.anos || [];
         return anosSelecionados.some(opt => anosDaProva.includes(opt.label));
       });
     }
 
     if (faseSelecionada) {
-      filtradas = filtradas.filter(p => String(p.fase) === faseSelecionada);
+      filtradas = filtradas.filter(p => p.fase === faseSelecionada);
     }
 
     if (statusSelecionado) {
-      filtradas = filtradas.filter(p =>
-        p.status === statusSelecionado
-      );
+      filtradas = filtradas.filter(p => p.status === statusSelecionado);
     }
 
     setProvasFiltradas(filtradas);
   }, [searchName, searchDate, anosSelecionados, faseSelecionada, statusSelecionado, provas]);
 
-  function visualizarPDF(prova) {
-    gerarPDF(prova.questoes, prova, true);
+  // Geração de PDF via backend
+  async function visualizarPDF(prova) {
+    if (gerandoPDF) return;
+
+    // Extrai as questões da prova (o backend já retorna o array `questions`)
+    const examQuestions = prova.questions || [];
+    if (examQuestions.length === 0) {
+      alert('Esta prova não possui questões.');
+      return;
+    }
+
+      // Extrai as questões do aninhamento
+      const questoes = examQuestions.map(eq => {
+      const q = eq.question;
+      // Monta o objeto no formato esperado pelo backend (campos como question_statement, alternatives, etc.)
+      return {
+        id: q.id,
+        name: q.name,
+        question_statement: q.question_statement,
+        alternatives: q.alternatives,
+        correct_alternative: q.correct_alternative,
+        detailed_resolution: q.detailed_resolution,
+        image: q.image?.url || null,
+        image_role: q.image_role,
+        // inclua outros campos necessários
+      };
+    }); 
+    
+    setGerandoPDF(true);
+    try {
+      const payload = {
+        name: prova.name || 'Prova Sem Título',
+        fase: prova.fase || '',
+        anos: prova.anos || [],
+        questoes: questoes ,
+      };
+
+      const response = await api.post('/api/v1/exams/generate_pdf', payload, {
+        responseType: 'blob'
+      });
+
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      const errorMsg = authService._handleError(error);
+      alert(`Erro ao gerar PDF: ${errorMsg}`);
+    } finally {
+      setGerandoPDF(false);
+    }
   }
 
-  // Listas fixas
+  // Listas fixas para filtros
   const opcoesAno = [
     { value: '4', label: '4º' },
     { value: '5', label: '5º' },
@@ -84,67 +150,53 @@ function Prova() {
     { value: 'Final', label: 'Final' }
   ];
 
-  const listaStatus = ['Aplicada', 'Pendente', 'Aprovada'];
+  const listaStatus = ['APROVADA', 'PENDENTE', 'APLICADA']; // ajuste conforme o backend
 
-    // Estilos personalizados para o React Select ficarem iguais ao CSS Module
-    const customSelectStyles = {
-      control: (base, state) => ({
-        ...base,
-        minHeight: '45px',
-        height: '45px',
-        border: state.isFocused ? '1px solid #1967d2' : '1px solid #ced4da',
-        borderRadius: '6px',
-        boxShadow: state.isFocused ? '0 0 0 1px #1967d2' : 'none',
-        '&:hover': {
-          border: '1px solid #1967d2',
-        },
-      }),
-      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-      valueContainer: (base) => ({
-          ...base,
-          height: '45px',
-          padding: '0 8px',
-          overflow: 'auto',
-      }),
-      indicatorsContainer: (base) => ({
-          ...base,
-          height: '45px',
-      }),
-      multiValue: (base) => ({
-          ...base,
-          backgroundColor: '#e9ecef',
-          borderRadius: '4px',
-      }),
-      multiValueLabel: (base) => ({
-          ...base,
-          color: '#495057',
-      }),
-    };
+  // Estilos personalizados para o React Select
+  const customSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '45px',
+      height: '45px',
+      border: state.isFocused ? '1px solid #1967d2' : '1px solid #ced4da',
+      borderRadius: '6px',
+      boxShadow: state.isFocused ? '0 0 0 1px #1967d2' : 'none',
+      '&:hover': { border: '1px solid #1967d2' },
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    valueContainer: (base) => ({ ...base, height: '45px', padding: '0 8px', overflow: 'auto' }),
+    indicatorsContainer: (base) => ({ ...base, height: '45px' }),
+    multiValue: (base) => ({ ...base, backgroundColor: '#e9ecef', borderRadius: '4px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#495057' }),
+  };
 
   return (
     <div className={styles.container}>
       <h2>Provas Salvas</h2>
-      
-      {/* Área de Filtros Modernizada */}
+
+      {/* Overlay de loading da geração de PDF */}
+      {gerandoPDF && (
+        <div className={styles.loadingOverlay}>
+          <h3>Gerando PDF...</h3>
+          <p>Aguarde</p>
+        </div>
+      )}
+
+      {/* Área de Filtros */}
       <div className={styles.filters_wrapper}>
-        
-        {/* Barra de Busca */}
         <div className={styles.search_container}>
           <FiSearch className={styles.icon} />
           <input
             type="text"
-            placeholder="Buscar prova pelo nome..." 
+            placeholder="Buscar prova pelo nome..."
             value={searchName}
             onChange={e => setSearchName(e.target.value)}
           />
         </div>
 
-        {/* Grid de Seletores */}
         <div className={`${styles.filters_grid} notranslate`} translate="no">
-          
-          {/* Select de Anos */}
           <Select
-            menuPortalTarget={document.body} 
+            menuPortalTarget={document.body}
             isSearchable
             options={opcoesAno}
             isMulti
@@ -154,12 +206,9 @@ function Prova() {
             closeMenuOnSelect={false}
             isClearable
             styles={customSelectStyles}
-            className="notranslate"
           />
 
-          {/* Select de Fase */}
-          <Select 
-            components={{ A11yText: () => null, LiveRegion: () => null }}
+          <Select
             options={listaFases}
             placeholder="Selecionar Fase"
             value={listaFases.find(f => f.value === faseSelecionada) || null}
@@ -168,8 +217,7 @@ function Prova() {
             styles={customSelectStyles}
           />
 
-          {/* Select de Status (Nativo) */}
-          <select 
+          <select
             className={styles.native_select}
             value={statusSelecionado}
             onChange={e => setStatusSelecionado(e.target.value)}
@@ -180,8 +228,7 @@ function Prova() {
             ))}
           </select>
 
-          {/* Input de Data (Nativo) */}
-          <input 
+          <input
             className={styles.native_input}
             type="date"
             value={searchDate}
@@ -193,65 +240,59 @@ function Prova() {
       {/* Lista de Provas */}
       <div className={styles.provas_container}>
         <div className={styles.section_title}>
-           {provasFiltradas.length} {provasFiltradas.length === 1 ? 'prova encontrada' : 'provas encontradas'}
+          {loading ? 'Carregando...' : `${provasFiltradas.length} ${provasFiltradas.length === 1 ? 'prova encontrada' : 'provas encontradas'}`}
         </div>
 
-        {provasFiltradas.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#999' }}>
+        {loading ? (
+          <div className={styles.loading}>Carregando...</div>
+        ) : provasFiltradas.length === 0 ? (
+          <div className={styles.empty_state}>
             Nenhuma prova encontrada com os filtros atuais.
           </div>
         ) : (
           provasFiltradas.map(prova => (
             <div key={prova.id} className={styles.prova_card}>
-              
-              {/* Esquerda: Informações */}
               <div className={styles.card_content}>
                 <div className={styles.card_header}>
                   <h3>{prova.name}</h3>
                   <span className={styles.card_date}>
-                    Criado em: {prova.createdAt || 'Data desconhecida'}
+                    Criado em: {prova.created_at ? new Date(prova.created_at).toLocaleDateString('pt-BR') : 'Data desconhecida'}
                   </span>
                 </div>
-                
-                {/* Tags de Informação (Visual Limpo) */}
+
                 <div className={styles.card_tags}>
-                    {/* Tag de Ano */}
-                    <div className={styles.tag} title="Anos Escolares">
-                        <BsBook style={{ marginRight: '6px' }} />
-                        {(prova.anos || []).join(', ') || 'Sem ano'}
-                    </div>
-
-                    {/* Tag de Fase */}
-                    <div className={styles.tag} title="Fase da Prova">
-                        <FiLayers style={{ marginRight: '6px' }} />
-                        {prova.fase ? `Fase ${prova.fase}` : 'Sem fase'}
-                    </div>
-
-                    {/* Pill de Status */}
-                    <div className={`${styles.status_pill} ${styles[prova.status?.toLowerCase()] || ''}`}>
-                        {prova.status || 'Pendente'}
-                    </div>
+                  <div className={styles.tag} title="Anos Escolares">
+                    <BsBook style={{ marginRight: '6px' }} />
+                    {(prova.anos || []).join(', ') || 'Sem ano'}
+                  </div>
+                  <div className={styles.tag} title="Fase da Prova">
+                    <FiLayers style={{ marginRight: '6px' }} />
+                    {prova.fase ? `Fase ${prova.fase}` : 'Sem fase'}
+                  </div>
+                  <div className={`${styles.status_pill} ${styles[prova.status?.toLowerCase()] || ''}`}>
+                    {prova.status || 'Pendente'}
+                  </div>
                 </div>
               </div>
 
-              {/* Direita: Botões de Ação */}
               <div className={styles.card_actions}>
                 <button
                   className={`${styles.action_btn} ${styles.edit_btn}`}
                   onClick={() => window.location.href = `/provas/${prova.id}`}
                   title="Editar Prova"
+                  disabled={gerandoPDF}
                 >
                   <BsPencil />
                 </button>
-                <button 
-                  className={`${styles.action_btn} ${styles.view_btn}`} 
+                <button
+                  className={`${styles.action_btn} ${styles.view_btn}`}
                   onClick={() => visualizarPDF(prova)}
-                  title="Gerar/Visualizar PDF"
+                  title="Visualizar PDF"
+                  disabled={gerandoPDF}
                 >
                   <FiSearch />
                 </button>
               </div>
-
             </div>
           ))
         )}

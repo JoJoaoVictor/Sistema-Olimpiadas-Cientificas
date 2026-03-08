@@ -10,5 +10,10 @@ export default defineConfig({
     exclude: [
       "@esbuild-plugins/node-globals-polyfill"
     ]
+  },
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    }
   }
 });

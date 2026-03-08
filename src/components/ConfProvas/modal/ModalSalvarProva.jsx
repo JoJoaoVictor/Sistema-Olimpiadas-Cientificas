@@ -4,15 +4,15 @@ import Select from 'react-select';
 import styles from './ModalSalvarProva.module.css';
 
 const opcoesAno = [
-  { value: '4', label: '4º Ano' },
-  { value: '5', label: '5º Ano' },
-  { value: '6', label: '6º Ano' },
-  { value: '7', label: '7º Ano' },
-  { value: '8', label: '8º Ano' },
-  { value: '9', label: '9º Ano' },
-  { value: '1', label: '1º Médio' },
-  { value: '2', label: '2º Médio' },
-  { value: '3', label: '3º Médio' },
+    { value: '4º', label: '4º Ano' },
+    { value: '5º', label: '5º Ano' },
+    { value: '6º', label: '6º Ano' },
+    { value: '7º', label: '7º Ano' },
+    { value: '8º', label: '8º Ano' },
+    { value: '9º', label: '9º Ano' },
+    { value: '1º', label: '1º Médio' },
+    { value: '2º', label: '2º Médio' },
+    { value: '3º', label: '3º Médio' },
 ];
 
 function ModalSalvarProva({ 
@@ -125,14 +125,14 @@ function ModalSalvarProva({
                 <div className={styles.formGroup}>
                     <label htmlFor="status">Status</label>
                     <select 
-                        id="status"
-                        className={styles.selectNative}
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                      id="status"
+                      className={styles.selectNative}
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
                     >
-                        <option value="Pendente">Pendente</option>
-                        <option value="Em Revisão">Em Revisão</option>
-                        <option value="Pronta">Pronta</option>
+                      <option value="PENDENTE">Pendente</option>
+                      <option value="APLICADA">Aplicada</option>
+                      <option value="APROVADA">Aprovada</option>
                     </select>
                 </div>
             </div>
@@ -146,8 +146,8 @@ function ModalSalvarProva({
                   options={opcoesAno}
                   isMulti
                   placeholder="Selecione os anos..."
-                  value={localAnos} // AGORA USA O ESTADO LOCAL
-                  onChange={handleChangeAnos} // AGORA CHAMA O HANDLER LOCAL
+                  value={localAnos} 
+                  onChange={handleChangeAnos} 
                   closeMenuOnSelect={false}
                   styles={{
                     control: (base, state) => ({

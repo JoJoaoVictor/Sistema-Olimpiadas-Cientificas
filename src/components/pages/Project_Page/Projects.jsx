@@ -15,9 +15,14 @@ import Select from 'react-select';
 import { LuLayoutGrid, LuLayoutList, LuPlus, LuCalendarDays } from "react-icons/lu";
 import { FaInbox, FaCheckDouble, FaSadTear } from "react-icons/fa";
 
+// Serviço de API
+import api from '../../../services/api';
+import { authService } from '../../../services/authService';
+
 function Project() {
     // === ESTADOS ===
     const [projects, setProjects] = useState([]);
+    const [graus, setGraus] = useState([]);          // Lista de graus (para filtros)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -33,55 +38,92 @@ function Project() {
     const [habilidade, setHabilidade] = useState('');
     const [phaseLevel, setPhaseLevel] = useState('');
     
-    // === NOVO: Estado para Unidade Temática ===
+    // Estado para Unidade Temática
     const [bnccTheme, setBnccTheme] = useState('');
     
     // Estado para o filtro de Data
     const [dateFilter, setDateFilter] = useState('all'); 
 
-    // === BUSCA DE DADOS ===
+    // === CARREGAR GRAUS (para filtros) ===
+    useEffect(() => {
+        async function fetchGraus() {
+            try {
+                const grausRes = await api.get('/api/v1/graus/');
+                const grausArray = grausRes.data?.data?.graus || [];
+                setGraus(grausArray);
+            } catch (err) {
+                console.error('Erro ao carregar graus:', err);
+            }
+        }
+        fetchGraus();
+    }, []);
+
+    // === BUSCA DE QUESTÕES via API ===
     useEffect(() => {
         async function fetchProjects() {
-            const endpoint = tipoQuestao === 'aprovadas' 
-                ? 'http://localhost:5000/questõesAprovadas' 
-                : 'http://localhost:5000/projects';
-
             setLoading(true);
             try {
-                const res = await fetch(endpoint);
-                if (!res.ok) throw new Error('Erro de conexão com o servidor');
-                const data = await res.json();
-                setProjects(data);
+                const categoryId = tipoQuestao === 'aprovadas' ? 2 : 1;
+                const response = await api.get('/api/v1/questions/', {
+                    params: {
+                        category_id: categoryId,
+                        per_page: 100, // máximo permitido
+                    }
+                });
+
+                const backendQuestions = response.data?.data?.questions || [];
+
+                // Converte os campos de snake_case para camelCase
+                const convertedQuestions = backendQuestions.map(q => ({
+                    id: q.id,
+                    name: q.name,
+                    professorName: q.professor_name,
+                    phaseLevel: q.phase_level,
+                    serieAno: q.grau?.name || q.serie_ano, // nome do grau vindo do relacionamento
+                    grauId: q.grau_id,
+                    difficultyLevel: q.difficulty_level,
+                    knowledgeObjects: q.knowledge_objects,
+                    bnccTheme: q.bncc_theme,
+                    abilityCode: q.ability_code,
+                    abilityDescription: q.ability_description,
+                    questionStatement: q.question_statement,
+                    alternatives: q.alternatives,
+                    correctAlternative: q.correct_alternative,
+                    detailedResolution: q.detailed_resolution,
+                    categoryId: q.category_id,
+                    categoryName: q.category?.name || 'Sem categoria', // nome da categoria vindo do relacionamento
+                    reviewerComments: q.reviewer_comments,
+                    images: q.images || [],
+                    createdAt: q.created_at,
+                    updatedAt: q.updated_at,
+                }));
+
+                setProjects(convertedQuestions);
                 setError(null);
             } catch (err) {
-                setError(err.message);
-                console.error(err);
+                console.error('Erro ao carregar questões:', err);
+                const errorMsg = authService._handleError(err);
+                setError(errorMsg || 'Erro ao carregar questões.');
             } finally {
                 setLoading(false);
             }
         }
 
         fetchProjects();
-    }, [tipoQuestao]);
+    }, [tipoQuestao]); // dependência apenas do tipo, pois não precisa mais de graus/categories
 
-    // === AÇÃO DE REMOVER ===
+    // === AÇÃO DE REMOVER (DELETE) ===
     async function removeProject(id) {
         if (!window.confirm('Tem certeza que deseja excluir esta questão?')) return;
         try {
             setLoading(true);
-            const endpoint = tipoQuestao === 'aprovadas' 
-                ? `http://localhost:5000/questõesAprovadas/${id}`
-                : `http://localhost:5000/projects/${id}`;
-
-            const response = await fetch(endpoint, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            if (!response.ok) throw new Error('Falha ao remover');
+            await api.delete(`/api/v1/questions/${id}`);
             setProjects(prev => prev.filter(p => p.id !== id));
             alert('Questão removida com sucesso!');
         } catch (err) {
-            alert('Erro ao remover: ' + err.message);
+            console.error('Erro ao remover:', err);
+            const errorMsg = authService._handleError(err);
+            alert('Erro ao remover: ' + errorMsg);
         } finally {
             setLoading(false);
         }
@@ -89,49 +131,23 @@ function Project() {
 
     // === LÓGICA DE FILTRAGEM AVANÇADA ===
     const filteredProjects = projects
-        // 1. Filtro de Dificuldade
-        .filter((p) => dificuldade === '' || String(p.difficultyLevel) === difficultyStringCheck(dificuldade))
-        
-        // 2. Filtro de Texto (Nome)
+        .filter((p) => dificuldade === '' || String(p.difficultyLevel) === dificuldade)
         .filter((p) => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-        
-        // 3. Filtro de Anos
         .filter((p) => {
             if (anosSelecionados.length === 0) return true;
-            const serieItem = String(p.serieAno).replace(/[^0-9]/g, ''); 
-            return anosSelecionados.some(opcao => opcao.value === serieItem);
+            // Extrai o número do nome do grau (ex: "4º Fundamental" -> "4")
+            const numeroAno = p.serieAno.match(/\d+/)?.[0] || '';
+            return anosSelecionados.some(opcao => opcao.value === numeroAno);
         })
-
-        // 4. Filtro por Nível da Fase
-        .filter((p) => {
-             if (phaseLevel === '') return true;
-             return String(p.phaseLevel) === String(phaseLevel);
-        })
-
-        // 5. Filtro por Código de Habilidade
-        .filter((p) => {
-             if (habilidade === '') return true;
-             return p.abilityCode?.toLowerCase().includes(habilidade.toLowerCase());
-        })
-
-        // === NOVO: Filtro por Unidade Temática ===
-        // Verifica se o tema selecionado está contido no tema do projeto
-        .filter((p) => {
-            if (bnccTheme === '') return true;
-            // Usa includes para ser flexível ou === para exato. Includes é mais seguro se houver espaços extras.
-            return p.bnccTheme?.toLowerCase().includes(bnccTheme.toLowerCase());
-        })
-
-        // 6. Filtro de Data (Periodo)
+        .filter((p) => phaseLevel === '' || String(p.phaseLevel) === String(phaseLevel))
+        .filter((p) => habilidade === '' || p.abilityCode?.toLowerCase().includes(habilidade.toLowerCase()))
+        .filter((p) => bnccTheme === '' || p.bnccTheme?.toLowerCase().includes(bnccTheme.toLowerCase()))
         .filter((p) => {
             if (dateFilter === 'all') return true;
-
             const dataCriacao = p.createdAt ? new Date(p.createdAt).getTime() : 0;
             const dataEdicao = p.updatedAt ? new Date(p.updatedAt).getTime() : 0;
             const ultimaAtividadeTimestamp = Math.max(dataCriacao, dataEdicao);
-            
             if (ultimaAtividadeTimestamp === 0) return true;
-
             const dataProjeto = new Date(ultimaAtividadeTimestamp);
             const hoje = new Date();
             const inicioHoje = new Date(hoje.setHours(0,0,0,0));
@@ -149,28 +165,13 @@ function Project() {
                 return dataProjeto >= trintaDiasAtras;
             }
             if (dateFilter === 'year') return dataProjeto.getFullYear() === new Date().getFullYear();
-
             return true;
         })
-
-        // 7. Ordenação (Sort)
         .sort((a, b) => {
-            const dateA = new Date(
-                sortOrder === 'recentes' 
-                ? (a.createdAt || 0) 
-                : (a.updatedAt || a.createdAt || 0) 
-            );
-            const dateB = new Date(
-                sortOrder === 'recentes' 
-                ? (b.createdAt || 0) 
-                : (b.updatedAt || b.createdAt || 0)
-            );
-            return dateB - dateA; 
+            const dateA = new Date(sortOrder === 'recentes' ? (a.createdAt || 0) : (a.updatedAt || a.createdAt || 0));
+            const dateB = new Date(sortOrder === 'recentes' ? (b.createdAt || 0) : (b.updatedAt || b.createdAt || 0));
+            return dateB - dateA;
         });
-
-    function difficultyStringCheck(diffState) {
-        return diffState;
-    }
 
     const opcoesAno = [
         { value: '2', label: '2º Ano' }, { value: '3', label: '3º Ano' },
@@ -179,21 +180,6 @@ function Project() {
         { value: '8', label: '8º Ano' }, { value: '9', label: '9º Ano' },
         { value: '1', label: '1º Médio' }, { value: '2', label: '2º Médio' }, { value: '3', label: '3º Médio' },
     ];
-
-    const customSelectStyles = {
-        control: (base, state) => ({
-            ...base,
-            height: '42px',
-            minHeight: '42px',
-            borderRadius: '6px',
-            borderColor: state.isFocused ? '#2c3e50' : '#ddd',
-            boxShadow: 'none',
-            fontSize: '0.9rem',
-            backgroundColor: 'white',
-        }),
-        valueContainer: (base) => ({ ...base, padding: '0 8px' }),
-        input: (base) => ({ ...base, margin: 0, padding: 0 }),
-    };
 
     return (
         <div className={styles.page_container}>
@@ -258,51 +244,24 @@ function Project() {
                         isMulti
                         placeholder="Ano"
                         value={anosSelecionados}
-                        onChange={(selected) => {
-                        setAnosSelecionados(selected || []);
-                        }}
+                        onChange={(selected) => setAnosSelecionados(selected || [])}
                         closeMenuOnSelect={false}
                         isClearable
                         styles={{
-                        control: (base, state) => ({ 
-                            ...base,
-                            height: '42px',
-                            borderColor: state.isFocused ? '#1967d2' : '#ccc',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                borderColor: '#1967d2',
-                            },
-                        }),
-                        valueContainer: (base) => ({
-                            ...base,
-                            height: '40px',
-                            padding: '0 0.5em',
-                            overflow: 'auto', // Permite scroll se tiver muitos itens selecionados
-                        }),
-                        input: (base) => ({
-                            ...base,
-                            margin: 0,
-                            padding:0,
-                        }),
-                        indicatorsContainer: (base) => ({
-                            ...base,
-                        }),
-                        multiValue: (base) => ({
-                            ...base,
-                            backgroundColor: '#e0e0e0',
-                        }),
-                        multiValueLabel: (base) => ({
-                            ...base,
-                            color: '#797979',
-                        }),
-                        placeholder: (base) => ({
-                            ...base,
-                            color: '#797979',
-                        }),
-                        menu: (base) => ({
-                            ...base,
-                            zIndex: 9999, // Garante que o menu fique por cima
-                        }),
+                            control: (base, state) => ({ 
+                                ...base,
+                                height: '42px',
+                                borderColor: state.isFocused ? '#1967d2' : '#ccc',
+                                boxShadow: 'none',
+                                '&:hover': { borderColor: '#1967d2' },
+                            }),
+                            valueContainer: (base) => ({ ...base, height: '40px', padding: '0 0.5em', overflow: 'auto' }),
+                            input: (base) => ({ ...base, margin: 0, padding:0 }),
+                            indicatorsContainer: (base) => ({ ...base }),
+                            multiValue: (base) => ({ ...base, backgroundColor: '#e0e0e0' }),
+                            multiValueLabel: (base) => ({ ...base, color: '#797979' }),
+                            placeholder: (base) => ({ ...base, color: '#797979' }),
+                            menu: (base) => ({ ...base, zIndex: 9999 }),
                         }}
                     />
 
@@ -339,18 +298,15 @@ function Project() {
                         onChange={(e) => setHabilidade(e.target.value)}
                     />
                     
-                    {/* === NOVO: Select de Unidade Temática Ativado === */}
                     <select 
                         className={styles.native_select}
                         value={bnccTheme}
                         onChange={(e) => setBnccTheme(e.target.value)}
                     >
-                        {/* Define o valor como vazio para mostrar todos */}
                         <option value="">Unidade Temática</option>
-                        {/* Os values agora são os textos reais para bater com o DB */}
                         <option value="Álgebra">Álgebra</option>
                         <option value="Geometria">Geometria</option>
-                         <option value="Estatística">Estatística</option>
+                        <option value="Estatística">Estatística</option>
                         <option value="Álgebra/Geometria">Álgebra / Geometria</option>
                         <option value="Grandezas/Geometria">Grandezas / Geometria</option> 
                         <option value="Grandezas/Medidas">Grandezas / Medidas</option>
@@ -391,14 +347,13 @@ function Project() {
                         <button 
                             className={styles.clear_filters} 
                             onClick={() => {
-                                // === Reset de todos os filtros ===
                                 setSearchTerm('');
                                 setDateFilter('all');
                                 setDificuldade('');
                                 setAnosSelecionados([]);
                                 setPhaseLevel('');
                                 setHabilidade('');
-                                setBnccTheme(''); 
+                                setBnccTheme('');
                             }}
                         >
                             Limpar Filtros
@@ -410,7 +365,8 @@ function Project() {
                             viewMode === 'grid' ? (
                                 <ProjectsCard
                                     key={project.id}
-                                    {...project} 
+                                    {...project}
+                                    grauName={project.serieAno} // passa o nome do grau
                                     handleRemove={removeProject}
                                 />
                             ) : (
