@@ -78,46 +78,14 @@ function Prova() {
   }, [searchName, searchDate, anosSelecionados, faseSelecionada, statusSelecionado, provas]);
 
   // Geração de PDF via backend
-  async function visualizarPDF(prova) {
+    async function visualizarPDF(prova) {
     if (gerandoPDF) return;
-
-    // Extrai as questões da prova (o backend já retorna o array `questions`)
-    const examQuestions = prova.questions || [];
-    if (examQuestions.length === 0) {
-      alert('Esta prova não possui questões.');
-      return;
-    }
-
-      // Extrai as questões do aninhamento
-      const questoes = examQuestions.map(eq => {
-      const q = eq.question;
-      // Monta o objeto no formato esperado pelo backend (campos como question_statement, alternatives, etc.)
-      return {
-        id: q.id,
-        name: q.name,
-        question_statement: q.question_statement,
-        alternatives: q.alternatives,
-        correct_alternative: q.correct_alternative,
-        detailed_resolution: q.detailed_resolution,
-        image: q.image?.url || null,
-        image_role: q.image_role,
-        // inclua outros campos necessários
-      };
-    }); 
-    
     setGerandoPDF(true);
     try {
-      const payload = {
-        name: prova.name || 'Prova Sem Título',
-        fase: prova.fase || '',
-        anos: prova.anos || [],
-        questoes: questoes ,
-      };
-
-      const response = await api.post('/api/v1/exams/generate_pdf', payload, {
-        responseType: 'blob'
+      const response = await api.get(`/api/v1/exams/${prova.id}/pdf`, {
+        responseType: 'blob',
+        params: { include_answers: true } // ou false
       });
-
       const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -178,7 +146,7 @@ function Prova() {
       {gerandoPDF && (
         <div className={styles.loadingOverlay}>
           <h3>Gerando PDF...</h3>
-          <p>Aguarde</p>
+          <p>Aguarde, isso pode levar alguns segundos na primeira vez.</p>
         </div>
       )}
 
