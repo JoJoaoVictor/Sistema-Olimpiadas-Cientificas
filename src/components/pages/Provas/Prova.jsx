@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Prova.module.css';
 import { FiSearch, FiCalendar, FiLayers, FiCheckCircle } from 'react-icons/fi';
 import { BsPencil, BsBook } from 'react-icons/bs';
@@ -9,6 +10,8 @@ import api from '../../../services/api';
 import { authService } from '../../../services/authService';
 
 function Prova() {
+  const navigate = useNavigate();
+
   const [provas, setProvas] = useState([]);
   const [provasFiltradas, setProvasFiltradas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -41,37 +44,60 @@ function Prova() {
     fetchProvas();
   }, []);
 
-  // Aplica todos os filtros localmente (já que o backend não tem filtros avançados)
+  // Aplica todos os filtros localmente
   useEffect(() => {
     let filtradas = [...provas];
 
-    if (searchName.trim() !== '') {
+    // ── Nome ─────────────────────────────────────────────────────────────────
+    if (searchName.trim()) {
       filtradas = filtradas.filter(p =>
         p.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
+    // ── Data ─────────────────────────────────────────────────────────────────
+    // Compara apenas YYYY-MM-DD para evitar problemas de timezone.
+    // searchDate já vem como "YYYY-MM-DD" do input type="date".
+    // created_at vem como ISO string "2024-03-18T..." — pega só os 10 primeiros chars.
     if (searchDate) {
-      const dataSelecionada = new Date(searchDate).toLocaleDateString('pt-BR');
       filtradas = filtradas.filter(p => {
-        const createdAt = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '';
-        return createdAt === dataSelecionada;
+        if (!p.created_at) return false;
+        const dataProva = p.created_at.slice(0, 10); // "YYYY-MM-DD"
+        return dataProva === searchDate;
       });
     }
 
+    // ── Anos ──────────────────────────────────────────────────────────────────
     if (anosSelecionados.length > 0) {
       filtradas = filtradas.filter(p => {
         const anosDaProva = p.anos || [];
-        return anosSelecionados.some(opt => anosDaProva.includes(opt.label));
+        return anosSelecionados.some(opt =>
+          anosDaProva.some(a => a.includes(opt.label) || opt.label.includes(a))
+        );
       });
     }
 
+    // ── Fase ──────────────────────────────────────────────────────────────────
+    // O banco pode guardar "1", "2", "3", "Final" ou "1ª FASE" etc.
+    // O select usa value "1","2","Final" — comparamos de forma flexível.
     if (faseSelecionada) {
-      filtradas = filtradas.filter(p => p.fase === faseSelecionada);
+      filtradas = filtradas.filter(p => {
+        const fase = String(p.fase || '').trim();
+        // Comparação exata primeiro
+        if (fase === faseSelecionada) return true;
+        // Comparação pelo número inicial: "1ª FASE" contém "1"
+        if (fase.startsWith(faseSelecionada)) return true;
+        // "Final" case-insensitive
+        if (faseSelecionada.toLowerCase() === 'final' && fase.toLowerCase().includes('final')) return true;
+        return false;
+      });
     }
 
+    // ── Status ────────────────────────────────────────────────────────────────
     if (statusSelecionado) {
-      filtradas = filtradas.filter(p => p.status === statusSelecionado);
+      filtradas = filtradas.filter(p =>
+        p.status?.toUpperCase() === statusSelecionado.toUpperCase()
+      );
     }
 
     setProvasFiltradas(filtradas);
@@ -246,7 +272,7 @@ function Prova() {
               <div className={styles.card_actions}>
                 <button
                   className={`${styles.action_btn} ${styles.edit_btn}`}
-                  onClick={() => window.location.href = `/provas/${prova.id}`}
+                  onClick={() => navigate(`/provas/${prova.id}`)}
                   title="Editar Prova"
                   disabled={gerandoPDF}
                 >

@@ -16,6 +16,7 @@ import Register from './components/pages/Usuario/Componentes/Login/Registro.jsx'
 import Projetos from './components/pages/Project_Page/Components_project/Project_Modals/Projetos.jsx'; 
 import MontarProva from './components/ConfProvas/MontarProva.jsx';
 import Prova from './components/pages/Provas/Prova';
+import EditarProva from './components/pages/Provas/Prova_Modal/EditarProva.jsx';
 
 /* Layout */ 
 import Container from './components/Layout/Container.jsx';
@@ -109,6 +110,7 @@ function AppContent() {
           <Route element={<PrivateRoute allowedRoles={['PROFESSOR', 'ADMIN', 'REVISOR']} />}>
             <Route path="/montarProva" element={<MontarProva/>} />    
             <Route path="/Prova" element={<Prova/>} />                
+            <Route path="/provas/:id" element={<EditarProva />} />    
           </Route>
 
            {/* ====================================================

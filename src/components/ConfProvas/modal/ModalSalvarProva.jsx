@@ -15,6 +15,7 @@ const opcoesAno = [
     { value: '3º', label: '3º Médio' },
 ];
 
+// modoEdicao = true quando há um id de prova existente
 function ModalSalvarProva({ 
   isOpen, 
   onClose, 
@@ -26,150 +27,157 @@ function ModalSalvarProva({
   setNomeProva, 
   setFase, 
   setAnosSelecionados,
-  setStatus 
+  setStatus,
+  modoEdicao = false,   // ← novo prop
 }) {
   const [error, setError] = useState('');
 
-  // ESTADO LOCAL: Todos os campos agora são controlados localmente para garantir a validação
   const [localNome, setLocalNome] = useState('');
   const [localFase, setLocalFase] = useState('');
-  const [localAnos, setLocalAnos] = useState([]); // Novo estado local para Anos
+  const [localAnos, setLocalAnos] = useState([]);
 
-  // Carrega os dados iniciais APENAS quando o modal abre
   useEffect(() => {
     if (isOpen) {
       setLocalNome(nomeProva || '');
       setLocalFase(fase || '');
-      setLocalAnos(anosSelecionados || []); // Sincroniza anos iniciais
+      setLocalAnos(anosSelecionados || []);
       setError('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]); 
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  // Atualiza Nome Local e avisa o pai
   const handleChangeNome = (e) => {
     const valor = e.target.value;
     setLocalNome(valor);
     if (setNomeProva) setNomeProva(valor);
   };
 
-  // Atualiza Fase Local e avisa o pai
   const handleChangeFase = (e) => {
     const valor = e.target.value;
     setLocalFase(valor);
     if (setFase) setFase(valor);
   };
 
-  // Atualiza Anos Locais e avisa o pai (CORREÇÃO DO ERRO DE VALIDAÇÃO)
   const handleChangeAnos = (selected) => {
     const valor = selected || [];
-    setLocalAnos(valor); // Atualiza visualmente e para validação imediata
+    setLocalAnos(valor);
     if (setAnosSelecionados) setAnosSelecionados(valor);
   };
 
   const handleConfirm = () => {
-    // Valida usando EXCLUSIVAMENTE os estados locais (o que você vê na tela)
-    // Isso impede que atrasos do pai causem falso erro de "campo vazio"
     if (!localNome.trim() || !localFase.trim() || !localAnos || localAnos.length === 0) {
       setError('⚠️ Por favor, preencha todos os campos obrigatórios.');
       return;
     }
-    
-    // Garante sincronia final antes de salvar
     if (setNomeProva) setNomeProva(localNome);
     if (setFase) setFase(localFase);
     if (setAnosSelecionados) setAnosSelecionados(localAnos);
-
     setError('');
-    onConfirm(); 
+    onConfirm();
   };
 
   return (
     <div className={styles.overlay}>
       <div className={styles.modalContainer}>
         <div className={styles.modalHeader}>
-            <h2>Salvar Prova</h2>
-            <p>Confirme os dados gerados automaticamente antes de finalizar.</p>
+          <h2>{modoEdicao ? 'Editar Prova' : 'Salvar Prova'}</h2>
+          <p>
+            {modoEdicao
+              ? 'Altere os dados da prova antes de salvar.'
+              : 'Confirme os dados antes de finalizar.'}
+          </p>
         </div>
 
         <div className={styles.modalBody}>
-            {/* Grupo: Nome da Prova */}
+          {/* Nome da Prova */}
+          <div className={styles.formGroup}>
+            <label htmlFor="nomeProva">
+              Nome da Prova <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="nomeProva"
+              type="text"
+              className={styles.input}
+              value={localNome}
+              onChange={handleChangeNome}
+              placeholder="Ex: OM_2024_NÍVEL I_FASE 1"
+            />
+          </div>
+
+          {/* Fase + Status (status só na edição) */}
+          <div className={styles.row}>
             <div className={styles.formGroup}>
-                <label htmlFor="nomeProva">Nome da Prova <span className={styles.required}>*</span></label>
-                <input 
-                  id="nomeProva"
-                  type="text" 
-                  className={styles.input}
-                  value={localNome} 
-                  onChange={handleChangeNome} 
-                  placeholder="Ex: OM_2024_NÍVEL I_FASE 1"
-                />
+              <label htmlFor="fase">
+                Fase / Etapa <span className={styles.required}>*</span>
+              </label>
+              <input
+                id="fase"
+                type="text"
+                className={styles.input}
+                value={localFase}
+                onChange={handleChangeFase}
+                placeholder="Ex: 1ª FASE"
+              />
             </div>
 
-            {/* Grupo: Fase e Status */}
-            <div className={styles.row}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="fase">Fase / Etapa <span className={styles.required}>*</span></label>
-                    <input 
-                      id="fase"
-                      type="text" 
-                      className={styles.input}
-                      value={localFase} 
-                      onChange={handleChangeFase} 
-                      placeholder="Ex: 1ª FASE"
-                    />
-                </div>
+            {modoEdicao && (
+              <div className={styles.formGroup}>
+                <label htmlFor="status">Status</label>
+                <select
+                  id="status"
+                  className={styles.selectNative}
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="PENDENTE">Pendente</option>
+                  <option value="APLICADA">Aplicada</option>
+                  <option value="APROVADA">Aprovada</option>
+                </select>
+              </div>
+            )}
+          </div>
 
-                <div className={styles.formGroup}>
-                    <label htmlFor="status">Status</label>
-                    <select 
-                      id="status"
-                      className={styles.selectNative}
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="PENDENTE">Pendente</option>
-                      <option value="APLICADA">Aplicada</option>
-                      <option value="APROVADA">Aprovada</option>
-                    </select>
-                </div>
-            </div>
+          {/* Anos Escolares */}
+          <div className={styles.formGroup}>
+            <label>
+              Anos Escolares <span className={styles.required}>*</span>
+            </label>
+            <Select
+              classNamePrefix="react-select"
+              isSearchable
+              options={opcoesAno}
+              isMulti
+              placeholder="Selecione os anos..."
+              value={localAnos}
+              onChange={handleChangeAnos}
+              closeMenuOnSelect={false}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  minHeight: '45px',
+                  borderRadius: '6px',
+                  borderColor: state.isFocused ? '#007bff' : '#ced4da',
+                  boxShadow: state.isFocused ? '0 0 0 1px #007bff' : 'none',
+                  '&:hover': { borderColor: '#007bff' },
+                }),
+                multiValue: (base) => ({ ...base, backgroundColor: '#e7f1ff' }),
+                multiValueLabel: (base) => ({ ...base, color: '#007bff' }),
+              }}
+            />
+          </div>
 
-            {/* Grupo: Anos Escolares */}
-            <div className={styles.formGroup}>
-                <label>Anos Escolares <span className={styles.required}>*</span></label>
-                <Select
-                  classNamePrefix="react-select"
-                  isSearchable
-                  options={opcoesAno}
-                  isMulti
-                  placeholder="Selecione os anos..."
-                  value={localAnos} 
-                  onChange={handleChangeAnos} 
-                  closeMenuOnSelect={false}
-                  styles={{
-                    control: (base, state) => ({
-                      ...base, 
-                      minHeight: '45px',
-                      borderRadius: '6px',
-                      borderColor: state.isFocused ? '#007bff' : '#ced4da',
-                      boxShadow: state.isFocused ? '0 0 0 1px #007bff' : 'none',
-                      '&:hover': { borderColor: '#007bff' }
-                    }),
-                    multiValue: (base) => ({ ...base, backgroundColor: '#e7f1ff' }),
-                    multiValueLabel: (base) => ({ ...base, color: '#007bff' }),
-                  }}
-                />
-            </div>
-            
-            {error && <div className={styles.errorBanner}>{error}</div>}
+          {error && <div className={styles.errorBanner}>{error}</div>}
         </div>
 
         <div className={styles.modalFooter}>
-          <button className={styles.btnCancel} onClick={onClose}>Cancelar</button>
-          <button className={styles.btnSave} onClick={handleConfirm}>Confirmar e Salvar</button>
+          <button className={styles.btnCancel} onClick={onClose}>
+            Cancelar
+          </button>
+          <button className={styles.btnSave} onClick={handleConfirm}>
+            {modoEdicao ? 'Salvar Alterações' : 'Confirmar e Salvar'}
+          </button>
         </div>
       </div>
     </div>
@@ -188,6 +196,7 @@ ModalSalvarProva.propTypes = {
   setFase: PropTypes.func.isRequired,
   setAnosSelecionados: PropTypes.func.isRequired,
   setStatus: PropTypes.func.isRequired,
+  modoEdicao: PropTypes.bool,
 };
 
 export default ModalSalvarProva;

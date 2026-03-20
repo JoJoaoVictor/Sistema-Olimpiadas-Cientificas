@@ -1,0 +1,1254 @@
+/* =============================================================================
+   EditarProva.module.css
+   Segue o mesmo padrão visual de Projetos.module.css e Prova.module.css
+============================================================================= */
+
+/* ── Wrapper externo ─────────────────────────────────────────────────────── */
+.page_wrapper {
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+}
+
+/* ── Botão Voltar ────────────────────────────────────────────────────────── */
+.back_btn {
+  align-self: flex-start;
+  margin-bottom: 15px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.back_btn:hover { color: #333; }
+
+/* ── Card principal ──────────────────────────────────────────────────────── */
+.card_container {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-in-out;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.card_header {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.header_content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 700;
+}
+
+.dates_info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+.separator { color: #ccc; }
+
+.header_actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Badges de Status ────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.status_approved {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.status_applied {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+
+.status_pending {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border: 1px solid #ffe0b2;
+}
+
+/* ── Botões de Ação ──────────────────────────────────────────────────────── */
+.action_btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  border: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn_edit {
+  background-color: #2c3e50;
+  color: #fff;
+}
+.btn_edit:hover { background-color: #1a252f; transform: translateY(-1px); }
+
+.btn_cancel {
+  background-color: #e74c3c;
+  color: #fff;
+}
+.btn_cancel:hover { background-color: #c0392b; }
+
+.btn_save {
+  background-color: #27ae60;
+  color: #fff;
+}
+.btn_save:hover { background-color: #1e8449; transform: translateY(-1px); }
+.btn_save:disabled { background-color: #95a5a6; cursor: not-allowed; transform: none; }
+
+.btn_pdf {
+  background-color: #e74c3c;
+  color: #fff;
+}
+.btn_pdf:hover { background-color: #c0392b; transform: translateY(-1px); }
+.btn_pdf:disabled { background-color: #95a5a6; cursor: not-allowed; transform: none; }
+
+/* ── Corpo do card ───────────────────────────────────────────────────────── */
+.card_body {
+  padding: 30px;
+}
+
+/* ── Modo visualização ───────────────────────────────────────────────────── */
+.view_mode {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* ── Grid de metadados ───────────────────────────────────────────────────── */
+.info_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.info_box {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  font-size: 0.78rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.info_box p {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #eee;
+  margin: 0;
+}
+
+/* ── Seção de questões ───────────────────────────────────────────────────── */
+.questoes_section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section_heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  color: #444;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.empty_questoes {
+  text-align: center;
+  color: #adb5bd;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+  font-size: 0.95rem;
+}
+
+/* ── Card de questão ─────────────────────────────────────────────────────── */
+.questao_card {
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.questao_card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #dee2e6;
+  transition: background-color 0.3s;
+}
+
+.questao_card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+}
+
+.questao_card:hover::before {
+  background-color: #1967d2;
+}
+
+.questao_numero {
+  width: 36px;
+  height: 36px;
+  background-color: #f1f3f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #495057;
+  flex-shrink: 0;
+}
+
+.questao_content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.questao_nome {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #212529;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.questao_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Tags / Badges ───────────────────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.tag_dificuldade {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.tag_aprovada {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tag_pendente {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+/* ── Botão editar questão ────────────────────────────────────────────────── */
+.questao_edit_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  color: #495057;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.questao_edit_btn:hover {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  border-color: #b6d4fe;
+  transform: translateY(-1px);
+}
+
+/* ── Modo edição ─────────────────────────────────────────────────────────── */
+.edit_mode {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.edit_hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #795548;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.edit_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.field_group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field_label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.field_input {
+  width: 100%;
+  padding: 0 14px;
+  height: 42px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #333;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.field_input:focus {
+  outline: none;
+  border-color: #1967d2;
+  box-shadow: 0 0 0 3px rgba(25, 103, 210, 0.1);
+}
+
+.field_select {
+  width: 100%;
+  padding: 0 14px;
+  height: 42px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #495057;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.field_select:hover  { border-color: #1967d2; }
+.field_select:focus  { outline: none; border-color: #1967d2; }
+
+.edit_actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* ── Overlay de carregamento ─────────────────────────────────────────────── */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loadingOverlay h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loadingOverlay p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.loadingOverlay::after {
+  content: "";
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-top: 20px;
+}
+
+/* ── Loading central (carregamento inicial) ──────────────────────────────── */
+.loading_center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 40px;
+  color: #666;
+  font-size: 1rem;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1967d2;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── Estado vazio / erro ─────────────────────────────────────────────────── */
+.empty_state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 40px;
+  color: #adb5bd;
+  font-size: 1rem;
+}
+
+/* ── Responsividade ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page_wrapper {
+    padding: 1rem;
+  }
+
+  .card_header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header_actions {
+    width: 100%;
+  }
+
+  .action_btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .edit_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit_grid > [style*="grid-column"] {
+    grid-column: 1 !important;
+  }
+
+  .questao_card {
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .questao_edit_btn {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .edit_actions {
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
+
+/* ── Ações do card de questão ────────────────────────────────────────────── */
+.questao_actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Botão remover questão */
+.questao_remove_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #fde2e2;
+  background-color: #fff5f5;
+  color: #e03131;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.questao_remove_btn:hover:not(:disabled) {
+  background-color: #e03131;
+  border-color: #e03131;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.questao_remove_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Botão adicionar questão (header da seção) */
+.btn_add {
+  background-color: #1967d2;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+.btn_add:hover { background-color: #1558b0; transform: translateY(-1px); }
+
+/* Row do heading da seção com botão */
+.section_heading_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.section_heading_row .section_heading {
+  margin: 0;
+}
+
+/* Spinner mini (inline) */
+.mini_spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+/* ── Modal de adicionar questão ──────────────────────────────────────────── */
+.modal_backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal_box {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease-out;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #eee;
+}
+.modal_header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.modal_close_btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.modal_close_btn:hover { background: #f1f3f5; color: #333; }
+
+.modal_search_row {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.modal_search_input {
+  flex: 1;
+  padding: 0 14px;
+  height: 42px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.modal_search_input:focus {
+  outline: none;
+  border-color: #1967d2;
+  box-shadow: 0 0 0 3px rgba(25,103,210,0.1);
+}
+
+.modal_search_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  height: 42px;
+  background-color: #1967d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.modal_search_btn:hover:not(:disabled) { background-color: #1558b0; }
+.modal_search_btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+.modal_results {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.modal_empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: #adb5bd;
+  font-size: 0.95rem;
+}
+
+.modal_questao_card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid #f8f9fa;
+  transition: background-color 0.15s;
+}
+.modal_questao_card:last-child { border-bottom: none; }
+.modal_questao_card:hover { background-color: #f8f9fa; }
+
+.modal_questao_info {
+  flex: 1;
+  min-width: 0;
+}
+.modal_questao_nome {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #212529;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal_add_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: 1px solid #1967d2;
+  background-color: #fff;
+  color: #1967d2;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.modal_add_btn:hover:not(:disabled) {
+  background-color: #1967d2;
+  color: #fff;
+}
+.modal_add_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Responsividade mobile ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .questao_card {
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .questao_actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    border-top: 1px solid #f1f3f5;
+    padding-top: 10px;
+  }
+  .questao_edit_btn { flex: 1; justify-content: center; max-width: 120px; }
+  .modal_box { max-height: 92vh; }
+  .modal_search_row { flex-direction: column; }
+  .modal_search_btn { width: 100%; justify-content: center; }
+}
+
+/* ── Abas ────────────────────────────────────────────────────────────────── */
+.tabs_bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e9ecef;
+  background: #f8f9fa;
+  padding: 0 30px;
+}
+
+.tab_btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  white-space: nowrap;
+}
+.tab_btn:hover { color: #1967d2; background: #fff; }
+.tab_active {
+  color: #1967d2 !important;
+  border-bottom-color: #1967d2 !important;
+  background: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* ── Seção de layout (cabeçalho/rodapé) ─────────────────────────────────── */
+.layout_section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.layout_intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #795548;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.layout_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.layout_card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.layout_card_title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Preview */
+.preview_box {
+  background: #fff;
+  border: 1px dashed #ced4da;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.preview_label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #adb5bd;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.preview_img {
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: width 0.2s;
+  display: block;
+}
+
+.preview_placeholder {
+  color: #adb5bd;
+  font-size: 0.88rem;
+  font-style: italic;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* Upload row */
+.layout_upload_row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.upload_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #1967d2;
+  background: #fff;
+  color: #1967d2;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.upload_btn:hover { background: #1967d2; color: #fff; }
+
+.reset_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #6c757d;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.reset_btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+/* Slider */
+.slider_group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider_label {
+  font-size: 0.88rem;
+  color: #495057;
+}
+.slider_label strong { color: #2c3e50; }
+
+.slider {
+  width: 100%;
+  accent-color: #1967d2;
+  cursor: pointer;
+  height: 4px;
+}
+
+.slider_marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #adb5bd;
+}
+
+/* Botão salvar layout */
+.layout_save_row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* ── Responsividade ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .tabs_bar { padding: 0 12px; overflow-x: auto; }
+  .tab_btn  { padding: 12px 14px; font-size: 0.88rem; }
+  .layout_grid { grid-template-columns: 1fr; }
+  .layout_save_row { justify-content: stretch; }
+  .layout_save_row .action_btn { width: 100%; justify-content: center; }
+}
+
+/* Hint de dimensões recomendadas */
+.layout_dim_hint {
+  font-size: 0.78rem;
+  color: #6c757d;
+  background: #e9ecef;
+  border-radius: 4px;
+  padding: 3px 8px;
+  display: inline-block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: -8px;
+}
+
+/* ── Botão excluir ───────────────────────────────────────────────────────── */
+.btn_delete {
+  background: #fff;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+.btn_delete:hover:not(:disabled) {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* ── Overlay de confirmação de exclusão ──────────────────────────────────── */
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.15s ease;
+}
+
+.confirmBox {
+  background: #fff;
+  border-radius: 12px;
+  padding: 36px 32px 28px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: slideUp 0.2s ease;
+}
+
+.confirmIcon {
+  font-size: 2.4rem;
+  color: #e74c3c;
+  line-height: 1;
+}
+
+.confirmTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.confirmMsg {
+  font-size: 0.95rem;
+  color: #6c757d;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+.confirmMsg strong {
+  color: #e74c3c;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Modal grande (com filtros) ──────────────────────────────────────────── */
+.modal_box_large {
+  background: #fff;
+  border-radius: 12px;
+  width: 780px;
+  max-width: 95vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+/* Botão de toggle de filtros */
+.modal_filter_toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  height: 42px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  background: #fff;
+  color: #495057;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.modal_filter_toggle:hover { border-color: #1967d2; color: #1967d2; }
+
+/* Ponto indicador de filtro ativo */
+.filter_dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e74c3c;
+}
+
+/* Painel de filtros avançados */
+.modal_filters_panel {
+  padding: 14px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal_filters_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.filter_field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter_label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.filter_select_native,
+.filter_input_text {
+  height: 36px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 0.85rem;
+  color: #495057;
+  background: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: border-color 0.2s;
+}
+.filter_select_native:focus,
+.filter_input_text:focus {
+  outline: none;
+  border-color: #1967d2;
+}
+
+.filter_clear_btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #6c757d;
+  font-size: 0.83rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.filter_clear_btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+@media (max-width: 600px) {
+  .modal_filters_grid { grid-template-columns: 1fr; }
+  .modal_box_large { max-height: 95vh; }
+}
+
+/* ── Botão preview (olho) no card de resultado do modal ─────────────────────── */
+.modal_preview_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  background: #fff;
+  color: #6c757d;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+.modal_preview_btn:hover {
+  border-color: #1967d2;
+  color: #1967d2;
+  background: #f0f4ff;
+}
+
+/* ── Botão info no QuestaoCard ───────────────────────────────────────────── */
+.questao_info_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  background: #fff;
+  color: #6c757d;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+.questao_info_btn:hover {
+  border-color: #1967d2;
+  color: #1967d2;
+  background: #f0f4ff;
+}
