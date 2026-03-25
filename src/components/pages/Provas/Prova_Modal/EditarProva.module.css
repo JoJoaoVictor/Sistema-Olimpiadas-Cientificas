@@ -603,6 +603,40 @@
 }
 .questao_remove_btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* Botões de movimento de questão (reordenação) */
+.questao_move_buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.questao_move_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.questao_move_btn:hover:not(:disabled) {
+  background-color: #1967d2;
+  border-color: #1967d2;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.questao_move_btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Botão adicionar questão (header da seção) */
 .btn_add {
   background-color: #1967d2;

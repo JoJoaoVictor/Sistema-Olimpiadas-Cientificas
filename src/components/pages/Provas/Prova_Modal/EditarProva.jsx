@@ -73,6 +73,7 @@ export default function EditarProva() {
     // Questões
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
+    moverQuestaoParaCima, moverQuestaoParaBaixo,
     // Exclusão
     confirmandoExclusao, setConfirmandoExclusao,
     excluindo, excluirProva,
@@ -366,6 +367,9 @@ export default function EditarProva() {
                       index={index}
                       removendo={removendo}
                       onRemover={removerQuestao}
+                      onMoverParaCima={moverQuestaoParaCima}
+                      onMoverParaBaixo={moverQuestaoParaBaixo}
+                      isLastItem={index === questoes.length - 1}
                     />
                   ))
                 )}

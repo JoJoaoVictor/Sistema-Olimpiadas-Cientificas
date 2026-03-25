@@ -7,7 +7,15 @@ import { BsBook, BsPencil } from 'react-icons/bs';
 import ModalInfoQuestao from './../../../../ConfProvas/modal/ModalInfoQuestao';
 import styles from '../EditarProva.module.css';
 
-export default function QuestaoCard({ q, index, removendo, onRemover }) {
+export default function QuestaoCard({ 
+  q, 
+  index, 
+  removendo, 
+  onRemover,
+  onMoverParaCima,
+  onMoverParaBaixo,
+  isLastItem
+}) {
   const navigate = useNavigate();
   const [verDetalhes, setVerDetalhes] = useState(false);
 
@@ -65,6 +73,26 @@ export default function QuestaoCard({ q, index, removendo, onRemover }) {
           >
             <BsPencil /><span>Editar</span>
           </button>
+          
+          <div className={styles.questao_move_buttons}>
+            <button
+              className={styles.questao_move_btn}
+              onClick={() => onMoverParaCima?.(index)}
+              disabled={index === 0}
+              title="Mover para cima"
+            >
+              ⬆
+            </button>
+            <button
+              className={styles.questao_move_btn}
+              onClick={() => onMoverParaBaixo?.(index)}
+              disabled={isLastItem}
+              title="Mover para baixo"
+            >
+              ⬇
+            </button>
+          </div>
+
           <button
             className={styles.questao_remove_btn}
             onClick={() => onRemover(q.id)}

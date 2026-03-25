@@ -183,11 +183,44 @@ export function useEditarProva(id) {
   }
 
   // =========================================================================
-  // 6. SALVAR LAYOUT
+  // 6. MOVER QUESTÕES (REORDENAÇÃO)
+  // =========================================================================
+  async function moverQuestaoParaCima(index) {
+    if (index <= 0) return;
+    
+    const novaLista = [...questoes];
+    [novaLista[index - 1], novaLista[index]] = [novaLista[index], novaLista[index - 1]];
+    
+    try {
+      const questaoIds = novaLista.map(q => q.id);
+      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: questaoIds });
+      setQuestoes(novaLista);
+    } catch (err) {
+      alert('Erro ao reordenar questão: ' + authService._handleError(err));
+    }
+  }
+
+  async function moverQuestaoParaBaixo(index) {
+    if (index >= questoes.length - 1) return;
+    
+    const novaLista = [...questoes];
+    [novaLista[index], novaLista[index + 1]] = [novaLista[index + 1], novaLista[index]];
+    
+    try {
+      const questaoIds = novaLista.map(q => q.id);
+      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: questaoIds });
+      setQuestoes(novaLista);
+    } catch (err) {
+      alert('Erro ao reordenar questão: ' + authService._handleError(err));
+    }
+  }
+
+  // =========================================================================
+  // 7. SALVAR LAYOUT
   // Envia as imagens em base64 para o endpoint dedicado POST /exams/:id/layout
   // O backend decodifica, salva em uploads/layouts/ e devolve o path relativo.
   // =========================================================================
-  // 6. SALVAR LAYOUT — envia JSON com base64, backend salva em uploads/layouts/
+  // 7. SALVAR LAYOUT — envia JSON com base64, backend salva em uploads/layouts/
   // headerBase64 / footerBase64 : string base64 (novo upload), "" (reset), null (sem mudança)
   // =========================================================================
   async function salvarLayout(headerBase64, footerBase64, resetHeader, resetFooter) {
@@ -255,6 +288,7 @@ export function useEditarProva(id) {
     // Questões
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
+    moverQuestaoParaCima, moverQuestaoParaBaixo,
     // Layout
     headerImage, setHeaderImage,
     footerImage, setFooterImage,

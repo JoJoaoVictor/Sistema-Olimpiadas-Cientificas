@@ -10,12 +10,12 @@ import { BsFillInfoCircleFill, BsCardText, BsPersonBadge, BsBook } from 'react-i
 import styles from './ProjectForme.module.css';
 
 import api from '../../../../services/api.js';
+import { getTemasByGrauId, getObjetosByTema, getHabilidadesByObjeto, getDescricaoByCodigoHabilidade } from '../../../../data/bnccHelper.js';
 
 function ProjectForme({ handleSubmit, projectData, btnText }) {
     const location = useLocation();
     const isEditMode = location.pathname.includes('/projetos/') || !!projectData?.id;
 
-    // --- LISTA DE OPÇÕES PARA SÉRIE/ANO (fallback enquanto carrega) ---
     const opcoesAno = [
         { value: '2º Fundamental', label: '2º Fundamental' },
         { value: '3º Fundamental', label: '3º Fundamental' },
@@ -72,10 +72,14 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     const [categories, setCategories] = useState([]);
     const [graus, setGraus] = useState([]);
     const [loadingGraus, setLoadingGraus] = useState(true);
-    const [knowledgeOptionsList, setKnowledgeOptionsList] = useState([]);
     const [formError, setFormError] = useState("");
     const [fieldErrors, setFieldErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // --- CASCATA BNCC ---
+    const [temasList, setTemasList] = useState([]);
+    const [objetosList, setObjetosList] = useState([]);
+    const [habilidadesList, setHabilidadesList] = useState([]);
 
     // --- 3. CARREGAR DADOS DO BACKEND ---
     useEffect(() => {
@@ -84,7 +88,8 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                 const catsRes = await api.get('/api/v1/categories/');
                 setCategories(catsRes.data?.data?.categories || []);
                 const grausRes = await api.get('/api/v1/graus/');
-                setGraus(grausRes.data?.data?.graus || []);
+                const grausData = grausRes.data?.data?.graus || [];
+                setGraus(grausData);
             } catch (err) {
                 console.error("Erro ao carregar opções:", err);
                 setFormError("Erro ao carregar dados do servidor.");
@@ -124,20 +129,44 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         }
     }, [projectData]);
 
-    // --- 4. LÓGICA DINÂMICA: OBJETOS DO CONHECIMENTO ---
+    // --- 4. LÓGICA CASCATA: ATUALIZAR TEMAS QUANDO SÉRIE/ANO MUDA ---
     useEffect(() => {
         if (project.serieAno) {
-            let mockOptions = [];
-            if (['1','2','3','4','5'].includes(String(project.serieAno))) {
-                mockOptions = ["Números Naturais", "Geometria Básica", "Medidas de Tempo"];
-            } else {
-                mockOptions = ["Álgebra Linear", "Funções", "Geometria Analítica", "Probabilidade"];
-            }
-            setKnowledgeOptionsList(mockOptions);
+            const grauId = Number(project.serieAno);
+            const temas = getTemasByGrauId(grauId);
+            setTemasList(temas);
+            setObjetosList([]);
+            setHabilidadesList([]);
         } else {
-            setKnowledgeOptionsList([]);
+            setTemasList([]);
+            setObjetosList([]);
+            setHabilidadesList([]);
         }
     }, [project.serieAno]);
+
+    // --- 5. LÓGICA CASCATA: ATUALIZAR OBJETOS QUANDO TEMA MUDA ---
+    useEffect(() => {
+        if (project.serieAno && project.bnccTheme) {
+            const grauId = Number(project.serieAno);
+            const objetos = getObjetosByTema(grauId, project.bnccTheme);
+            setObjetosList(objetos);
+            setHabilidadesList([]);
+        } else {
+            setObjetosList([]);
+            setHabilidadesList([]);
+        }
+    }, [project.serieAno, project.bnccTheme]);
+
+    // --- 6. LÓGICA CASCATA: ATUALIZAR HABILIDADES QUANDO OBJETO MUDA ---
+    useEffect(() => {
+        if (project.serieAno && project.bnccTheme && project.knowledgeObjects) {
+            const grauId = Number(project.serieAno);
+            const habilidades = getHabilidadesByObjeto(grauId, project.bnccTheme, project.knowledgeObjects);
+            setHabilidadesList(habilidades);
+        } else {
+            setHabilidadesList([]);
+        }
+    }, [project.serieAno, project.bnccTheme, project.knowledgeObjects]);
 
     // --- 5. HANDLERS ---
     const handleChange = (e) => {
@@ -145,6 +174,41 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         setProject((prev) => ({ ...prev, [name]: value }));
         if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: null }));
         if (formError) setFormError("");
+
+        if (name === "bnccTheme" && value !== project.bnccTheme) {
+            setProject((prev) => ({
+                ...prev,
+                knowledgeObjects: "",
+                abilityCode: "",
+                abilityDescription: ""
+            }));
+        }
+
+        if (name === "knowledgeObjects" && value !== project.knowledgeObjects) {
+            setProject((prev) => ({
+                ...prev,
+                abilityCode: "",
+                abilityDescription: ""
+            }));
+        }
+    };
+
+    const handleSelectHabilidade = (e) => {
+        const codigoSelecionado = e.target.value;
+        const habilidadorSelecionada = habilidadesList.find(h => h.codigo === codigoSelecionado);
+        if (habilidadorSelecionada) {
+            setProject(prev => ({
+                ...prev,
+                abilityCode: habilidadorSelecionada.codigo,
+                abilityDescription: habilidadorSelecionada.descricao
+            }));
+        } else {
+            setProject(prev => ({
+                ...prev,
+                abilityCode: "",
+                abilityDescription: ""
+            }));
+        }
     };
 
     const handleAltChange = (e) => {
@@ -168,14 +232,12 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         setProject(prev => ({ ...prev, image: null }));
     };
 
-    // --- 6. ENVIO DO FORMULÁRIO ---
+    // --- 8. ENVIO DO FORMULÁRIO ---
     const submit = async (e) => {
         e.preventDefault();
         console.log('project.image antes do submit:', project.image);
 
-        // ========== VALIDAÇÕES ==========
         const errors = {};
-
         if (!project.name?.trim()) errors.name = "O título da questão é obrigatório.";
         if (!project.professorName?.trim()) errors.professorName = "O nome do professor é obrigatório.";
         if (!project.serieAno) errors.serieAno = "Selecione a série/ano.";
@@ -190,7 +252,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         if (!project.detailedResolution?.trim()) errors.detailedResolution = "Resolução detalhada é obrigatória.";
         const validLetters = ['a', 'b', 'c', 'd', 'e'];
         if (!project.correctAlternative || !validLetters.includes(project.correctAlternative.toLowerCase())) {
-            errors.correctAlternative = "Alternativa correta deve ser uma letra de A a E.";
+            errors.correctAlternative = "Selecione a alternativa correta (A a E).";
         }
         if (isEditMode && canEditComments && !project.categoryId) {
             errors.categoryId = "Defina a situação da questão.";
@@ -204,24 +266,20 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
 
         setIsSubmitting(true);
 
-        // Converte alternativas para string no formato "a) texto\nb) texto..."
         const alternativesText = Object.entries(alts)
             .map(([key, value]) => `${key.toLowerCase()}) ${value}`)
             .join('\n');
 
-        // Encontra o nome do grau correspondente ao ID selecionado
         const selectedGrau = graus.find(g => g.id === Number(project.serieAno));
         const grauName = selectedGrau?.name || '';
 
-        // Monta objeto com os dados do formulário
         const dados = {
             ...project,
-            grauId: project.serieAno,          // ID do grau
-            grauName,                           // Nome do grau
+            grauId: project.serieAno,
+            grauName,
             alternatives: alternativesText,
         };
 
-        // Se for criação e houver imagem, força papel LARGE
         if (!isEditMode && dados.image) {
             dados.image = { ...dados.image, role: 'LARGE' };
         }
@@ -249,20 +307,28 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
 
     const renderError = (fieldName) => {
         if (fieldErrors[fieldName]) {
-            return <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '-10px', display: 'block', marginBottom: '10px' }}>{fieldErrors[fieldName]}</span>;
+            return (
+                <span style={{
+                    color: '#e74c3c', fontSize: '0.85rem',
+                    marginTop: '-10px', display: 'block', marginBottom: '10px'
+                }}>
+                    {fieldErrors[fieldName]}
+                </span>
+            );
         }
         return null;
     };
 
     return (
         <form className={styles.form_container} onSubmit={submit}>
-            {/* SEÇÃO 1: IDENTIFICAÇÃO */}
+
+            {/* ── SEÇÃO 1: IDENTIFICAÇÃO ─────────────────────────────────── */}
             <section className={styles.form_section}>
                 <div className={styles.section_title}>
                     <BsPersonBadge /> <span>Identificação</span>
                 </div>
                 <div className={styles.grid_row}>
-                    <div style={{width: '100%'}}>
+                    <div style={{ width: '100%' }}>
                         <Input
                             type="text" text="Título da Questão" name="name"
                             placeholder="Ex: Teorema de Pitágoras #01"
@@ -270,7 +336,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                         />
                         {renderError('name')}
                     </div>
-                    <div style={{width: '100%'}}>
+                    <div style={{ width: '100%' }}>
                         <Input
                             type="text" text="Nome do Professor" name="professorName"
                             placeholder="Nome completo"
@@ -281,7 +347,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                 </div>
             </section>
 
-            {/* SEÇÃO 2: DADOS PEDAGÓGICOS */}
+            {/* ── SEÇÃO 2: DADOS PEDAGÓGICOS BNCC ───────────────────────── */}
             <section className={styles.form_section}>
                 <div className={styles.section_title}>
                     <BsBook /> <span>Dados Pedagógicos BNCC</span>
@@ -299,15 +365,11 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                             <option value="">Selecione o Ano...</option>
                             {loadingGraus ? (
                                 opcoesAno.map((opcao) => (
-                                    <option key={opcao.value} value={opcao.value}>
-                                        {opcao.label}
-                                    </option>
+                                    <option key={opcao.value} value={opcao.value}>{opcao.label}</option>
                                 ))
                             ) : (
                                 graus.map((grau) => (
-                                    <option key={grau.id} value={grau.id}>
-                                        {grau.name}
-                                    </option>
+                                    <option key={grau.id} value={grau.id}>{grau.name}</option>
                                 ))
                             )}
                         </select>
@@ -329,83 +391,93 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     </div>
                 </div>
 
-                <div className={styles.grid_row}>
-                    {/* Objetos do Conhecimento */}
+                {/* CASCATA BNCC */}
+                <div className={styles.grid_row_2}>
                     <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                        <label className={styles.label}>Objetos do Conhecimento:</label>
-                        <select
-                            name="knowledgeObjects"
-                            className={styles.native_select || styles.input}
-                            value={project.knowledgeObjects}
-                            onChange={handleChange}
-                            style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
-                        >
-                            <option value="">Selecione um Objeto...</option>
-                            {!project.serieAno ? (
-                                <option value="" disabled>Preencha a Série/Ano acima primeiro</option>
-                            ) : (
-                                knowledgeOptionsList.map((opt, index) => (
-                                    <option key={index} value={opt}>{opt}</option>
-                                ))
-                            )}
-                        </select>
-                        {renderError('knowledgeObjects')}
-                    </div>
-
-                    {/* Tema BNCC */}
-                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                        <label className={styles.label}>Tema BNCC:</label>
+                        <label className={styles.label}>Tema BNCC (Unidade Temática):</label>
                         <select
                             className={styles.native_select || styles.input}
                             value={project.bnccTheme}
                             name="bnccTheme"
                             onChange={handleChange}
+                            disabled={!project.serieAno}
                             style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
                         >
-                            <option value="">Unidade Temática</option>
-                            <option value="Álgebra">Álgebra</option>
-                            <option value="Geometria">Geometria</option>
-                            <option value="Estatística">Estatística</option>
-                            <option value="Álgebra/Geometria">Álgebra / Geometria</option>
-                            <option value="Grandezas/Geometria">Grandezas / Geometria</option>
-                            <option value="Grandezas/Medidas">Grandezas / Medidas</option>
-                            <option value="Números">Números</option>
-                            <option value="Números/Álgebra">Números e Álgebra</option>
-                            <option value="Probabilidade">Probabilidade</option>
-                            <option value="Probabilidade e Estatística">Probabilidade e Estatística</option>
+                            <option value="">
+                                {!project.serieAno ? 'Selecione o ano primeiro' : 'Selecione um Tema...'}
+                            </option>
+                            {temasList.map((tema, index) => (
+                                <option key={index} value={tema}>{tema}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <label className={styles.label}>Objeto do Conhecimento:</label>
+                        <select
+                            name="knowledgeObjects"
+                            className={styles.native_select || styles.input}
+                            value={project.knowledgeObjects}
+                            onChange={handleChange}
+                            disabled={!project.bnccTheme}
+                            style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
+                        >
+                            <option value="">
+                                {!project.bnccTheme ? 'Selecione o tema primeiro' : 'Selecione um Objeto...'}
+                            </option>
+                            {objetosList.map((objeto, index) => (
+                                <option key={index} value={objeto}>{objeto}</option>
+                            ))}
+                        </select>
+                        {renderError('knowledgeObjects')}
+                    </div>
+                </div>
+
+                {/* Habilidade BNCC */}
+                <div className={styles.grid_row}>
+                    <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <label className={styles.label}>Habilidade BNCC:</label>
+                        <select
+                            className={styles.native_select || styles.input}
+                            value={project.abilityCode}
+                            onChange={handleSelectHabilidade}
+                            disabled={!project.knowledgeObjects}
+                            style={{ padding: '.7em', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
+                        >
+                            <option value="">
+                                {!project.knowledgeObjects ? 'Selecione o objeto primeiro' : 'Selecione uma Habilidade...'}
+                            </option>
+                            {habilidadesList.map((hab, index) => (
+                                <option key={index} value={hab.codigo}>{hab.codigo}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
 
+                {/* Código e Descrição */}
                 <div className={styles.grid_row_auto}>
-                    <div className={styles.input_group_icon}>
-                        <Input
-                            type="text" text="Cód. Habilidade" name="abilityCode"
-                            placeholder="Ex: EF05MA12" value={project.abilityCode}
-                            handleOnChange={handleChange}
-                        />
-                        <span className={styles.icon_tooltip} title="Consulte a BNCC"><BsFillInfoCircleFill /></span>
-                    </div>
                     <Input
                         type="text" text="Descrição da Habilidade" name="abilityDescription"
-                        placeholder="Descrição completa" value={project.abilityDescription}
+                        placeholder="Preenchida automaticamente ou edite manualmente"
+                        value={project.abilityDescription}
                         handleOnChange={handleChange}
                     />
                     {renderError('abilityDescription')}
                 </div>
             </section>
 
-            {/* SEÇÃO 3: CONTEÚDO LATEX */}
+            {/* ── SEÇÃO 3: ELABORAÇÃO DA QUESTÃO ────────────────────────── */}
             <section className={styles.form_section}>
                 <div className={styles.section_title}>
                     <BsCardText /> <span>Elaboração da Questão (LaTeX)</span>
                 </div>
+
                 <div className={styles.latex_tip}>
                     💡 Dica: Você pode usar fórmulas matemáticas em LaTeX. Para fórmulas inline, use <code>\(...\)</code> e para fórmulas em bloco, use <code>\[...\]</code>.
                     <br />Exemplo: A área do círculo é <code>\(\pi r^2\)</code>
                 </div>
 
-                {/* 1. ENUNCIADO COM PREVIEW */}
+                {/* ENUNCIADO */}
                 <div className={styles.editor_block}>
                     <Input
                         type="text" text="Enunciado" name="questionStatement"
@@ -421,7 +493,8 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     )}
                 </div>
 
-               <div className={styles.upload_area}>
+                {/* IMAGEM */}
+                <div className={styles.upload_area}>
                     <label>Imagem da Questão (Opcional)</label>
                     <ImageUploader
                         onImageProcessed={handleImageProcessed}
@@ -439,44 +512,94 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     )}
                 </div>
 
-                {/* 2. ALTERNATIVAS COM PREVIEW */}
+                {/* ── ALTERNATIVAS (redesenhado) ─────────────────────────── */}
                 <div className={styles.editor_block}>
-                    <label style={{ fontWeight: 'bold', marginBottom: '10px', display: 'block' }}>Apresente 5 Alternativas:</label>
-                    {['A', 'B', 'C', 'D', 'E'].map((altKey) => (
-                        <div key={altKey} style={{ marginBottom: '15px' }}>
-                            <Input
-                                type="text"
-                                text={`${altKey})`}
-                                name={altKey}
-                                value={alts[altKey]}
-                                handleOnChange={handleAltChange}
-                                placeholder={`Alternativa ${altKey}`}
-                            />
-                            {alts[altKey] && (
-                                <div className={styles.preview_box} style={{ marginTop: '5px' }}>
-                                    <strong>Pré-visualização ({altKey}):</strong>
-                                    <LatexText content={alts[altKey]} />
+                    <div className={styles.alt_section_header}>
+                        <span className={styles.alt_section_title}>Alternativas</span>
+                        <span className={styles.alt_section_hint}>
+                            Preencha as 5 opções. Marque a correta no seletor abaixo.
+                        </span>
+                    </div>
+
+                    <div className={styles.alt_grid}>
+                        {['A', 'B', 'C', 'D', 'E'].map((altKey) => {
+                            const isCorreta = project.correctAlternative?.toUpperCase() === altKey;
+                            return (
+                                <div
+                                    key={altKey}
+                                    className={`${styles.alt_card} ${isCorreta ? styles.alt_card_correct : ''}`}
+                                >
+                                    <div className={styles.alt_badge_row}>
+                                        <span className={`${styles.alt_badge} ${isCorreta ? styles.alt_badge_correct : ''}`}>
+                                            {altKey}
+                                        </span>
+                                        {isCorreta && (
+                                            <span className={styles.alt_correct_tag}>✓ Correta</span>
+                                        )}
+                                    </div>
+                                    <Input
+                                        type="text"
+                                        text=" "
+                                        name={altKey}
+                                        value={alts[altKey]}
+                                        handleOnChange={handleAltChange}
+                                        placeholder={`Digite a alternativa ${altKey}...`}
+                                    />
+                                    {alts[altKey] && (
+                                        <div className={styles.alt_preview}>
+                                            <LatexText content={alts[altKey]} />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            );
+                        })}
+                    </div>
                     {renderError('alternatives')}
                 </div>
 
-                <div className={styles.grid_row}>
-                    <Input
-                        type="text" text="Alternativa Correta (Ex: A)" name="correctAlternative"
-                        placeholder="Ex: A" value={project.correctAlternative}
-                        handleOnChange={handleChange}
-                    />
+                {/* ── SELETOR ALTERNATIVA CORRETA (redesenhado) ─────────── */}
+                <div className={styles.correct_alt_block}>
+                    <label className={styles.correct_alt_label}>Alternativa correta</label>
+                    <p className={styles.correct_alt_hint}>
+                        Selecione a letra que corresponde à resposta correta.
+                    </p>
+                    <div className={styles.correct_alt_selector}>
+                        {['A', 'B', 'C', 'D', 'E'].map((letra) => (
+                            <button
+                                key={letra}
+                                type="button"
+                                className={`${styles.correct_alt_btn} ${
+                                    project.correctAlternative?.toUpperCase() === letra
+                                        ? styles.correct_alt_btn_active
+                                        : ''
+                                }`}
+                                onClick={() =>
+                                    handleChange({
+                                        target: { name: 'correctAlternative', value: letra.toLowerCase() }
+                                    })
+                                }
+                            >
+                                {letra}
+                            </button>
+                        ))}
+                    </div>
                     {renderError('correctAlternative')}
                 </div>
 
-                {/* 3. RESOLUÇÃO COM PREVIEW */}
-                <div className={styles.editor_block}>
+                {/* ── RESOLUÇÃO (redesenhado) ───────────────────────────── */}
+                <div className={`${styles.editor_block} ${styles.resolution_block}`}>
+                    <div className={styles.resolution_header}>
+                        <span className={styles.resolution_title}>Resolução detalhada</span>
+                        <span className={styles.resolution_hint}>
+                            Explique o raciocínio passo a passo.
+                        </span>
+                    </div>
                     <Input
-                        type="text" text="Resolução Detalhada" name="detailedResolution"
-                        placeholder="Explicação passo a passo..." value={project.detailedResolution}
+                        type="text"
+                        text=" "
+                        name="detailedResolution"
+                        placeholder="Ex: Aplicando o teorema de Pitágoras, temos que..."
+                        value={project.detailedResolution}
                         handleOnChange={handleChange}
                     />
                     {renderError('detailedResolution')}
@@ -489,7 +612,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                 </div>
             </section>
 
-            {/* SEÇÃO 4: STATUS E REVISÃO */}
+            {/* ── SEÇÃO 4: STATUS E REVISÃO ──────────────────────────────── */}
             {isEditMode && canEditComments && (
                 <section className={`${styles.form_section} ${styles.admin_section}`}>
                     <div className={styles.section_title}>Revisão e Status</div>
@@ -516,7 +639,8 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     </div>
                 </section>
             )}
-            
+
+            {/* ── FOOTER ─────────────────────────────────────────────────── */}
             <div className={styles.form_footer}>
                 {formError && (
                     <div className={styles.error_msg} style={{
