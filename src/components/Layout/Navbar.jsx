@@ -5,6 +5,7 @@ import Container from "./Container";
 import styles from "./Navbar.module.css";
 import logo from "./../../img/logov.png";
 import useAuth from "../../hooks/useAuth";
+import NotificationBell from "./NotificationBell";
 
 const DEFAULT_AVATAR = "https://www.w3schools.com/howto/img_avatar.png";
 
@@ -99,6 +100,13 @@ function Navbar() {
                 <Link to="/admin/users" style={{ color: "red" }} onClick={handleLinkClick}>
                   Usuários
                 </Link>
+              </li>
+            )}
+
+            {/* NOTIFICATION BELL (Apenas para usuários logados) */}
+            {signed && (
+              <li className={styles.item_notification}>
+                <NotificationBell />
               </li>
             )}
 

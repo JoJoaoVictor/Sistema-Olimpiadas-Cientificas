@@ -96,6 +96,13 @@
   border-color: #4a90e2;
 }
 
+/* Área da Notificação Bell */
+.item_notification {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
 /* =========================================
    RESPONSIVIDADE (MOBILE)
    ========================================= */
@@ -156,5 +163,10 @@
 
   .profileTextMobile {
     display: block; /* Mostra o texto no mobile */
+  }
+
+  /* Ajustes da Notificação no Mobile */
+  .item_notification {
+    margin: 10px 0;
   }
 }

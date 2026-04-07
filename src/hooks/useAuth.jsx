@@ -1,5 +1,4 @@
 import { useContext } from "react";
-// CORREÇÃO: O caminho deve apontar para a pasta 'context' e o arquivo 'auth'
 import { AuthContext } from "../contexts/auth.jsx"; 
 
 const useAuth = () => {

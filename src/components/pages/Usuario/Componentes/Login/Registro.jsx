@@ -7,59 +7,40 @@ import { authService } from "../../../../../services/authService";
 const Registro = () => {
   const navigate = useNavigate();
 
-  // =========================
-  // ESTADOS DO FORMULÁRIO
-  // =========================
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name,            setName]            = useState("");
+  const [email,           setEmail]           = useState("");
+  const [password,        setPassword]        = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("STUDENT");
+  const [role,            setRole]            = useState("STUDENT");
+  const [error,           setError]           = useState("");
+  const [loading,         setLoading]         = useState(false);
+  const [showPassword,    setShowPassword]    = useState(false);
 
-  // UX
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  // =========================
-  // SUBMIT DO REGISTRO
-  // =========================
   const handleRegistro = async (e) => {
     e.preventDefault();
     setError("");
 
-    // ===== VALIDAÇÕES FRONT =====
     if (!name || !email || !password || !confirmPassword) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
-
     if (password.length < 8) {
       setError("A senha deve ter no mínimo 8 caracteres");
       return;
     }
-
     if (password !== confirmPassword) {
       setError("As senhas não coincidem");
       return;
     }
 
     setLoading(true);
-
     try {
-      const result = await authService.register({
-        name,
-        email,
-        password,
-        role,
-      });
+      const result = await authService.register({ name, email, password, role });
 
       if (!result?.success) {
         setError(result?.error || "Erro ao cadastrar usuário");
         return;
       }
-
-      // Sucesso
       navigate("/");
     } catch (err) {
       console.error("Erro no registro:", err);
@@ -75,8 +56,7 @@ const Registro = () => {
         <h2>Criar uma conta</h2>
         <p className="subtitle">Preencha seus dados para começar</p>
 
-        <form onSubmit={handleRegistro}>
-          {/* ERRO */}
+        <form onSubmit={handleRegistro} autoComplete="on">
           {error && <div className="error-message">{error}</div>}
 
           {/* NOME */}
@@ -88,6 +68,7 @@ const Registro = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
+              autoComplete="name"
               required
             />
           </div>
@@ -101,6 +82,7 @@ const Registro = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
+              autoComplete="email"
               required
             />
           </div>
@@ -116,6 +98,12 @@ const Registro = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                // ── CORREÇÃO ─────────────────────────────────────────────
+                // Antes: sem atributo autocomplete — o Chrome exibia aviso
+                // "[DOM] Input elements should have autocomplete attributes"
+                // Agora: "new-password" instrui o browser a sugerir uma
+                // senha nova (não preencher com credenciais salvas).
+                autoComplete="new-password"
                 required
               />
               <button
@@ -139,9 +127,11 @@ const Registro = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
+                // ── CORREÇÃO ─────────────────────────────────────────────
+                // Mesmo autocomplete do campo acima — confirma a nova senha.
+                autoComplete="new-password"
                 required
               />
-               {/* Opcional: Repetir o ícone ou deixar sem, já que o de cima controla ambos ou individualmente */}
             </div>
           </div>
 
@@ -161,18 +151,14 @@ const Registro = () => {
             </select>
           </div>
 
-          {/* BOTÃO */}
           <button type="submit" className="register-btn" disabled={loading}>
             {loading ? "Criando conta..." : "Cadastrar"}
           </button>
         </form>
       </div>
 
-      {/* LINK LOGIN - Fora do card */}
       <div className="register-footer-link">
-        <p>
-          Já possui uma conta? <Link to="/login">Fazer Login</Link>
-        </p>
+        <p>Já possui uma conta? <Link to="/login">Fazer Login</Link></p>
       </div>
     </div>
   );

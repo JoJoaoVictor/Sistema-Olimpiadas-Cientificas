@@ -19,38 +19,52 @@ import { FaInbox, FaCheckDouble, FaSadTear } from "react-icons/fa";
 import api from '../../../services/api';
 import { authService } from '../../../services/authService';
 
+// ─── Opções de ano SEM valores duplicados ────────────────────────────────────
+// O value deve ser único E deve bater com o campo serieAno que vem do backend
+// (que é o nome do grau, ex: "4º Fundamental", "1º Médio")
+const opcoesAno = [
+    { value: '2º Fundamental', label: '2º Fundamental' },
+    { value: '3º Fundamental', label: '3º Fundamental' },
+    { value: '4º Fundamental', label: '4º Fundamental' },
+    { value: '5º Fundamental', label: '5º Fundamental' },
+    { value: '6º Fundamental', label: '6º Fundamental' },
+    { value: '7º Fundamental', label: '7º Fundamental' },
+    { value: '8º Fundamental', label: '8º Fundamental' },
+    { value: '9º Fundamental', label: '9º Fundamental' },
+    { value: '1º Médio',       label: '1º Médio'       },
+    { value: '2º Médio',       label: '2º Médio'       },
+    { value: '3º Médio',       label: '3º Médio'       },
+];
+
 function Project() {
     // === ESTADOS ===
-    const [projects, setProjects] = useState([]);
-    const [graus, setGraus] = useState([]);          // Lista de graus (para filtros)
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [projects,         setProjects]         = useState([]);
+    const [graus,            setGraus]            = useState([]);
+    const [loading,          setLoading]          = useState(true);
+    const [error,            setError]            = useState(null);
 
     // Filtros e Controle
-    const [searchTerm, setSearchTerm] = useState('');
-    const [sortOrder, setSortOrder] = useState('recentes'); 
-    const [dificuldade, setDificuldade] = useState(''); 
+    const [searchTerm,       setSearchTerm]       = useState('');
+    const [sortOrder,        setSortOrder]        = useState('recentes');
+    const [dificuldade,      setDificuldade]      = useState('');
     const [anosSelecionados, setAnosSelecionados] = useState([]);
-    const [tipoQuestao, setTipoQuestao] = useState('aprovadas'); 
-    const [viewMode, setViewMode] = useState('list');
-    
-    // Filtros Específicos
-    const [habilidade, setHabilidade] = useState('');
-    const [phaseLevel, setPhaseLevel] = useState('');
-    
-    // Estado para Unidade Temática
-    const [bnccTheme, setBnccTheme] = useState('');
-    
-    // Estado para o filtro de Data
-    const [dateFilter, setDateFilter] = useState('all'); 
+    const [tipoQuestao,      setTipoQuestao]      = useState('aprovadas');
+    const [viewMode,         setViewMode]         = useState('list');
 
-    // === CARREGAR GRAUS (para filtros) ===
+    // Filtros Específicos BNCC
+    const [habilidade,  setHabilidade]  = useState('');
+    const [phaseLevel,  setPhaseLevel]  = useState('');
+    const [bnccTheme,   setBnccTheme]   = useState('');
+
+    // Filtro de Data
+    const [dateFilter, setDateFilter] = useState('all');
+
+    // === CARREGAR GRAUS ===
     useEffect(() => {
         async function fetchGraus() {
             try {
                 const grausRes = await api.get('/api/v1/graus/');
-                const grausArray = grausRes.data?.data?.graus || [];
-                setGraus(grausArray);
+                setGraus(grausRes.data?.data?.graus || []);
             } catch (err) {
                 console.error('Erro ao carregar graus:', err);
             }
@@ -58,61 +72,57 @@ function Project() {
         fetchGraus();
     }, []);
 
-    // === BUSCA DE QUESTÕES via API ===
+    // === BUSCA DE QUESTÕES ===
     useEffect(() => {
         async function fetchProjects() {
             setLoading(true);
             try {
                 const categoryId = tipoQuestao === 'aprovadas' ? 2 : 1;
                 const response = await api.get('/api/v1/questions/', {
-                    params: {
-                        category_id: categoryId,
-                        per_page: 100, // máximo permitido
-                    }
+                    params: { category_id: categoryId, per_page: 100 },
                 });
 
                 const backendQuestions = response.data?.data?.questions || [];
 
-                // Converte os campos de snake_case para camelCase
                 const convertedQuestions = backendQuestions.map(q => ({
-                    id: q.id,
-                    name: q.name,
-                    professorName: q.professor_name,
-                    phaseLevel: q.phase_level,
-                    serieAno: q.grau?.name || q.serie_ano, // nome do grau vindo do relacionamento
-                    grauId: q.grau_id,
-                    difficultyLevel: q.difficulty_level,
-                    knowledgeObjects: q.knowledge_objects,
-                    bnccTheme: q.bncc_theme,
-                    abilityCode: q.ability_code,
+                    id:                 q.id,
+                    name:               q.name,
+                    professorName:      q.professor_name,
+                    phaseLevel:         q.phase_level,
+                    // serieAno = nome legível do grau (ex: "4º Fundamental")
+                    serieAno:           q.grau?.name || q.serie_ano || '',
+                    grauId:             q.grau_id,
+                    difficultyLevel:    q.difficulty_level,
+                    knowledgeObjects:   q.knowledge_objects,
+                    bnccTheme:          q.bncc_theme,
+                    abilityCode:        q.ability_code,
                     abilityDescription: q.ability_description,
-                    questionStatement: q.question_statement,
-                    alternatives: q.alternatives,
+                    questionStatement:  q.question_statement,
+                    alternatives:       q.alternatives,
                     correctAlternative: q.correct_alternative,
                     detailedResolution: q.detailed_resolution,
-                    categoryId: q.category_id,
-                    categoryName: q.category?.name || 'Sem categoria', // nome da categoria vindo do relacionamento
-                    reviewerComments: q.reviewer_comments,
-                    images: q.images || [],
-                    createdAt: q.created_at,
-                    updatedAt: q.updated_at,
+                    categoryId:         q.category_id,
+                    categoryName:       q.category?.name || 'Sem categoria',
+                    reviewerComments:   q.reviewer_comments,
+                    images:             q.images || [],
+                    createdAt:          q.created_at,
+                    updatedAt:          q.updated_at,
                 }));
 
                 setProjects(convertedQuestions);
                 setError(null);
             } catch (err) {
                 console.error('Erro ao carregar questões:', err);
-                const errorMsg = authService._handleError(err);
-                setError(errorMsg || 'Erro ao carregar questões.');
+                setError(authService._handleError(err) || 'Erro ao carregar questões.');
             } finally {
                 setLoading(false);
             }
         }
 
         fetchProjects();
-    }, [tipoQuestao]); // dependência apenas do tipo, pois não precisa mais de graus/categories
+    }, [tipoQuestao]);
 
-    // === AÇÃO DE REMOVER (DELETE) ===
+    // === REMOVER QUESTÃO ===
     async function removeProject(id) {
         if (!window.confirm('Tem certeza que deseja excluir esta questão?')) return;
         try {
@@ -122,68 +132,78 @@ function Project() {
             alert('Questão removida com sucesso!');
         } catch (err) {
             console.error('Erro ao remover:', err);
-            const errorMsg = authService._handleError(err);
-            alert('Erro ao remover: ' + errorMsg);
+            alert('Erro ao remover: ' + authService._handleError(err));
         } finally {
             setLoading(false);
         }
     }
 
-    // === LÓGICA DE FILTRAGEM AVANÇADA ===
+    // === FILTRAGEM ===
     const filteredProjects = projects
-        .filter((p) => dificuldade === '' || String(p.difficultyLevel) === dificuldade)
-        .filter((p) => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-        .filter((p) => {
-            if (anosSelecionados.length === 0) return true;
-            // Extrai o número do nome do grau (ex: "4º Fundamental" -> "4")
-            const numeroAno = p.serieAno.match(/\d+/)?.[0] || '';
-            return anosSelecionados.some(opcao => opcao.value === numeroAno);
-        })
-        .filter((p) => phaseLevel === '' || String(p.phaseLevel) === String(phaseLevel))
-        .filter((p) => habilidade === '' || p.abilityCode?.toLowerCase().includes(habilidade.toLowerCase()))
-        .filter((p) => bnccTheme === '' || p.bnccTheme?.toLowerCase().includes(bnccTheme.toLowerCase()))
-        .filter((p) => {
-            if (dateFilter === 'all') return true;
-            const dataCriacao = p.createdAt ? new Date(p.createdAt).getTime() : 0;
-            const dataEdicao = p.updatedAt ? new Date(p.updatedAt).getTime() : 0;
-            const ultimaAtividadeTimestamp = Math.max(dataCriacao, dataEdicao);
-            if (ultimaAtividadeTimestamp === 0) return true;
-            const dataProjeto = new Date(ultimaAtividadeTimestamp);
-            const hoje = new Date();
-            const inicioHoje = new Date(hoje.setHours(0,0,0,0));
-            const diaProjeto = new Date(new Date(ultimaAtividadeTimestamp).setHours(0,0,0,0));
+        // Busca por nome
+        .filter(p => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
 
-            if (dateFilter === 'today') return diaProjeto.getTime() === inicioHoje.getTime();
-            if (dateFilter === '7days') {
-                const seteDiasAtras = new Date(hoje);
-                seteDiasAtras.setDate(hoje.getDate() - 7);
-                return dataProjeto >= seteDiasAtras;
-            }
-            if (dateFilter === '30days') {
-                const trintaDiasAtras = new Date(hoje);
-                trintaDiasAtras.setDate(hoje.getDate() - 30);
-                return dataProjeto >= trintaDiasAtras;
-            }
-            if (dateFilter === 'year') return dataProjeto.getFullYear() === new Date().getFullYear();
+        // Dificuldade
+        .filter(p => dificuldade === '' || String(p.difficultyLevel) === dificuldade)
+
+        // Anos escolares — compara o nome completo do grau (ex: "4º Fundamental")
+        // O value de opcoesAno agora é o próprio nome, então a comparação é direta.
+        .filter(p => {
+            if (anosSelecionados.length === 0) return true;
+            return anosSelecionados.some(opcao =>
+                p.serieAno?.toLowerCase().trim() === opcao.value?.toLowerCase().trim()
+            );
+        })
+
+        // Fase / Nível
+        .filter(p => phaseLevel === '' || String(p.phaseLevel) === String(phaseLevel))
+
+        // Habilidade BNCC (código)
+        .filter(p => habilidade === '' || p.abilityCode?.toLowerCase().includes(habilidade.toLowerCase()))
+
+        // Unidade Temática BNCC
+        .filter(p => bnccTheme === '' || p.bnccTheme?.toLowerCase().includes(bnccTheme.toLowerCase()))
+
+        // Filtro de data
+        .filter(p => {
+            if (dateFilter === 'all') return true;
+            const ts = Math.max(
+                p.createdAt ? new Date(p.createdAt).getTime() : 0,
+                p.updatedAt ? new Date(p.updatedAt).getTime() : 0,
+            );
+            if (ts === 0) return true;
+            const data    = new Date(ts);
+            const hoje    = new Date();
+            const inicioHoje = new Date(new Date().setHours(0, 0, 0, 0));
+            const diaDoc     = new Date(new Date(ts).setHours(0, 0, 0, 0));
+
+            if (dateFilter === 'today')   return diaDoc.getTime() === inicioHoje.getTime();
+            if (dateFilter === '7days')   { const d = new Date(hoje); d.setDate(d.getDate() - 7);  return data >= d; }
+            if (dateFilter === '30days')  { const d = new Date(hoje); d.setDate(d.getDate() - 30); return data >= d; }
+            if (dateFilter === 'year')    return data.getFullYear() === new Date().getFullYear();
             return true;
         })
+
+        // Ordenação
         .sort((a, b) => {
-            const dateA = new Date(sortOrder === 'recentes' ? (a.createdAt || 0) : (a.updatedAt || a.createdAt || 0));
-            const dateB = new Date(sortOrder === 'recentes' ? (b.createdAt || 0) : (b.updatedAt || b.createdAt || 0));
-            return dateB - dateA;
+            const getTs = p => new Date(sortOrder === 'recentes' ? (p.createdAt || 0) : (p.updatedAt || p.createdAt || 0));
+            return getTs(b) - getTs(a);
         });
 
-    const opcoesAno = [
-        { value: '2', label: '2º Ano' }, { value: '3', label: '3º Ano' },
-        { value: '4', label: '4º Ano' }, { value: '5', label: '5º Ano' },
-        { value: '6', label: '6º Ano' }, { value: '7', label: '7º Ano' },
-        { value: '8', label: '8º Ano' }, { value: '9', label: '9º Ano' },
-        { value: '1', label: '1º Médio' }, { value: '2', label: '2º Médio' }, { value: '3', label: '3º Médio' },
-    ];
+    // === LIMPAR FILTROS ===
+    function limparFiltros() {
+        setSearchTerm('');
+        setDateFilter('all');
+        setDificuldade('');
+        setAnosSelecionados([]);
+        setPhaseLevel('');
+        setHabilidade('');
+        setBnccTheme('');
+    }
 
     return (
         <div className={styles.page_container}>
-            
+
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.page_title}>Banco de Questões</h1>
@@ -194,40 +214,43 @@ function Project() {
                 </Link>
             </header>
 
+            {/* Abas Aprovadas / Pendentes */}
             <div className={styles.tabs_container}>
-                <button 
+                <button
                     className={`${styles.tab} ${tipoQuestao === 'aprovadas' ? styles.active_tab : ''}`}
                     onClick={() => setTipoQuestao('aprovadas')}
                 >
                     <FaCheckDouble /> Aprovadas
                 </button>
-                <button 
+                <button
                     className={`${styles.tab} ${tipoQuestao === 'pendentes' ? styles.active_tab : ''}`}
                     onClick={() => setTipoQuestao('pendentes')}
                 >
-                    <FaInbox /> Pendentes 
+                    <FaInbox /> Pendentes
                 </button>
             </div>
 
+            {/* Barra de ferramentas / filtros */}
             <div className={styles.toolbar}>
-                
+
                 <div className={styles.search_wrapper}>
-                    <SearchBar 
-                        value={searchTerm} 
-                        onDebouncedChange={setSearchTerm} 
-                        placeholder="Buscar por nome..." 
+                    <SearchBar
+                        value={searchTerm}
+                        onDebouncedChange={setSearchTerm}
+                        placeholder="Buscar por nome..."
                     />
                 </div>
 
                 <div className={styles.filters_wrapper}>
-                    
+
+                    {/* Filtro de data */}
                     <div className={styles.date_filter_container}>
                         <LuCalendarDays className={styles.calendar_icon} />
                         <span className={styles.filter_label}>Modificado:</span>
-                        <select 
+                        <select
                             className={styles.transparent_select}
                             value={dateFilter}
-                            onChange={(e) => setDateFilter(e.target.value)}
+                            onChange={e => setDateFilter(e.target.value)}
                         >
                             <option value="all">Qualquer data</option>
                             <option value="today">Hoje</option>
@@ -237,38 +260,48 @@ function Project() {
                         </select>
                     </div>
 
-                    <Select 
-                        className={styles.react_select}
-                        isSearchable
-                        options={opcoesAno}
-                        isMulti
-                        placeholder="Ano"
-                        value={anosSelecionados}
-                        onChange={(selected) => setAnosSelecionados(selected || [])}
-                        closeMenuOnSelect={false}
-                        isClearable
-                        styles={{
-                            control: (base, state) => ({ 
-                                ...base,
-                                height: '42px',
-                                borderColor: state.isFocused ? '#1967d2' : '#ccc',
-                                boxShadow: 'none',
-                                '&:hover': { borderColor: '#1967d2' },
-                            }),
-                            valueContainer: (base) => ({ ...base, height: '40px', padding: '0 0.5em', overflow: 'auto' }),
-                            input: (base) => ({ ...base, margin: 0, padding:0 }),
-                            indicatorsContainer: (base) => ({ ...base }),
-                            multiValue: (base) => ({ ...base, backgroundColor: '#e0e0e0' }),
-                            multiValueLabel: (base) => ({ ...base, color: '#797979' }),
-                            placeholder: (base) => ({ ...base, color: '#797979' }),
-                            menu: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                    />
+                    {/* Filtro de anos — envolvido em translate="no" para evitar crash
+                        causado por extensões de browser (Google Translate, Grammarly etc.)
+                        que modificam o DOM interno do react-select */}
+                    <div className="notranslate" translate="no">
+                        <Select
+                            instanceId="filtro-anos"
+                            className={styles.react_select}
+                            isSearchable
+                            options={opcoesAno}
+                            isMulti
+                            placeholder="Ano escolar"
+                            value={anosSelecionados}
+                            onChange={selected => setAnosSelecionados(selected || [])}
+                            closeMenuOnSelect={false}
+                            isClearable
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '42px',
+                                    borderColor: state.isFocused ? '#1967d2' : '#ccc',
+                                    boxShadow: 'none',
+                                    '&:hover': { borderColor: '#1967d2' },
+                                }),
+                                valueContainer: (base) => ({
+                                    ...base,
+                                    padding: '0 0.5em',
+                                    flexWrap: 'wrap',
+                                }),
+                                input:           (base) => ({ ...base, margin: 0, padding: 0 }),
+                                multiValue:      (base) => ({ ...base, backgroundColor: '#e0e0e0' }),
+                                multiValueLabel: (base) => ({ ...base, color: '#555' }),
+                                placeholder:     (base) => ({ ...base, color: '#797979' }),
+                                menu:            (base) => ({ ...base, zIndex: 9999 }),
+                            }}
+                        />
+                    </div>
 
-                    <select 
+                    {/* Grau de dificuldade */}
+                    <select
                         className={styles.native_select}
                         value={dificuldade}
-                        onChange={(e) => setDificuldade(e.target.value)}
+                        onChange={e => setDificuldade(e.target.value)}
                     >
                         <option value="">Grau de Dificuldade</option>
                         <option value="1">Nível 1</option>
@@ -277,11 +310,12 @@ function Project() {
                         <option value="4">Nível 4</option>
                         <option value="5">Nível 5</option>
                     </select>
-                     
-                    <select 
+
+                    {/* Fase / Nível */}
+                    <select
                         className={styles.native_select}
                         value={phaseLevel}
-                        onChange={(e) => setPhaseLevel(e.target.value)}
+                        onChange={e => setPhaseLevel(e.target.value)}
                     >
                         <option value="">Nível / Categoria</option>
                         <option value="1">Fase 1</option>
@@ -290,25 +324,27 @@ function Project() {
                         <option value="4">Fase 4</option>
                     </select>
 
-                    <input 
-                        type="text" 
-                        className={styles.native_select} 
-                        placeholder="Cód. Habilidade" 
+                    {/* Código de habilidade BNCC */}
+                    <input
+                        type="text"
+                        className={styles.native_select}
+                        placeholder="Cód. Habilidade"
                         value={habilidade}
-                        onChange={(e) => setHabilidade(e.target.value)}
+                        onChange={e => setHabilidade(e.target.value)}
                     />
-                    
-                    <select 
+
+                    {/* Unidade Temática BNCC */}
+                    <select
                         className={styles.native_select}
                         value={bnccTheme}
-                        onChange={(e) => setBnccTheme(e.target.value)}
+                        onChange={e => setBnccTheme(e.target.value)}
                     >
                         <option value="">Unidade Temática</option>
                         <option value="Álgebra">Álgebra</option>
                         <option value="Geometria">Geometria</option>
                         <option value="Estatística">Estatística</option>
                         <option value="Álgebra/Geometria">Álgebra / Geometria</option>
-                        <option value="Grandezas/Geometria">Grandezas / Geometria</option> 
+                        <option value="Grandezas/Geometria">Grandezas / Geometria</option>
                         <option value="Grandezas/Medidas">Grandezas / Medidas</option>
                         <option value="Números">Números</option>
                         <option value="Números/Álgebra">Números e Álgebra</option>
@@ -316,15 +352,16 @@ function Project() {
                         <option value="Probabilidade e Estatística">Probabilidade e Estatística</option>
                     </select>
 
+                    {/* Alternar visualização */}
                     <div className={styles.view_toggles}>
-                        <button 
+                        <button
                             className={`${styles.toggle_btn} ${viewMode === 'list' ? styles.active : ''}`}
                             onClick={() => setViewMode('list')}
                             title="Lista"
                         >
                             <LuLayoutList />
                         </button>
-                        <button 
+                        <button
                             className={`${styles.toggle_btn} ${viewMode === 'grid' ? styles.active : ''}`}
                             onClick={() => setViewMode('grid')}
                             title="Grade"
@@ -335,6 +372,7 @@ function Project() {
                 </div>
             </div>
 
+            {/* Conteúdo */}
             <div className={styles.content_area}>
                 {loading ? (
                     <div className={styles.loading_wrapper}><Loading /></div>
@@ -344,29 +382,18 @@ function Project() {
                     <div className={styles.empty_state}>
                         <FaSadTear size={40} color="#ccc" />
                         <p>Nenhuma questão encontrada.</p>
-                        <button 
-                            className={styles.clear_filters} 
-                            onClick={() => {
-                                setSearchTerm('');
-                                setDateFilter('all');
-                                setDificuldade('');
-                                setAnosSelecionados([]);
-                                setPhaseLevel('');
-                                setHabilidade('');
-                                setBnccTheme('');
-                            }}
-                        >
+                        <button className={styles.clear_filters} onClick={limparFiltros}>
                             Limpar Filtros
                         </button>
                     </div>
                 ) : (
                     <div className={viewMode === 'grid' ? styles.grid_layout : styles.list_layout}>
-                        {filteredProjects.map((project) => (
+                        {filteredProjects.map(project =>
                             viewMode === 'grid' ? (
                                 <ProjectsCard
                                     key={project.id}
                                     {...project}
-                                    grauName={project.serieAno} // passa o nome do grau
+                                    grauName={project.serieAno}
                                     handleRemove={removeProject}
                                 />
                             ) : (
@@ -376,7 +403,7 @@ function Project() {
                                     handleRemove={removeProject}
                                 />
                             )
-                        ))}
+                        )}
                     </div>
                 )}
             </div>

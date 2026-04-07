@@ -36,6 +36,7 @@ const formatDate = (d) => d
   ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
   : '-';
 
+// StatusBadge — translate="no" pois mistura ícone + texto
 const StatusBadge = ({ status }) => {
   const s = (status || 'PENDENTE').toUpperCase();
   const map = {
@@ -44,7 +45,11 @@ const StatusBadge = ({ status }) => {
     PENDENTE: { icon: <FiClock />,       cls: styles.status_pending,  label: 'Pendente' },
   };
   const { icon, cls, label } = map[s] || map.PENDENTE;
-  return <span className={`${styles.badge} ${cls}`}>{icon} {label}</span>;
+  return (
+    <span className={`${styles.badge} ${cls}`} translate="no">
+      {icon} {label}
+    </span>
+  );
 };
 
 // =============================================================================
@@ -58,9 +63,7 @@ export default function EditarProva() {
   const [modalAberto, setModalAberto] = useState(false);
 
   const {
-    // Dados
     prova, questoes, carregando,
-    // Metadados
     modoEdicao, setModoEdicao,
     salvando, salvarEdicao, cancelarEdicao,
     formNome, setFormNome,
@@ -68,22 +71,17 @@ export default function EditarProva() {
     formFase, setFormFase,
     formStatus, setFormStatus,
     formAnos, setFormAnos,
-    // PDF
     gerandoPDF, visualizarPDF,
-    // Questões
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
     moverQuestaoParaCima, moverQuestaoParaBaixo,
-    // Exclusão
     confirmandoExclusao, setConfirmandoExclusao,
     excluindo, excluirProva,
-    // Layout
     headerImage, setHeaderImage,
     footerImage, setFooterImage,
     headerSize,  setHeaderSize,
     footerSize,  setFooterSize,
     salvandoLayout, salvarLayout,
-    // Constantes
     opcoesAno,
   } = useEditarProva(id);
 
@@ -102,7 +100,9 @@ export default function EditarProva() {
   if (!prova) {
     return (
       <div className={styles.page_wrapper}>
-        <button onClick={() => navigate(-1)} className={styles.back_btn}><FaArrowLeft /> Voltar</button>
+        <button onClick={() => navigate(-1)} className={styles.back_btn} translate="no">
+          <FaArrowLeft /> Voltar
+        </button>
         <div className={styles.empty_state}>
           <FiAlertCircle size={40} />
           <p>Prova não encontrada.</p>
@@ -116,7 +116,7 @@ export default function EditarProva() {
   return (
     <div className={styles.page_wrapper}>
 
-      {/* ── Overlays ──────────────────────────────────────────────────────── */}
+      {/* ── Overlay loading ───────────────────────────────────────────────── */}
       {(gerandoPDF || salvando || salvandoLayout) && (
         <div className={styles.loadingOverlay}>
           <h3>{gerandoPDF ? 'Gerando PDF...' : 'Salvando...'}</h3>
@@ -124,7 +124,7 @@ export default function EditarProva() {
         </div>
       )}
 
-      {/* ── Overlay confirmação de exclusão ─────────────────────────────────── */}
+      {/* ── Overlay confirmação de exclusão ──────────────────────────────── */}
       {confirmandoExclusao && (
         <div className={styles.confirmOverlay}>
           <div className={styles.confirmBox}>
@@ -137,10 +137,12 @@ export default function EditarProva() {
               <strong>Esta ação não pode ser desfeita.</strong>
             </p>
             <div className={styles.confirmActions}>
+              {/* translate="no": ícone + texto dentro do botão */}
               <button
                 className={`${styles.action_btn} ${styles.btn_cancel}`}
                 onClick={() => setConfirmandoExclusao(false)}
                 disabled={excluindo}
+                translate="no"
               >
                 <FaTimes /> Cancelar
               </button>
@@ -148,6 +150,7 @@ export default function EditarProva() {
                 className={`${styles.action_btn} ${styles.btn_delete}`}
                 onClick={excluirProva}
                 disabled={excluindo}
+                translate="no"
               >
                 {excluindo
                   ? <><span className={styles.mini_spinner} /> Excluindo...</>
@@ -159,7 +162,7 @@ export default function EditarProva() {
         </div>
       )}
 
-      {/* ── Modal adicionar questão ────────────────────────────────────────── */}
+      {/* ── Modal adicionar questão ───────────────────────────────────────── */}
       {modalAberto && (
         <ModalAdicionarQuestao
           questoesAtuais={questoes}
@@ -170,17 +173,21 @@ export default function EditarProva() {
       )}
 
       {/* Botão Voltar */}
-      <button onClick={() => navigate(-1)} className={styles.back_btn}>
+      <button onClick={() => navigate(-1)} className={styles.back_btn} translate="no">
         <FaArrowLeft /> Voltar
       </button>
 
       <div className={styles.card_container}>
 
         {/* ── HEADER DO CARD ────────────────────────────────────────────────── */}
-        <header className={styles.card_header}>
+        {/* translate="no" em todo o header: contém ícones + texto alternados
+            que o Google Translate envolve em <font> tags, corrompendo o DOM */}
+        <header className={styles.card_header} translate="no">
           <div className={styles.header_content}>
             <StatusBadge status={prova.status} />
-            <h1 className={styles.title}>{modoEdicao ? 'Editando Dados daProva' : prova.name}</h1>
+            <h1 className={styles.title}>
+              {modoEdicao ? 'Editando Dados da Prova' : prova.name}
+            </h1>
             <p className={styles.dates_info}>
               <FiCalendar />
               <span> Criado: {formatDate(prova.created_at)}</span>
@@ -188,10 +195,15 @@ export default function EditarProva() {
               <span> Atualizado: <strong>{formatDate(prova.updated_at)}</strong></span>
             </p>
           </div>
+
           <div className={styles.header_actions}>
             {!modoEdicao && (
               <>
-                <button className={`${styles.action_btn} ${styles.btn_pdf}`} onClick={visualizarPDF} disabled={gerandoPDF}>
+                <button
+                  className={`${styles.action_btn} ${styles.btn_pdf}`}
+                  onClick={visualizarPDF}
+                  disabled={gerandoPDF}
+                >
                   <FaFilePdf /> PDF
                 </button>
                 <button
@@ -210,7 +222,11 @@ export default function EditarProva() {
               {modoEdicao ? <><FaTimes /> Cancelar</> : <><FaEdit /> Editar Prova</>}
             </button>
             {modoEdicao && (
-              <button className={`${styles.action_btn} ${styles.btn_save}`} onClick={salvarEdicao} disabled={salvando}>
+              <button
+                className={`${styles.action_btn} ${styles.btn_save}`}
+                onClick={salvarEdicao}
+                disabled={salvando}
+              >
                 <FaSave /> Salvar
               </button>
             )}
@@ -218,7 +234,8 @@ export default function EditarProva() {
         </header>
 
         {/* ── ABAS ──────────────────────────────────────────────────────────── */}
-        <div className={styles.tabs_bar}>
+        {/* translate="no": abas têm ícone + texto */}
+        <div className={styles.tabs_bar} translate="no">
           <button
             className={`${styles.tab_btn} ${abaAtiva === 'questoes' ? styles.tab_active : ''}`}
             onClick={() => setAbaAtiva('questoes')}
@@ -236,7 +253,7 @@ export default function EditarProva() {
         {/* ── CORPO ─────────────────────────────────────────────────────────── */}
         <div className={styles.card_body}>
 
-          {/* ─── ABA QUESTÕES ───────────────────────────────────────────────── */}
+          {/* ─── ABA QUESTÕES ─────────────────────────────────────────────── */}
           {abaAtiva === 'questoes' && (
             <>
               {/* Modo visualização: grid de metadados */}
@@ -268,7 +285,7 @@ export default function EditarProva() {
               {/* Modo edição: formulário de metadados */}
               {modoEdicao && (
                 <div className={styles.edit_mode} style={{ marginBottom: '24px' }}>
-                  <p className={styles.edit_hint}>
+                  <p className={styles.edit_hint} translate="no">
                     <FiAlertCircle /> Edite os metadados da prova abaixo.
                   </p>
                   <div className={styles.edit_grid}>
@@ -283,7 +300,7 @@ export default function EditarProva() {
                       />
                     </div>
                     <div className={styles.field_group}>
-                      <label className={styles.field_label}>Ano do Titulo da Prova</label>
+                      <label className={styles.field_label}>Ano do Título da Prova</label>
                       <input
                         type="number"
                         className={styles.field_input}
@@ -296,15 +313,19 @@ export default function EditarProva() {
                     </div>
                     <div className={styles.field_group}>
                       <label className={styles.field_label}>Fase</label>
-                      <Select
-                        options={listaFases}
-                        placeholder="Selecionar Fase"
-                        value={listaFases.find(f => f.value === formFase) || null}
-                        onChange={s => setFormFase(s?.value || '')}
-                        isClearable
-                        menuPortalTarget={document.body}
-                        styles={customSelectStyles}
-                      />
+                      {/* translate="no": react-select com texto nas opções */}
+                      <div className="notranslate" translate="no">
+                        <Select
+                          instanceId="select-fase"
+                          options={listaFases}
+                          placeholder="Selecionar Fase"
+                          value={listaFases.find(f => f.value === formFase) || null}
+                          onChange={s => setFormFase(s?.value || '')}
+                          isClearable
+                          menuPortalTarget={document.body}
+                          styles={customSelectStyles}
+                        />
+                      </div>
                     </div>
                     <div className={styles.field_group}>
                       <label className={styles.field_label}>Status</label>
@@ -320,6 +341,7 @@ export default function EditarProva() {
                       <label className={styles.field_label}>Anos Escolares</label>
                       <div className="notranslate" translate="no">
                         <Select
+                          instanceId="select-anos-escolares"
                           menuPortalTarget={document.body}
                           isSearchable
                           options={opcoesAno}
@@ -334,11 +356,20 @@ export default function EditarProva() {
                       </div>
                     </div>
                   </div>
-                  <div className={styles.edit_actions}>
-                    <button className={`${styles.action_btn} ${styles.btn_cancel}`} onClick={cancelarEdicao}>
+
+                  {/* Botões de ação do formulário — translate="no": ícone + texto */}
+                  <div className={styles.edit_actions} translate="no">
+                    <button
+                      className={`${styles.action_btn} ${styles.btn_cancel}`}
+                      onClick={cancelarEdicao}
+                    >
                       <FaTimes /> Cancelar
                     </button>
-                    <button className={`${styles.action_btn} ${styles.btn_save}`} onClick={salvarEdicao} disabled={salvando}>
+                    <button
+                      className={`${styles.action_btn} ${styles.btn_save}`}
+                      onClick={salvarEdicao}
+                      disabled={salvando}
+                    >
                       <FaSave /> {salvando ? 'Salvando...' : 'Salvar Alterações'}
                     </button>
                   </div>
@@ -349,16 +380,21 @@ export default function EditarProva() {
               {/* Lista de questões */}
               <section className={styles.questoes_section}>
                 <div className={styles.section_heading_row}>
-                  <h3 className={styles.section_heading}><BsBook /> Questões ({questoes.length})</h3>
+                  <h3 className={styles.section_heading} translate="no">
+                    <BsBook /> Questões ({questoes.length})
+                  </h3>
                   <button
                     className={`${styles.action_btn} ${styles.btn_add}`}
                     onClick={() => setModalAberto(true)}
+                    translate="no"
                   >
                     <FaPlus /> Adicionar Questão
                   </button>
                 </div>
                 {questoes.length === 0 ? (
-                  <div className={styles.empty_questoes}>Nenhuma questão vinculada a esta prova.</div>
+                  <div className={styles.empty_questoes}>
+                    Nenhuma questão vinculada a esta prova.
+                  </div>
                 ) : (
                   questoes.map((q, index) => (
                     <QuestaoCard
@@ -377,7 +413,7 @@ export default function EditarProva() {
             </>
           )}
 
-          {/* ─── ABA CABEÇALHO/RODAPÉ ───────────────────────────────────────── */}
+          {/* ─── ABA CABEÇALHO/RODAPÉ ─────────────────────────────────────── */}
           {abaAtiva === 'cabecalho' && (
             <TabCabecalhoRodape
               headerImage={headerImage}  setHeaderImage={setHeaderImage}
