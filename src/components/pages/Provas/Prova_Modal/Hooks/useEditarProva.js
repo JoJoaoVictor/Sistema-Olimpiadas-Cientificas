@@ -49,6 +49,9 @@ export function useEditarProva(id) {
   const [removendo,       setRemovendo]       = useState(null);
   const [adicionando,     setAdicionando]     = useState(null);
 
+   // ── Estado para comentários do revisor Questões e Provas ─────────────────
+  const [reviewerComments, setReviewerComments] = useState('');
+
   // ── Layout (cabeçalho/rodapé) ─────────────────────────────────────────────
   const [headerImage,    setHeaderImage]    = useState(null);
   const [footerImage,    setFooterImage]    = useState(null);
@@ -80,6 +83,7 @@ export function useEditarProva(id) {
       setFooterImage(dp.footer_image || null);
       setHeaderSize(dp.header_size  ?? 100);
       setFooterSize(dp.footer_size  ?? 100);
+      setReviewerComments(dp.reviewer_comments || '');
     } catch {
       alert('Erro ao carregar a prova. Verifique sua conexão e tente novamente.');
     } finally {
@@ -102,6 +106,7 @@ export function useEditarProva(id) {
         status: formStatus,
         anos:   formAnos.map(a => a.label),
         ano:    Number(formAno),
+        reviewer_comments: reviewerComments.trim() || null,
       };
       const res = await api.patch(`/api/v1/exams/${id}`, payload);
       const atualizado = res.data?.data?.exam || res.data?.data || { ...prova, ...payload };
@@ -126,6 +131,7 @@ export function useEditarProva(id) {
       )
     );
     setModoEdicao(false);
+    setReviewerComments(prova?.reviewer_comments || '');
   }
 
   // =========================================================================
@@ -289,6 +295,8 @@ export function useEditarProva(id) {
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
     moverQuestaoParaCima, moverQuestaoParaBaixo,
+    //Comentarios
+    reviewerComments, setReviewerComments,
     // Layout
     headerImage, setHeaderImage,
     footerImage, setFooterImage,

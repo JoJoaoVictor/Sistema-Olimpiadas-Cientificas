@@ -83,6 +83,7 @@ export default function EditarProva() {
     footerSize,  setFooterSize,
     salvandoLayout, salvarLayout,
     opcoesAno,
+    reviewerComments, setReviewerComments,
   } = useEditarProva(id);
 
   // ── Loading ───────────────────────────────────────────────────────────────
@@ -256,126 +257,154 @@ export default function EditarProva() {
           {/* ─── ABA QUESTÕES ─────────────────────────────────────────────── */}
           {abaAtiva === 'questoes' && (
             <>
-              {/* Modo visualização: grid de metadados */}
+              {/* Modo visualização */}
               {!modoEdicao && (
-                <section className={styles.info_grid} style={{ marginBottom: '24px' }}>
-                  <div className={styles.info_box}>
-                    <span className={styles.label}><BsBook style={{ marginRight: 4 }} /> Anos</span>
-                    <p>{anosTexto}</p>
-                  </div>
-                  <div className={styles.info_box}>
-                    <span className={styles.label}><FiLayers style={{ marginRight: 4 }} /> Fase</span>
-                    <p>{prova.fase || '—'}</p>
-                  </div>
-                  <div className={styles.info_box}>
-                    <span className={styles.label}><FiCheckCircle style={{ marginRight: 4 }} /> Status</span>
-                    <p>{prova.status || 'PENDENTE'}</p>
-                  </div>
-                  <div className={styles.info_box}>
-                    <span className={styles.label}>Ano</span>
-                    <p>{prova.ano ?? (prova.created_at ? new Date(prova.created_at).getFullYear() : '—')}</p>
-                  </div>
-                  <div className={styles.info_box}>
-                    <span className={styles.label}>Total de Questões</span>
-                    <p>{questoes.length}</p>
-                  </div>
-                </section>
-              )}
+                <>
+                  {/* --- CÓDIGO EXISTENTE: Grid de metadados --- */}
+                  <section className={styles.info_grid} style={{ marginBottom: '24px' }}>
+                    <div className={styles.info_box}>
+                      <span className={styles.label}><BsBook style={{ marginRight: 4 }} /> Anos</span>
+                      <p>{anosTexto}</p>
+                    </div>
+                    <div className={styles.info_box}>
+                      <span className={styles.label}><FiLayers style={{ marginRight: 4 }} /> Fase</span>
+                      <p>{prova.fase || '—'}</p>
+                    </div>
+                    <div className={styles.info_box}>
+                      <span className={styles.label}><FiCheckCircle style={{ marginRight: 4 }} /> Status</span>
+                      <p>{prova.status || 'PENDENTE'}</p>
+                    </div>
+                    <div className={styles.info_box}>
+                      <span className={styles.label}>Ano</span>
+                      <p>{prova.ano ?? (prova.created_at ? new Date(prova.created_at).getFullYear() : '—')}</p>
+                    </div>
+                    <div className={styles.info_box}>
+                      <span className={styles.label}>Total de Questões</span>
+                      <p>{questoes.length}</p>
+                    </div>
+                  </section>
 
+                  {/* --- Exibição de comentários do revisor (se existirem) --- */}
+                  {prova.reviewer_comments && (
+                    <div className={styles.comments_block} style={{ marginBottom: '24px' }}>
+                      <span className={styles.comments_label}>Comentários do Revisor:</span>
+                      <div className={styles.comments_content}>
+                        {prova.reviewer_comments}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+  
               {/* Modo edição: formulário de metadados */}
               {modoEdicao && (
-                <div className={styles.edit_mode} style={{ marginBottom: '24px' }}>
-                  <p className={styles.edit_hint} translate="no">
-                    <FiAlertCircle /> Edite os metadados da prova abaixo.
-                  </p>
-                  <div className={styles.edit_grid}>
-                    <div className={styles.field_group} style={{ gridColumn: '1 / -1' }}>
-                      <label className={styles.field_label}>Nome da Prova</label>
-                      <input
-                        type="text"
-                        className={styles.field_input}
-                        value={formNome}
-                        onChange={e => setFormNome(e.target.value)}
-                        placeholder="Nome da prova..."
-                      />
-                    </div>
-                    <div className={styles.field_group}>
-                      <label className={styles.field_label}>Ano do Título da Prova</label>
-                      <input
-                        type="number"
-                        className={styles.field_input}
-                        value={formAno}
-                        onChange={e => setFormAno(e.target.value)}
-                        min={2000}
-                        max={2100}
-                        placeholder={String(new Date().getFullYear())}
-                      />
-                    </div>
-                    <div className={styles.field_group}>
-                      <label className={styles.field_label}>Fase</label>
-                      {/* translate="no": react-select com texto nas opções */}
-                      <div className="notranslate" translate="no">
-                        <Select
-                          instanceId="select-fase"
-                          options={listaFases}
-                          placeholder="Selecionar Fase"
-                          value={listaFases.find(f => f.value === formFase) || null}
-                          onChange={s => setFormFase(s?.value || '')}
-                          isClearable
-                          menuPortalTarget={document.body}
-                          styles={customSelectStyles}
+                  <div className={styles.edit_mode} style={{ marginBottom: '24px' }}>
+                    <p className={styles.edit_hint} translate="no">
+                      <FiAlertCircle /> Edite os metadados da prova abaixo.
+                    </p>
+                    <div className={styles.edit_grid}>
+                      {/* --- CÓDIGO EXISTENTE: Campos de metadados --- */}
+                      <div className={styles.field_group} style={{ gridColumn: '1 / -1' }}>
+                        <label className={styles.field_label}>Nome da Prova</label>
+                        <input
+                          type="text"
+                          className={styles.field_input}
+                          value={formNome}
+                          onChange={e => setFormNome(e.target.value)}
+                          placeholder="Nome da prova..."
                         />
                       </div>
-                    </div>
-                    <div className={styles.field_group}>
-                      <label className={styles.field_label}>Status</label>
-                      <select
-                        className={styles.field_select}
-                        value={formStatus}
-                        onChange={e => setFormStatus(e.target.value)}
-                      >
-                        {listaStatus.map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </div>
-                    <div className={styles.field_group} style={{ gridColumn: '1 / -1' }}>
-                      <label className={styles.field_label}>Anos Escolares</label>
-                      <div className="notranslate" translate="no">
-                        <Select
-                          instanceId="select-anos-escolares"
-                          menuPortalTarget={document.body}
-                          isSearchable
-                          options={opcoesAno}
-                          isMulti
-                          placeholder="Selecionar Anos"
-                          value={formAnos}
-                          onChange={s => setFormAnos(s || [])}
-                          closeMenuOnSelect={false}
-                          isClearable
-                          styles={customSelectStyles}
+                      <div className={styles.field_group}>
+                        <label className={styles.field_label}>Ano do Título da Prova</label>
+                        <input
+                          type="number"
+                          className={styles.field_input}
+                          value={formAno}
+                          onChange={e => setFormAno(e.target.value)}
+                          min={2000}
+                          max={2100}
+                          placeholder={String(new Date().getFullYear())}
                         />
                       </div>
-                    </div>
-                  </div>
+                      <div className={styles.field_group}>
+                        <label className={styles.field_label}>Fase</label>
+                        <div className="notranslate" translate="no">
+                          <Select
+                            instanceId="select-fase"
+                            options={listaFases}
+                            placeholder="Selecionar Fase"
+                            value={listaFases.find(f => f.value === formFase) || null}
+                            onChange={s => setFormFase(s?.value || '')}
+                            isClearable
+                            menuPortalTarget={document.body}
+                            styles={customSelectStyles}
+                          />
+                        </div>
+                      </div>
+                      <div className={styles.field_group}>
+                        <label className={styles.field_label}>Status</label>
+                        <select
+                          className={styles.field_select}
+                          value={formStatus}
+                          onChange={e => setFormStatus(e.target.value)}
+                        >
+                          {listaStatus.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </div>
+                      <div className={styles.field_group} style={{ gridColumn: '1 / -1' }}>
+                        <label className={styles.field_label}>Anos Escolares</label>
+                        <div className="notranslate" translate="no">
+                          <Select
+                            instanceId="select-anos-escolares"
+                            menuPortalTarget={document.body}
+                            isSearchable
+                            options={opcoesAno}
+                            isMulti
+                            placeholder="Selecionar Anos"
+                            value={formAnos}
+                            onChange={s => setFormAnos(s || [])}
+                            closeMenuOnSelect={false}
+                            isClearable
+                            styles={customSelectStyles}
+                          />
+                        </div>
+                      </div>
 
-                  {/* Botões de ação do formulário — translate="no": ícone + texto */}
-                  <div className={styles.edit_actions} translate="no">
-                    <button
-                      className={`${styles.action_btn} ${styles.btn_cancel}`}
-                      onClick={cancelarEdicao}
-                    >
-                      <FaTimes /> Cancelar
-                    </button>
-                    <button
-                      className={`${styles.action_btn} ${styles.btn_save}`}
-                      onClick={salvarEdicao}
-                      disabled={salvando}
-                    >
-                      <FaSave /> {salvando ? 'Salvando...' : 'Salvar Alterações'}
-                    </button>
+                      {/* --- NOVO: Campo de comentários do revisor --- */}
+                      <div className={styles.field_group} style={{ gridColumn: '1 / -1', marginTop: '8px' }}>
+                        <label className={styles.field_label}>Comentários do Revisor</label>
+                        <textarea
+                          className={styles.field_textarea}
+                          value={reviewerComments}
+                          onChange={(e) => setReviewerComments(e.target.value)}
+                          placeholder="Adicione comentários sobre esta prova (visíveis para o autor)..."
+                          rows={4}
+                        />
+                        <small style={{ color: '#6c757d', marginTop: '4px', display: 'block' }}>
+                          Esses comentários serão notificados ao autor da prova.
+                        </small>
+                      </div>
+                    </div>
+
+                    {/* --- CÓDIGO EXISTENTE: Botões de ação --- */}
+                    <div className={styles.edit_actions} translate="no">
+                      <button
+                        className={`${styles.action_btn} ${styles.btn_cancel}`}
+                        onClick={cancelarEdicao}
+                      >
+                        <FaTimes /> Cancelar
+                      </button>
+                      <button
+                        className={`${styles.action_btn} ${styles.btn_save}`}
+                        onClick={salvarEdicao}
+                        disabled={salvando}
+                      >
+                        <FaSave /> {salvando ? 'Salvando...' : 'Salvar Alterações'}
+                      </button>
+                    </div>
+                    <hr className={styles.divider} />
                   </div>
-                  <hr className={styles.divider} />
-                </div>
-              )}
+                )}
 
               {/* Lista de questões */}
               <section className={styles.questoes_section}>

@@ -1286,3 +1286,42 @@
   color: #1967d2;
   background: #f0f4ff;
 }
+/* Estilos para exibição de comentários */
+.comments_block {
+  margin-bottom: 25px;
+}
+
+.comments_label {
+  display: block;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.comments_content {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-style: italic;
+  color: #666;
+  white-space: pre-wrap; /* preserva quebras de linha */
+}
+
+/* Estilo para o textarea (se não existir) */
+.field_textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.field_textarea:focus {
+  border-color: #1967d2;
+  outline: none;
+  box-shadow: 0 0 0 1px #1967d2;
+}
