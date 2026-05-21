@@ -3,24 +3,22 @@
    ========================================================= */
 
 .page_wrapper {
-    /* Centraliza a página na tela */
     display: flex;
     justify-content: center;
     padding: 40px 20px;
-    background-color: #f4f6f8; /* Fundo cinza claro profissional */
+    background-color: #f4f6f8;
     min-height: 100vh;
-    min-width: 100vw  ;
+    min-width: 100vw;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
   
   .container {
     width: 100%;
-    max-width: 1100px; /* Mais largo para PC */
+    max-width: 1100px;
     display: grid;
-    /* Desktop: Coluna da esquerda (300px) e o resto para a direita */
     grid-template-columns: 320px 1fr; 
     gap: 30px;
-    align-items: start; /* Impede que a esquerda estique se a direita for longa */
+    align-items: start;
   }
   
   /* =========================================================
@@ -34,7 +32,7 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     border: 1px solid #eaeaea;
     text-align: center;
-    position: sticky; /* No PC, fica fixo ao rolar */
+    position: sticky;
     top: 20px;
   }
   
@@ -73,6 +71,20 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
+
+  /* Badge de campus exibido sob o role no card esquerdo */
+  .campus_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #f3e5f5;
+    color: #6a1b9a;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-top: 6px;
+  }
   
   .action_buttons {
     display: flex;
@@ -82,7 +94,6 @@
     padding-top: 20px;
   }
   
-  /* Botões laterais estilo "Menu" */
   .btn_outline {
     display: flex;
     align-items: center;
@@ -144,11 +155,35 @@
     color: #888;
     font-size: 0.95rem;
   }
+
+  /* ── Divisor interno entre seções do card direito ── */
+  .details_divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 35px 0 25px;
+  }
+
+  .details_divider::before,
+  .details_divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #eee;
+  }
+
+  .details_divider span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+  }
   
   /* Grid interna dos detalhes */
   .info_grid {
     display: grid;
-    /* Cria colunas automáticas de no mínimo 250px */
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 25px;
   }
@@ -193,7 +228,7 @@
   }
   
   /* =========================================================
-     MODAL (Mantido igual, apenas ajustado visualmente)
+     MODAL
      ========================================================= */
   
   .modal_overlay {
@@ -240,17 +275,17 @@
   }
   
   /* =========================================================
-     RESPONSIVIDADE (Transforma PC em Mobile)
+     RESPONSIVIDADE
      ========================================================= */
   
   @media (max-width: 850px) {
     .container {
-      grid-template-columns: 1fr; /* Vira uma coluna só */
+      grid-template-columns: 1fr;
       gap: 20px;
     }
   
     .profile_card {
-      position: static; /* Remove o sticky no mobile */
+      position: static;
       padding: 20px;
     }
   
@@ -259,6 +294,52 @@
     }
     
     .info_grid {
-      grid-template-columns: 1fr; /* Itens um embaixo do outro no mobile */
+      grid-template-columns: 1fr;
     }
   }
+  /* Expandir a largura do modal de edição */
+.modal_content_wide {
+  max-width: 950px; /* Largura aumentada para acomodar duas colunas */
+}
+
+/* Sistema de colunas do modal */
+.modal_columns {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 15px;
+}
+
+.modal_column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Títulos das secções internas do modal */
+.modal_section_title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #f3f4f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estilo para o elemento select dentro do modal */
+.custom_select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.custom_select:focus {
+  outline: none;
+  border-color: #1976d2;
+}

@@ -57,7 +57,8 @@ function Project() {
     const [bnccTheme,   setBnccTheme]   = useState('');
 
     // Filtro de Data
-    const [dateFilter, setDateFilter] = useState('all');
+    const [dateFilter,  setDateFilter]  = useState('all');
+    const [searchDate,  setSearchDate]  = useState(''); // YYYY-MM-DD exato
 
     // === CARREGAR GRAUS ===
     useEffect(() => {
@@ -184,6 +185,13 @@ function Project() {
             return true;
         })
 
+        // Data exata (YYYY-MM-DD) — filtra por createdAt exato
+        .filter(p => {
+            if (!searchDate) return true;
+            const iso = p.createdAt || '';
+            return iso.slice(0, 10) === searchDate;
+        })
+
         // Ordenação
         .sort((a, b) => {
             const getTs = p => new Date(sortOrder === 'recentes' ? (p.createdAt || 0) : (p.updatedAt || p.createdAt || 0));
@@ -194,6 +202,7 @@ function Project() {
     function limparFiltros() {
         setSearchTerm('');
         setDateFilter('all');
+        setSearchDate('');
         setDificuldade('');
         setAnosSelecionados([]);
         setPhaseLevel('');
@@ -351,6 +360,15 @@ function Project() {
                         <option value="Probabilidade">Probabilidade</option>
                         <option value="Probabilidade e Estatística">Probabilidade e Estatística</option>
                     </select>
+
+                    {/* Data exata de criação */}
+                    <input
+                        type="date"
+                        className={styles.native_select}
+                        title="Filtrar por data exata de criação"
+                        value={searchDate}
+                        onChange={e => setSearchDate(e.target.value)}
+                    />
 
                     {/* Alternar visualização */}
                     <div className={styles.view_toggles}>

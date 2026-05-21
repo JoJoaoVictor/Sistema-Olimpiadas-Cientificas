@@ -657,7 +657,7 @@
           {
             "id": "30",
             "ano": "6º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Cálculo de probabilidade como a razão entre o número de resultados favoráveis e o total de resultados possíveis em um espaço amostral equiprovável Cálculo de probabilidade por meio de muitas repetições de um experimento (frequências de ocorrências e probabilidade frequentista)",
             "habilidade": "(EF06MA30)",
             "abilityDescription": " Calcular a probabilidade de um evento aleatório, expressando-a por número racional (forma fracionária, decimal e percentual) e comparar esse número com a probabilidade obtida por meio de experimentos sucessivos."
@@ -665,7 +665,7 @@
           {
             "id": "31",
             "ano": "6º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Leitura e interpretação de tabelas e gráficos (de colunas ou barras simples ou múltiplas) referentes a variáveis categóricas e variáveis numéricas",
             "habilidade": "(EF06MA31) ",
             "abilityDescription": "Identificar as variáveis e suas frequências e os elementos constitutivos (título, eixos, legendas, fontes e datas) em diferentes tipos de gráfico."
@@ -673,7 +673,7 @@
           {
             "id": "32",
             "ano": "6º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Leitura e interpretação de tabelas e gráficos (de colunas ou barras simples ou múltiplas) referentes a variáveis categóricas e variáveis numéricas",
             "habilidade": "(EF06MA32) ",
             "abilityDescription": "Representar graficamente dados coletados sobre situações do cotidiano."
@@ -681,7 +681,7 @@
           {
             "id": "33",
             "ano": "6º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Coleta de dados, organização e registro Construção de diferentes tipos de gráficos para representá-los e interpretação das informações",
             "habilidade": "(EF06MA33) ",
             "abilityDescription": "Planejar e coletar dados de pesquisa referente a práticas sociais escolhidas pelos alunos e fazer uso de planilhas eletrônicas para registro, representação e interpretação das informações, em tabelas, vários tipos de gráficos e texto."
@@ -689,7 +689,7 @@
           {
             "id": "34",
             "ano": "6º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Diferentes tipos de representação de informações: gráficos e fluxogramas",
             "habilidade": "(EF06MA34)  ",
             "abilityDescription": "Interpretar e desenvolver fluxogramas simples, identificando as relações entre os objetos representados (por exemplo, posição de cidades considerando as estradas que as unem, hierarquia dos funcionários de uma empresa etc.)."
@@ -952,7 +952,7 @@
           {
             "id": "33",
             "ano": "7º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Medida do comprimento da circunferência",
             "habilidade": "(EF07MA33) ",
             "abilityDescription": "Estabelecer o número π como a razão entre a medida de uma circunferência e seu diâmetro, para compreender e resolver problemas, inclusive os de natureza histórica."
@@ -960,7 +960,7 @@
           {
             "id": "34",
             "ano": "7º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Experimentos aleatórios: espaço amostral e estimativa de probabilidade por meio de frequência de ocorrências",
             "habilidade": "(EF07MA34)",
             "abilityDescription": " Planejar e realizar experimentos aleatórios ou simulações que envolvem cálculo de probabilidades ou estimativas por meio de frequência de ocorrências."
@@ -968,7 +968,7 @@
           {
             "id": "35",
             "ano": "7º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Estatística: média e amplitude de um conjunto de dados",
             "habilidade": "(EF07MA35) ",
             "abilityDescription": "Compreender, em contextos significativos, o significado de média estatística como indicador da tendência de uma pesquisa, calcular seu valor e relacioná-lo, intuitivamente, com a amplitude do conjunto de dados."
@@ -976,7 +976,7 @@
           {
             "id": "36",
             "ano": "7º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Pesquisa amostral e pesquisa censitária Planejamento de pesquisa, coleta e organização dos dados, construção de tabelas e gráficos e interpretação das informações",
             "habilidade": "(EF07MA36) ",
             "abilityDescription": " Planejar e realizar pesquisa envolvendo tema da realidade social, identificando a necessidade de ser censitária ou de usar amostra, e interpretar os dados para comunicá-los por meio de relatório escrito, tabelas e gráficos, com o apoio de planilhas eletrônicas."
@@ -984,7 +984,7 @@
           {
             "id": "37",
             "ano": "7º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Gráficos de setores: interpretação, pertinência e construção para representar conjunto de dados",
             "habilidade": "(EF07MA37) ",
             "abilityDescription": "Interpretar e analisar dados apresentados em gráfico de setores divulgados pela mídia e compreender quando é possível ou conveniente sua utilização."
@@ -1161,7 +1161,7 @@
           {
             "id": "22",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Princípio multiplicativo da contagem Soma das probabilidades de todos os elementos de um espaço amostra",
             "habilidade": "(EF08MA22) ",
             "abilityDescription": "Calcular a probabilidade de eventos, com base na construção do espaço amostral, utilizando o princípio multiplicativo, e reconhecer que a soma das probabilidades de todos os elementos do espaço amostral é igual a 1."
@@ -1169,7 +1169,7 @@
           {
             "id": "23",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Gráficos de barras, colunas, linhas ou setores e seus elementos constitutivos e adequação para determinado conjunto de dados",
             "habilidade": "(EF08MA23) ",
             "abilityDescription": "Avaliar a adequação de diferentes tipos de gráficos para representar um conjunto de dados de uma pesquisa."
@@ -1177,7 +1177,7 @@
           {
             "id": "24",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Organização dos dados de uma variável contínua em classes",
             "habilidade": "(EF08MA24) ",
             "abilityDescription": "Classificar as frequências de uma variável contínua de uma pesquisa em classes, de modo que resumam os dados de maneira adequada para a tomada de decisões."
@@ -1185,7 +1185,7 @@
           {
             "id": "25",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Medidas de tendência central e de dispersão",
             "habilidade": "(EF08MA25)",
             "abilityDescription": " Obter os valores de medidas de tendência central de uma pesquisa estatística (média, moda e mediana) com a compreensão de seus significados e relacioná-los com a dispersão de dados, indicada pela amplitude."
@@ -1193,7 +1193,7 @@
           {
             "id": "26",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Pesquisas censitária ou amostral Planejamento e execução de pesquisa amostral",
             "habilidade": "(EF08MA26) ",
             "abilityDescription": "Selecionar razões, de diferentes naturezas (física, ética ou econômica), que justificam a realização de pesquisas amostrais e não censitárias, e reconhecer que a seleção da amostra pode ser feita de diferentes maneiras (amostra casual simples, sistemática e estratificada). "
@@ -1201,7 +1201,7 @@
           {
             "id": "27",
             "ano": "8º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Pesquisas censitária ou amostral Planejamento e execução de pesquisa amostral",
             "habilidade": "(EF08MA27)  ",
             "abilityDescription": "Planejar e executar pesquisa amostral, selecionando uma técnica de amostragem adequada, e escrever relatório que contenha os gráficos apropriados para representar os conjuntos de dados, destacando aspectos como as medidas de tendência central, a amplitude e as conclusões."
@@ -1363,7 +1363,7 @@
           {
             "id": "20",
             "ano": "9º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Análise de probabilidade de eventos aleatórios: eventos dependentes e independentes",
             "habilidade": "(EF09MA20) ",
             "abilityDescription": "Reconhecer, em experimentos aleatórios, eventos independentes e dependentes e calcular a probabilidade de sua ocorrência, nos dois casos."
@@ -1371,7 +1371,7 @@
           {
             "id": "21",
             "ano": "9º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Análise de gráficos divulgados pela mídia: elementos que podem induzir a erros de leitura ou de interpretação",
             "habilidade": "(EF09MA21) ",
             "abilityDescription": "Analisar e identificar, em gráficos divulgados pela mídia, os elementos que podem induzir, às vezes propositadamente, erros de leitura, como escalas inapropriadas, legendas não explicitadas corretamente, omissão de informações importantes (fontes e datas), entre outros."
@@ -1379,7 +1379,7 @@
           {
             "id": "22",
             "ano": "9º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Leitura, interpretação e representação de dados de pesquisa expressos em tabelas de dupla entrada, gráficos de colunas simples e agrupadas, gráficos de barras e de setores e gráficos pictóricos",
             "habilidade": "(EF09MA22) ",
             "abilityDescription": "Escolher e construir o gráfico mais adequado (colunas, setores, linhas), com ou sem uso de planilhas eletrônicas, para apresentar um determinado conjunto de dados, destacando aspectos como as medidas de tendência central."
@@ -1387,7 +1387,7 @@
           {
             "id": "23",
             "ano": "9º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Planejamento e execução de pesquisa amostral e apresentação de relatório",
             "habilidade": "(EF09MA23) ",
             "abilityDescription": "Planejar e executar pesquisa amostral envolvendo tema da realidade social e comunicar os resultados por meio de relatório contendo avaliação de medidas de tendência central e da amplitude, tabelas e gráficos adequados, construídos com o apoio de planilhas eletrônicas."
@@ -1523,7 +1523,7 @@
               },  {
             "id": "22",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
-            "unidadeTematica": "Geometria E Medidas",
+            "unidadeTematica": "Geometria e Medidas",
             "habilidade": "(EM13MAT313) ",
             "abilityDescription": "Utilizar, quando necessário, a notação científica para expressar uma medida, compreendendo as noções de algarismos significativos e algarismos duvidosos, e reconhecendo que toda medida é inevitavelmente acompanhada de erro."
               },  {
@@ -1816,7 +1816,7 @@
               {
             "id": "64",
             "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Análise da ideia de aleatório em situações do cotidiano",
             "habilidade": "(EF02MA21)",
             "abilityDescription": "Classificar resultados de eventos cotidianos aleatórios como “pouco prováveis”, “muito prováveis”, “improváveis” e “impossíveis”."
@@ -1824,7 +1824,7 @@
               {
             "id": "65",
             "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
             "habilidade": "(EF02MA22)",
             "abilityDescription": "Comparar informações de pesquisas apresentadas por meio de tabelas de dupla entrada e em gráficos de colunas simples ou barras, para melhor compreender aspectos da realidade próxima."
@@ -1832,7 +1832,7 @@
               {
             "id": "66",
             "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
             "habilidade": "(EF02MA23)",
             "abilityDescription": "Realizar pesquisa em universo de até 30 elementos, escolhendo até três variáveis categóricas de seu interesse, organizando os dados coletados em listas, tabelas e gráficos de colunas simples."
@@ -2032,7 +2032,7 @@
               {
             "id": "91",
             "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Análise da ideia de acaso em situações do cotidiano: espaço amostral",
             "habilidade": "(EF03MA25)",
             "abilityDescription": "Identificar, em eventos familiares aleatórios, todos os resultados possíveis, estimando os que têm maiores ou menores chances de ocorrência."
@@ -2040,7 +2040,7 @@
               {
             "id": "92",
             "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
             "habilidade": "(EF03MA26)",
             "abilityDescription": "Resolver problemas cujos dados estão apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas."
@@ -2048,7 +2048,7 @@
               {
             "id": "93",
             "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
             "habilidade": "(EF03MA27)",
             "abilityDescription": "Ler, interpretar e comparar dados apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas, envolvendo resultados de pesquisas significativas, utilizando termos como maior e menor frequência, apropriando-se desse tipo de linguagem para compreender aspectos da realidade sociocultural significativos."
@@ -2056,7 +2056,7 @@
               {
             "id": "94",
             "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e estatística",
+            "unidadeTematica": "Probabilidade e Estatística",
             "objetosDeConhecimento": "Coleta, classificação e representação de dados referentes a variáveis categóricas, por meio de tabelas e gráficos",
             "habilidade": "(EF03MA28)",
             "abilityDescription": "Realizar pesquisa envolvendo variáveis categóricas em um universo de até 50 elementos, organizar os dados coletados utilizando listas, tabelas simples ou de dupla entrada e representá-los em gráficos de colunas simples, com e sem uso de tecnologias digitais."

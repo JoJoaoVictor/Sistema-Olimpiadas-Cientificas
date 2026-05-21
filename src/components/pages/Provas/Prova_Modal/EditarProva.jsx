@@ -220,7 +220,7 @@ export default function EditarProva() {
               className={`${styles.action_btn} ${modoEdicao ? styles.btn_cancel : styles.btn_edit}`}
               onClick={() => modoEdicao ? cancelarEdicao() : setModoEdicao(true)}
             >
-              {modoEdicao ? <><FaTimes /> Cancelar</> : <><FaEdit /> Editar Prova</>}
+              {modoEdicao ? <><FaTimes /> Cancelar</> : <><FaEdit /> Editar Dados da Prova</>}
             </button>
             {modoEdicao && (
               <button

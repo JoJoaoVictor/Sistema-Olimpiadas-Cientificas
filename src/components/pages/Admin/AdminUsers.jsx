@@ -1,226 +1,280 @@
-import { useState, useEffect } from 'react';
-import styles from './AdminUsers.module.css'; 
+import { useState, useEffect, useCallback } from 'react';
+import styles from './AdminUsers.module.css';
 import useAuth from '../../../hooks/useAuth';
 import { userService } from '../../../services/userService';
+import api from '../../../services/api';
 
 // Ícones
-import { FiTrash2, FiSearch, FiUsers, FiShield, FiAlertTriangle } from "react-icons/fi";
+import { FiUsers, FiShield } from 'react-icons/fi';
+import { FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaUserCheck } from 'react-icons/fa';
+
+// Componentes
+import StatCard from './AdminUsersComponents/StatCard';
+import ToolBar from './AdminUsersComponents/ToolBar';
+import UsersTable from './AdminUsersComponents/UsersTable';
+import UserCard from './AdminUsersComponents/UserCard';
+import ProfileModal from './AdminUsersComponents/ProfileModal';
+import DeleteConfirmationModal from './AdminUsersComponents/DeleteConfirmationModal';
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const ROLE_META = {
+  ADMIN:     { label: 'Admin',     color: '#6f42c1', bg: '#f0eaff', icon: <FaUserShield /> },
+  PROFESSOR: { label: 'Professor', color: '#0d6efd', bg: '#e7f0ff', icon: <FaChalkboardTeacher /> },
+  REVISOR:   { label: 'Revisor',   color: '#0ca678', bg: '#e6fcf5', icon: <FaUserCheck /> },
+  STUDENT:   { label: 'Estudante', color: '#fd7e14', bg: '#fff4e6', icon: <FaUserGraduate /> },
+};
+
+function avatarUrl(name) {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || '?')}&background=random&color=fff&size=128`;
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
 
 function AdminUsers() {
-  const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Novo: Filtro de busca
   const { token } = useAuth();
-  
-  // Estado para o Modal de Exclusão
-  const [userToDelete, setUserToDelete] = useState(null);
 
+  const [users,        setUsers]        = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [searchTerm,   setSearchTerm]   = useState('');
+  const [roleFilter,   setRoleFilter]   = useState('ALL');
+  const [cityFilter,   setCityFilter]   = useState('ALL');
+  const [sortField,    setSortField]    = useState('name');
+  const [sortDir,      setSortDir]      = useState('asc');
+
+  // Modais
+  const [userToDelete,  setUserToDelete]  = useState(null);
+  const [profileUser,   setProfileUser]   = useState(null);  // modal de perfil
+  const [profileStats,  setProfileStats]  = useState(null);  // dados carregados
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // ── Carregar usuários ────────────────────────────────────────────────────────
   useEffect(() => {
     async function loadUsers() {
       if (!token) return;
+      setLoading(true);
       try {
         const data = await userService.getAllUsers(token);
         if (Array.isArray(data)) setUsers(data);
-      } catch (error) {
-        console.error("Erro ao buscar usuários:", error);
+      } catch (err) {
+        console.error('Erro ao buscar usuários:', err);
+      } finally {
+        setLoading(false);
       }
     }
     loadUsers();
   }, [token]);
 
-  // Abre o modal perguntando se quer deletar
-  const confirmDelete = (user) => {
-    setUserToDelete(user);
-  }
+  // ── Abrir perfil + buscar stats do usuário ────────────────────────────────────
+  const openProfile = useCallback(async (user) => {
+    setProfileUser(user);
+    setProfileStats(null);
+    setProfileLoading(true);
+    try {
+      // Busca questões e provas em paralelo — adapte os endpoints se necessário
+      const [questionsRes, examsRes] = await Promise.allSettled([
+        api.get('/api/v1/questions/', { params: { professor_id: user.id, per_page: 1 } }),
+        api.get('/api/v1/exams',     { params: { professor_id: user.id, per_page: 1 } }),
+      ]);
 
-  // Ação real de deletar (chamada pelo modal)
+      const questionsTotal = questionsRes.status === 'fulfilled'
+        ? (questionsRes.value.data?.data?.total ?? questionsRes.value.data?.data?.questions?.length ?? 0)
+        : null;
+
+      const examsTotal = examsRes.status === 'fulfilled'
+        ? (examsRes.value.data?.data?.total ?? examsRes.value.data?.data?.exams?.length ?? 0)
+        : null;
+
+      setProfileStats({ questionsTotal, examsTotal });
+    } catch (err) {
+      console.error('Erro ao carregar stats:', err);
+      setProfileStats({ questionsTotal: null, examsTotal: null });
+    } finally {
+      setProfileLoading(false);
+    }
+  }, []);
+
+  // ── Deletar usuário ──────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (!userToDelete) return;
-    
     const success = await userService.deleteUser(userToDelete.id, token);
     if (success) {
-      setUsers(users.filter(u => u.id !== userToDelete.id));
-      setUserToDelete(null); // Fecha modal
+      setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+      setUserToDelete(null);
     } else {
-      alert("Erro ao remover usuário.");
-    }
-  }
-
-  const handleRoleChange = async (id, newRole) => {
-    // Feedback visual imediato (Otimista)
-    const oldUsers = [...users];
-    setUsers(users.map(u => u.id === id ? { ...u, role: newRole } : u));
-
-    const success = await userService.updateUserRole(id, newRole, token);
-    if (!success) {
-      setUsers(oldUsers); // Reverte se der erro
-      alert("Erro ao atualizar cargo.");
+      alert('Erro ao remover usuário.');
     }
   };
 
-  // Filtragem local
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ── Alterar cargo ────────────────────────────────────────────────────────────
+  const handleRoleChange = async (id, newRole) => {
+    const oldUsers = [...users];
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
+    // Atualiza modal de perfil se estiver aberto para este user
+    if (profileUser?.id === id) setProfileUser(prev => ({ ...prev, role: newRole }));
 
+    const success = await userService.updateUserRole(id, newRole, token);
+    if (!success) {
+      setUsers(oldUsers);
+      alert('Erro ao atualizar cargo.');
+    }
+  };
+
+  // ── Ordenação ────────────────────────────────────────────────────────────────
+  const toggleSort = (field) => {
+    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortField(field); setSortDir('asc'); }
+  };
+
+  // ── Filtragem + ordenação ────────────────────────────────────────────────────
+  const filteredUsers = users
+    .filter(u =>
+      (roleFilter === 'ALL' || u.role?.toUpperCase() === roleFilter) &&
+      (cityFilter === 'ALL' || u.city?.toLowerCase() === cityFilter.toLowerCase()) &&
+      (u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       u.email?.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const va = (a[sortField] || '').toLowerCase();
+      const vb = (b[sortField] || '').toLowerCase();
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+
+  // ── Obter cidades únicas ─────────────────────────────────────────────────────
+  const uniqueCities = Array.from(new Set(users.map(u => u.city).filter(Boolean))).sort();
+
+  // ── Stats totais ─────────────────────────────────────────────────────────────
+  const countByRole = (role) => users.filter(u => u.role?.toUpperCase() === role).length;
+
+  const STAT_CARDS = [
+    { label: 'Total',      value: users.length,           icon: <FiUsers />,              color: '#2c3e50' },
+    { label: 'Admins',     value: countByRole('ADMIN'),    icon: <FaUserShield />,         color: '#6f42c1' },
+    { label: 'Professores',value: countByRole('PROFESSOR'),icon: <FaChalkboardTeacher />,  color: '#0d6efd' },
+    { label: 'Revisores',  value: countByRole('REVISOR'),  icon: <FaUserCheck />,          color: '#0ca678' },
+    { label: 'Estudantes', value: countByRole('STUDENT'),  icon: <FaUserGraduate />,       color: '#fd7e14' },
+  ];
+
+  const ROLE_TABS = [
+    { key: 'ALL',      label: 'Todos' },
+    { key: 'ADMIN',    label: 'Admins' },
+    { key: 'PROFESSOR',label: 'Professores' },
+    { key: 'REVISOR',  label: 'Revisores' },
+    { key: 'STUDENT',  label: 'Estudantes' },
+  ];
+
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className={styles.page_wrapper}>
       <div className={styles.container}>
-        
-        {/* === CABEÇALHO DO DASHBOARD === */}
+
+        {/* ── Header ── */}
         <div className={styles.header_section}>
-            <div>
-                <h1><FiShield style={{marginRight: '10px'}}/>Gerenciar Usuários</h1>
-                <p>Administração de contas e permissões do sistema.</p>
-            </div>
-            
-            <div className={styles.stats_card}>
-                <FiUsers size={24} color="#007bff"/>
-                <div>
-                    <strong>{users.length}</strong>
-                    <span>Total de Usuários</span>
-                </div>
-            </div>
-        </div>
-
-        {/* === BARRA DE FERRAMENTAS === */}
-        <div className={styles.toolbar}>
-            <div className={styles.search_box}>
-                <FiSearch />
-                <input 
-                    type="text" 
-                    placeholder="Buscar por nome ou email..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-        </div>
-
-        {/* === ÁREA DE DADOS (TABELA PC / CARDS MOBILE) === */}
-        <div className={styles.content_area}>
-            {filteredUsers.length > 0 ? (
-                <>
-                  {/* TABELA (Visível apenas em PC) */}
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Usuário</th>
-                        <th>Email</th>
-                        <th>Cargo</th>
-                        <th style={{textAlign: 'right'}}>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td>
-                            <div className={styles.user_cell}>
-                                {/* Avatar automático gerado com iniciais */}
-                                <img 
-                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff`} 
-                                    alt="Avatar" 
-                                />
-                                <strong>{user.name}</strong>
-                            </div>
-                          </td>
-                          <td style={{color: '#666'}}>{user.email}</td>
-                          <td>
-                            <div className={styles.select_wrapper}>
-                                <select 
-                                  value={user.role} 
-                                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                  className={`${styles.role_select} ${styles[user.role?.toLowerCase()]}`}
-                                >
-                                  <option value="STUDENT">Estudante</option>
-                                  <option value="PROFESSOR">Professor</option>
-                                  <option value="REVISOR">Revisor</option>
-                                  <option value="ADMIN">Admin</option>
-                                </select>
-                            </div>
-                          </td>
-                          <td style={{textAlign: 'right'}}>
-                            <button 
-                              onClick={() => confirmDelete(user)}
-                              className={styles.icon_btn_delete}
-                              title="Excluir Usuário"
-                            >
-                              <FiTrash2 size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                  {/* LISTA DE CARDS (Visível apenas em Mobile) */}
-                  <div className={styles.mobile_list}>
-                    {filteredUsers.map((user) => (
-                        <div key={user.id} className={styles.user_card}>
-                            <div className={styles.card_header}>
-                                <img 
-                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff`} 
-                                    alt="Avatar" 
-                                />
-                                <div>
-                                    <strong>{user.name}</strong>
-                                    <span className={styles.email_text}>{user.email}</span>
-                                </div>
-                            </div>
-                            
-                            <div className={styles.card_body}>
-                                <label>Cargo:</label>
-                                <select 
-                                  value={user.role} 
-                                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                  className={styles.role_select_mobile}
-                                >
-                                  <option value="STUDENT">Estudante</option>
-                                  <option value="PROFESSOR">Professor</option>
-                                  <option value="REVISOR">Revisor</option>
-                                  <option value="ADMIN">Admin</option>
-                                </select>
-                            </div>
-
-                            <button 
-                                onClick={() => confirmDelete(user)}
-                                className={styles.btn_delete_mobile}
-                            >
-                                <FiTrash2 /> Excluir Usuário
-                            </button>
-                        </div>
-                    ))}
-                  </div>
-                </>
-            ) : (
-                <div className={styles.empty_state}>
-                    <p>Nenhum usuário encontrado.</p>
-                </div>
-            )}
-        </div>
-
-      </div>
-
-      {/* === MODAL DE CONFIRMAÇÃO DE EXCLUSÃO === */}
-      {userToDelete && (
-        <div className={styles.modal_overlay} onClick={() => setUserToDelete(null)}>
-          <div className={styles.modal_content} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modal_header_danger}>
-                <FiAlertTriangle size={40} />
-            </div>
-            <h3>Excluir Usuário?</h3>
-            <p>
-              Tem certeza que deseja remover <strong>{userToDelete.name}</strong>? 
-              <br/>Essa ação não pode ser desfeita.
-            </p>
-            
-            <div className={styles.modal_actions}>
-              <button className={styles.btn_cancel} onClick={() => setUserToDelete(null)}>Cancelar</button>
-              <button className={styles.btn_confirm_danger} onClick={handleDelete}>Sim, Excluir</button>
-            </div>
+          <div>
+            <h1><FiShield style={{ marginRight: '10px' }} />Gerenciar Usuários</h1>
+            <p>Administração de contas e permissões do sistema.</p>
           </div>
         </div>
-      )}
 
+        {/* ── Stats Cards ── */}
+        <div className={styles.stats_grid}>
+          {STAT_CARDS.map(s => (
+            <StatCard
+              key={s.label}
+              label={s.label}
+              value={s.value}
+              icon={s.icon}
+              color={s.color}
+            />
+          ))}
+        </div>
+
+        {/* ── Toolbar ── */}
+        <ToolBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          roleFilter={roleFilter}
+          onRoleFilterChange={setRoleFilter}
+          cityFilter={cityFilter}
+          onCityFilterChange={setCityFilter}
+          users={users}
+          cities={uniqueCities}
+          countByRole={countByRole}
+          roleTabsConfig={ROLE_TABS}
+        />
+
+        {/* ── Resultado ── */}
+        <p className={styles.result_count}>
+          {loading ? 'Carregando...' : `${filteredUsers.length} usuário${filteredUsers.length !== 1 ? 's' : ''} encontrado${filteredUsers.length !== 1 ? 's' : ''}`}
+        </p>
+
+        {/* ── Conteúdo ── */}
+        <div className={styles.content_area}>
+          {loading ? (
+            <div className={styles.loading_state}>
+              <div className={styles.spinner} />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className={styles.empty_state}>
+              <FiUsers size={40} color="#ccc" />
+              <p>Nenhum usuário encontrado.</p>
+            </div>
+          ) : (
+            <>
+              {/* TABELA (Desktop) */}
+              <UsersTable
+                users={filteredUsers}
+                sortField={sortField}
+                sortDir={sortDir}
+                onSort={toggleSort}
+                onRoleChange={handleRoleChange}
+                onViewProfile={openProfile}
+                onDeleteClick={setUserToDelete}
+                ROLE_META={ROLE_META}
+                formatDate={formatDate}
+                avatarUrl={avatarUrl}
+              />
+
+              {/* CARDS (Mobile) */}
+              <div className={styles.mobile_list}>
+                {filteredUsers.map(user => (
+                  <UserCard
+                    key={user.id}
+                    user={user}
+                    onRoleChange={handleRoleChange}
+                    onViewProfile={openProfile}
+                    onDeleteClick={setUserToDelete}
+                    ROLE_META={ROLE_META}
+                    avatarUrl={avatarUrl}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Modal: Perfil do Usuário ── */}
+      <ProfileModal
+        profileUser={profileUser}
+        profileStats={profileStats}
+        profileLoading={profileLoading}
+        onClose={() => setProfileUser(null)}
+        onRoleChange={handleRoleChange}
+        onDeleteClick={setUserToDelete}
+        ROLE_META={ROLE_META}
+        formatDate={formatDate}
+        avatarUrl={avatarUrl}
+      />
+
+      {/* ── Modal: Confirmar Exclusão ── */}
+      <DeleteConfirmationModal
+        userToDelete={userToDelete}
+        onConfirm={handleDelete}
+        onCancel={() => setUserToDelete(null)}
+      />
     </div>
   );
 }

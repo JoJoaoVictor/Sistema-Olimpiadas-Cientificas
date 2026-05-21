@@ -1,0 +1,370 @@
+/* EditarPerfil.module.css */
+
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: #f9fafb;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
+}
+
+/* Cabeçalho */
+.card_header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card_header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.card_header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.btn_back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+  align-self: flex-start;
+}
+
+.btn_back:hover {
+  color: #111827;
+}
+
+/* Alertas de Feedback */
+.alert_error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #f87171;
+  font-size: 0.95rem;
+}
+
+.alert_success {
+  background-color: #f0fdf4;
+  color: #15803d;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #4ade80;
+  font-size: 0.95rem;
+}
+
+/* Divisor de Seção */
+.section_divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0 1.5rem;
+}
+
+.section_divider::before,
+.section_divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.section_divider span {
+  padding: 0 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Avatar e Dados Pessoais */
+.avatar_row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.avatar_preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #f3f4f6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.avatar_inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Campos de Formulário Geral */
+.form_group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form_group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form_group input,
+.form_group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  background-color: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form_group input:focus,
+.form_group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input_readonly {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+  border-color: #e5e7eb !important;
+}
+
+/* Grid de Dados Acadêmicos */
+.fields_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Ações do Formulário (Botões) */
+.form_actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn_cancel {
+  padding: 0.75rem 1.5rem;
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn_cancel:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn_save {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb; /* Azul primário */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn_save:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn_save:disabled,
+.btn_cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 640px) {
+  .avatar_row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .avatar_preview {
+    align-self: center;
+  }
+
+  .avatar_inputs {
+    width: 100%;
+  }
+
+  .form_actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn_cancel, 
+  .btn_save {
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* ==========================================================================
+   MODAIS (Editar Perfil e Alterar Senha)
+   ========================================================================== */
+
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Deixa o fundo levemente desfocado */
+}
+
+.modal_content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalFadeIn 0.3s ease; /* Efeito de entrada suave */
+}
+
+.modal_content h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #111827;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Campos do formulário dentro do Modal */
+.form_group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.form_group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form_group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form_group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Botões do Modal */
+.modal_actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn_cancel {
+  padding: 0.6rem 1.2rem;
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn_cancel:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn_save {
+  padding: 0.6rem 1.2rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn_save:hover {
+  background-color: #1d4ed8;
+}

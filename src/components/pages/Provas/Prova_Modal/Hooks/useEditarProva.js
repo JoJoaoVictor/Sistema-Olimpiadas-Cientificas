@@ -267,7 +267,7 @@ export function useEditarProva(id) {
     setExcluindo(true);
     try {
       await api.delete(`/api/v1/exams/${id}`);
-      navigate('/provas');
+      navigate('/Prova');
     } catch (err) {
       alert('Erro ao excluir prova: ' + authService._handleError(err));
       setExcluindo(false);

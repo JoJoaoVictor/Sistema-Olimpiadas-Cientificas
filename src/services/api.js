@@ -1,100 +1,102 @@
 // src/services/api.js
 
-// Importa a biblioteca axios, responsável por realizar requisições HTTP
 import axios from 'axios';
 
-// Cria uma instância do axios para centralizar a configuração da API
 const api = axios.create({
-  // URL base do backend
-  baseURL: 'http://localhost:8000',
-  // Tempo máximo de espera por uma resposta do servidor (em milissegundos)
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   timeout: 30000,
 });
 
 // -----------------------------------------------------------------------------
 // INTERCEPTOR DE REQUISIÇÃO
 // -----------------------------------------------------------------------------
-
 api.interceptors.request.use(config => {
-  // Recupera o token salvo no localStorage
   const token = localStorage.getItem('access_token');
-
-  // Se o token existir, adiciona no cabeçalho da requisição
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
 // -----------------------------------------------------------------------------
 // INTERCEPTOR DE RESPOSTA
 // -----------------------------------------------------------------------------
-
 api.interceptors.response.use(
   response => response,
-  error => {
-    // Verifica se o erro é de não autorizado (token inválido ou expirado)
-    if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  async error => {
+    const originalRequest = error.config;
+
+    // Se não for 401, rejeita normalmente
+    if (error.response?.status !== 401) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    // Evita loop: se já tentou renovar, faz logout
+    if (originalRequest._retry) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user_token');
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
+
+    // Tenta renovar o token
+    try {
+      const authData = JSON.parse(localStorage.getItem('user_token') || '{}');
+      const refreshToken = authData.refresh_token;
+      if (!refreshToken) throw new Error('Sem refresh token');
+
+      originalRequest._retry = true;
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/auth/refresh-token`,
+        { refresh_token: refreshToken }
+      );
+
+      const newAccessToken = data.data.tokens.access_token;
+      localStorage.setItem('access_token', newAccessToken);
+      authData.access_token = newAccessToken;
+      // Se o backend retornar novo refresh token, atualiza também
+      if (data.data.tokens.refresh_token) {
+        authData.refresh_token = data.data.tokens.refresh_token;
+      }
+      localStorage.setItem('user_token', JSON.stringify(authData));
+
+      // Atualiza o cabeçalho e repete a requisição original
+      originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+      return api(originalRequest);
+    } catch (refreshError) {
+      // Se a renovação falhar, aí sim desloga
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user_token');
+      window.location.href = '/login';
+      return Promise.reject(refreshError);
+    }
   }
 );
 
 // -----------------------------------------------------------------------------
+// SINCRONIZAÇÃO ENTRE ABAS
+// -----------------------------------------------------------------------------
+window.addEventListener('storage', (event) => {
+  if (event.key === 'access_token' && !event.newValue) {
+    // Outra aba fez logout
+    window.location.href = '/login';
+  }
+});
+
+// -----------------------------------------------------------------------------
 // SERVIÇOS ESPECÍFICOS (PROVAS)
 // -----------------------------------------------------------------------------
-
 export const examService = {
-  /**
-   * Lista provas com filtros (paginação, busca, etc.)
-   * @param {Object} params - Parâmetros de consulta (page, per_page, search, etc.)
-   */
   list: (params = {}) => api.get('/api/v1/exams', { params }),
-
-  /**
-   * Busca uma prova por ID
-   * @param {number} id
-   */
   getById: (id) => api.get(`/api/v1/exams/${id}`),
-
-  /**
-   * Cria uma nova prova
-   * @param {Object} data - { name, fase, anos, status, question_ids }
-   */
   create: (data) => api.post('/api/v1/exams', data),
-
-  /**
-   * Atualiza os metadados de uma prova (nome, fase, anos, status)
-   * @param {number} id
-   * @param {Object} data
-   */
   update: (id, data) => api.patch(`/api/v1/exams/${id}`, data),
-
-  /**
-   * Atualiza a lista de questões de uma prova
-   * @param {number} id
-   * @param {Array<number>} question_ids
-   */
   updateQuestions: (id, question_ids) =>
     api.patch(`/api/v1/exams/${id}/questions`, { question_ids }),
-
-  /**
-   * Gera PDF de uma prova on-the-fly
-   * @param {Object} payload - { name, fase, anos, questions }
-   * @param {boolean} blobResponse - Se true, retorna blob (para download)
-   */
   generatePDF: (payload, blobResponse = true) =>
     api.post('/api/v1/exams/generate_pdf', payload, {
       responseType: blobResponse ? 'blob' : 'json',
     }),
 };
-
-// -----------------------------------------------------------------------------
-// EXPORTAÇÃO PADRÃO
-// -----------------------------------------------------------------------------
 
 export default api;

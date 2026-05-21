@@ -43,7 +43,9 @@ export const authService = {
   },
 
   // Registro de novos usuários
-  async register({ name, email, password, role }) {
+  async register(userData) {
+    const { name, email, password, role, cpf, telefone, campus, cidade, matricula, curso } = userData;
+
     if (!name || !email || !password) {
       return { success: false, error: "Preencha todos os campos obrigatórios." };
     }
@@ -54,6 +56,12 @@ export const authService = {
         email,
         password,
         role: role || "STUDENT",
+        cpf: cpf || null,
+        telefone: telefone || null,
+        campus: campus || null,
+        cidade: cidade || null,
+        matricula: matricula || null,
+        curso: curso || null,
       });
 
       const { data } = response;
@@ -66,7 +74,7 @@ export const authService = {
     } catch (error) {
       return {
         success: false,
-        error: this._handleError(error), // Usa o tratador seguro
+        error: this._handleError(error),
       };
     }
   },
@@ -188,6 +196,7 @@ export const authService = {
     const user = {
       ...data.user,
       picture: data.user.avatar_url || data.user.picture || DEFAULT_AVATAR,
+      profile: data.user.profile || null, 
     };
 
     const authPayload = {

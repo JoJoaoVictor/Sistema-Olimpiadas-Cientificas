@@ -347,7 +347,7 @@ function Projetos() {
                   </section>
                 </div>
               ) : (
-                <div className={styles.edit_mode}>
+                <div className={styles.edit_mode}> 
                   <ProjectForm
                     handleSubmit={editPost}
                     btnText="Salvar Alterações"
