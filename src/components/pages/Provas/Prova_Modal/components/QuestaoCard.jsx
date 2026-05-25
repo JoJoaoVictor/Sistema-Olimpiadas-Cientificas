@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
 import { FiLayers, FiInfo } from 'react-icons/fi';
-import { BsBook, BsPencil } from 'react-icons/bs';
+import { BsBook, BsPencil, BsListOl, BsTextParagraph } from 'react-icons/bs';
 import ModalInfoQuestao from './../../../../ConfProvas/modal/ModalInfoQuestao';
 import styles from '../EditarProva.module.css';
 
@@ -14,10 +14,14 @@ export default function QuestaoCard({
   onRemover,
   onMoverParaCima,
   onMoverParaBaixo,
-  isLastItem
+  isLastItem,
+  onToggleAlternativas // Prop injetada para receber a ação do hook
 }) {
   const navigate = useNavigate();
   const [verDetalhes, setVerDetalhes] = useState(false);
+
+  // Normaliza o valor booleano vindo da flag do banco
+  const ocultarAlternativas = q.hide_alternatives === true || q.hide_alternatives === "true";
 
   return (
     <>
@@ -25,7 +29,7 @@ export default function QuestaoCard({
         <ModalInfoQuestao questao={q} onClose={() => setVerDetalhes(false)} />
       )}
 
-      <div className={styles.questao_card}>
+      <div className={`${styles.questao_card} ${ocultarAlternativas ? styles.questao_sem_alt : ''}`}>
         <div className={styles.questao_numero}>{index + 1}</div>
 
         <div className={styles.questao_content}>
@@ -46,19 +50,38 @@ export default function QuestaoCard({
                 Nível {q.difficulty_level}
               </span>
             )}
-            {q.category?.name && (
-              <span className={`${styles.tag} ${
-                q.category.name.toLowerCase().includes('aprov')
-                  ? styles.tag_aprovada
-                  : styles.tag_pendente
-              }`}>
-                {q.category.name}
+            {ocultarAlternativas && (
+              <span className={styles.tag} style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px dashed #ffeeba' }}>
+                Discursiva (Sem Alts.)
               </span>
             )}
           </div>
         </div>
 
         <div className={styles.questao_actions}>
+          {/* BOTÃO MUDADO: Alternar entre múltipla escolha e discursiva */}
+          <button
+            className={`${styles.action_btn}`}
+            onClick={() => onToggleAlternativas?.(q.id)}
+            title={ocultarAlternativas ? "Mudar para Múltipla Escolha" : "Tornar Discursiva (Ocultar Alts)"}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: ocultarAlternativas ? '#f8d7da' : '#e2e8f0',
+              border: '1px solid #cbd5e1',
+              borderRadius: '4px',
+              padding: '6px 10px',
+              cursor: 'pointer',
+              color: ocultarAlternativas ? '#721c24' : '#334155'
+            }}
+          >
+            {ocultarAlternativas ? <BsTextParagraph /> : <BsListOl />}
+            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>
+              {ocultarAlternativas ? "Sem Alts." : "Com Alts."}
+            </span>
+          </button>
+
           <button
             className={styles.questao_info_btn}
             onClick={() => setVerDetalhes(true)}
@@ -66,6 +89,7 @@ export default function QuestaoCard({
           >
             <FiInfo />
           </button>
+          
           <button
             className={styles.questao_edit_btn}
             onClick={() => navigate(`/projetos/${q.id}`)}

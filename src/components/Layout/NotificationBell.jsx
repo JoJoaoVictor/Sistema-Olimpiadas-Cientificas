@@ -22,25 +22,29 @@ export default function NotificationBell() {
 
   /**
    * Fetch notifications from API
-   * Uses api.js service which automatically injects Bearer token
    */
   const fetchNotifications = async () => {
-    if (!user) return;
+    // TRAVA DE SEGURANÇA 1: Garante que há um token salvo antes de disparar
+    const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+    if (!user || !token) return;
 
     setLoading(true);
     try {
       const response = await api.get('/api/v1/notifications?limit=50&offset=0');
       
-      // API returns { success: true, data: { notifications, unread_count, ... } }
       const data = response.data.data || response.data;
-      
       setNotifications(data.notifications || []);
       setUnreadCount(data.unread_count || 0);
       setError(null);
     } catch (error) {
-      console.error('Erro ao buscar notificações:', error);
-      setError('Erro ao carregar notificações');
-      // Don't set empty array on error, keep existing notifications
+      // TRAVA DE SEGURANÇA 2: Se for 401, lida silenciosamente para não poluir o console do navegador
+      if (error.response && error.response.status === 401) {
+        console.warn('Sessão expirada ou token ausente. Busca de notificações pausada.');
+        setError('Sessão expirada. Faça login novamente.');
+      } else {
+        console.error('Erro ao buscar notificações:', error);
+        setError('Erro ao carregar notificações');
+      }
     } finally {
       setLoading(false);
     }
@@ -48,16 +52,26 @@ export default function NotificationBell() {
 
   /**
    * Setup polling interval on mount
-   * Fetch immediately, then every 30 seconds
    */
   useEffect(() => {
-    if (!user) return;
+    // Inicia fluxo inicial
+    const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+    if (!user || !token) return;
 
-    fetchNotifications(); // First call immediately
-    const interval = setInterval(fetchNotifications, 30000); // 30 seconds
+    fetchNotifications(); 
+    
+    // Configura o loop a cada 30 segundos
+    const interval = setInterval(() => {
+      // Verifica novamente antes de cada ciclo do polling (caso o usuário tenha deslogado em outra aba)
+      const currentToken = localStorage.getItem('access_token') || localStorage.getItem('token');
+      if (currentToken) {
+        fetchNotifications();
+      }
+    }, 30000); 
 
+    // Limpa o loop ao desmontar o componente
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user]); // Monitora a mudança do usuário
 
   /**
    * Mark single notification as read and navigate to entity
@@ -151,11 +165,11 @@ export default function NotificationBell() {
 
             {loading && notifications.length === 0 && (
               <div className={styles.loadingMessage}>
-                <p>Carregando notificações...</p>
+                <p>Carregando... Aguarde.</p>
               </div>
             )}
 
-            {!loading && notifications.length === 0 && (
+            {!loading && notifications.length === 0 && !error && (
               <div className={styles.emptyMessage}>
                 <p>Sem notificações</p>
               </div>
@@ -172,9 +186,7 @@ export default function NotificationBell() {
                 }
               >
                 <div className={styles.notifContent}>
-                  {/* ✅ CORREÇÃO 1: Usar notif.title (conteúdo preparado pelo backend) */}
                   <strong>{notif.title}</strong>
-                  {/* ✅ CORREÇÃO 2: Usar notif.message + triggered_by_user.name */}
                   <p>
                     {notif.triggered_by_user?.name && (
                       <span className={styles.editor}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import styles from './AdminUsers.module.css';
 import useAuth from '../../../hooks/useAuth';
 import { userService } from '../../../services/userService';
@@ -24,10 +24,6 @@ const ROLE_META = {
   REVISOR:   { label: 'Revisor',   color: '#0ca678', bg: '#e6fcf5', icon: <FaUserCheck /> },
   STUDENT:   { label: 'Estudante', color: '#fd7e14', bg: '#fff4e6', icon: <FaUserGraduate /> },
 };
-
-function avatarUrl(name) {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || '?')}&background=random&color=fff&size=128`;
-}
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -68,30 +64,26 @@ function AdminUsers() {
     loadUsers();
   }, [token]);
 
-  // ── Abrir perfil + buscar stats do usuário ────────────────────────────────────
+  // ── Abrir perfil + buscar stats REAIS e individuais do usuário ────────────────
   const openProfile = useCallback(async (user) => {
     setProfileUser(user);
     setProfileStats(null);
     setProfileLoading(true);
     try {
-      // Busca questões e provas em paralelo — adapte os endpoints se necessário
-      const [questionsRes, examsRes] = await Promise.allSettled([
-        api.get('/api/v1/questions/', { params: { professor_id: user.id, per_page: 1 } }),
-        api.get('/api/v1/exams',     { params: { professor_id: user.id, per_page: 1 } }),
-      ]);
-
-      const questionsTotal = questionsRes.status === 'fulfilled'
-        ? (questionsRes.value.data?.data?.total ?? questionsRes.value.data?.data?.questions?.length ?? 0)
-        : null;
-
-      const examsTotal = examsRes.status === 'fulfilled'
-        ? (examsRes.value.data?.data?.total ?? examsRes.value.data?.data?.exams?.length ?? 0)
-        : null;
-
-      setProfileStats({ questionsTotal, examsTotal });
+      // 🌟 MUDANÇA REALIZADA: Consome a nova rota focada nas estatísticas individuais
+      const response = await api.get(`/api/v1/users/${user.id}/stats`);
+      
+      if (response.data && response.data.success) {
+        setProfileStats({
+          questionsTotal: response.data.data.questionsTotal ?? 0,
+          examsTotal: response.data.data.examsTotal ?? 0
+        });
+      } else {
+        setProfileStats({ questionsTotal: 0, examsTotal: 0 });
+      }
     } catch (err) {
-      console.error('Erro ao carregar stats:', err);
-      setProfileStats({ questionsTotal: null, examsTotal: null });
+      console.error('Erro ao carregar stats reais do usuário:', err);
+      setProfileStats({ questionsTotal: 0, examsTotal: 0 });
     } finally {
       setProfileLoading(false);
     }
@@ -129,23 +121,44 @@ function AdminUsers() {
     else { setSortField(field); setSortDir('asc'); }
   };
 
-  // ── Filtragem + ordenação ────────────────────────────────────────────────────
+  // ── Filtragem + ordenação (Corrigido para o Schema Pydantic) ─────────────────
   const filteredUsers = users
-    .filter(u =>
-      (roleFilter === 'ALL' || u.role?.toUpperCase() === roleFilter) &&
-      (cityFilter === 'ALL' || u.city?.toLowerCase() === cityFilter.toLowerCase()) &&
-      (u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       u.email?.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    .filter(u => {
+      // 1. Filtro de Cargo (Role)
+      const matchRole = roleFilter === 'ALL' || u.role?.toUpperCase() === roleFilter.toUpperCase();
+      
+      // 2. Filtro de Cidade (Polo) - Lendo do sub-objeto profile.cidade
+      const userCidade = u.profile?.cidade?.trim() || '';
+      const matchCity = cityFilter === 'ALL' || 
+        userCidade.toLowerCase() === cityFilter.trim().toLowerCase();
+        
+      // 3. Filtro de Busca por texto (Nome ou Email)
+      const matchText = !searchTerm ? true : (
+        u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return matchRole && matchCity && matchText;
+    })
     .sort((a, b) => {
-      const va = (a[sortField] || '').toLowerCase();
-      const vb = (b[sortField] || '').toLowerCase();
+      const va = (a[sortField] || '').toString().toLowerCase();
+      const vb = (b[sortField] || '').toString().toLowerCase();
       return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     });
 
-  // ── Obter cidades únicas ─────────────────────────────────────────────────────
-  const uniqueCities = Array.from(new Set(users.map(u => u.city).filter(Boolean))).sort();
+  // ── Obter cidades únicas padronizadas (Corrigido para o Schema Pydantic) ─────
+  const uniqueCities = useMemo(() => {
+    if (!users || users.length === 0) return [];
+    
+    const cidadesFiltradas = users
+      .map(u => u.profile?.cidade?.trim()) // 👈 Acessa u.profile.cidade
+      .filter(Boolean);                   // Remove nulos ou vazios
 
+    return Array.from(new Set(cidadesFiltradas)).sort((a, b) => 
+      a.localeCompare(b, 'pt-BR')
+    );
+  }, [users]);
+  
   // ── Stats totais ─────────────────────────────────────────────────────────────
   const countByRole = (role) => users.filter(u => u.role?.toUpperCase() === role).length;
 
@@ -200,8 +213,8 @@ function AdminUsers() {
           cityFilter={cityFilter}
           onCityFilterChange={setCityFilter}
           users={users}
+          filteredUsers={filteredUsers} 
           cities={uniqueCities}
-          countByRole={countByRole}
           roleTabsConfig={ROLE_TABS}
         />
 
@@ -223,7 +236,7 @@ function AdminUsers() {
             </div>
           ) : (
             <>
-              {/* TABELA (Desktop) */}
+              {/* TABELA (Desktop) - 🌟 Removido parâmetro obsoleto avatarUrl */}
               <UsersTable
                 users={filteredUsers}
                 sortField={sortField}
@@ -234,10 +247,9 @@ function AdminUsers() {
                 onDeleteClick={setUserToDelete}
                 ROLE_META={ROLE_META}
                 formatDate={formatDate}
-                avatarUrl={avatarUrl}
               />
 
-              {/* CARDS (Mobile) */}
+              {/* CARDS (Mobile) - 🌟 Removido parâmetro obsoleto avatarUrl e corrigido bug de carregamento */}
               <div className={styles.mobile_list}>
                 {filteredUsers.map(user => (
                   <UserCard
@@ -247,7 +259,6 @@ function AdminUsers() {
                     onViewProfile={openProfile}
                     onDeleteClick={setUserToDelete}
                     ROLE_META={ROLE_META}
-                    avatarUrl={avatarUrl}
                   />
                 ))}
               </div>
@@ -256,7 +267,7 @@ function AdminUsers() {
         </div>
       </div>
 
-      {/* ── Modal: Perfil do Usuário ── */}
+      {/* ── Modal: Perfil do Usuário ── - 🌟 Removido parâmetro obsoleto avatarUrl */}
       <ProfileModal
         profileUser={profileUser}
         profileStats={profileStats}
@@ -266,7 +277,6 @@ function AdminUsers() {
         onDeleteClick={setUserToDelete}
         ROLE_META={ROLE_META}
         formatDate={formatDate}
-        avatarUrl={avatarUrl}
       />
 
       {/* ── Modal: Confirmar Exclusão ── */}

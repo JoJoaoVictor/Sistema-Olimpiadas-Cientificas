@@ -64,11 +64,24 @@ export default function ModalAdicionarQuestao({ questoesAtuais, adicionando, onA
     setBuscando(true);
     setJaFez(true);
     try {
-      const params = { per_page: 50, category_id: 2 };
+      // Removido o category_id: 2 para permitir a busca de questões Aplicadas também
+      const params = { per_page: 100 };
       if (buscaNome.trim())  params.search = buscaNome.trim();
 
       const res   = await api.get('/api/v1/questions', { params });
       let lista   = res.data?.data?.questions || [];
+
+      // Mapeamento para garantir a visualização correta da etiqueta (Aplicada vs Aprovada)
+      lista = lista.map(q => {
+        let isAplicada = false;
+        if (q.is_applied === true || String(q.is_applied) === "true" || q.is_applied === 1) {
+           isAplicada = true;
+        }
+        if (q.status && String(q.status).toUpperCase() === 'APLICADA') {
+           isAplicada = true;
+        }
+        return { ...q, is_applied: isAplicada };
+      });
 
       // Filtragem local (o backend pode não suportar todos os filtros)
       const idsNaProva = new Set(questoesAtuais.map(q => q.id));
@@ -242,17 +255,26 @@ export default function ModalAdicionarQuestao({ questoesAtuais, adicionando, onA
         <div className={styles.modal_results}>
           {!jaFez && (
             <div className={styles.modal_empty}>
-              Use os filtros acima e clique em <strong>Buscar</strong> para encontrar questões aprovadas.
+              Use os filtros acima e clique em <strong>Buscar</strong> para encontrar questões.
             </div>
           )}
           {jaFez && !buscando && resultadosBusca.length === 0 && (
-            <div className={styles.modal_empty}>Nenhuma questão aprovada encontrada com esses filtros.</div>
+            <div className={styles.modal_empty}>Nenhuma questão encontrada com esses filtros.</div>
           )}
           {resultadosBusca.map(q => (
             <div key={q.id} className={styles.modal_questao_card}>
               <div className={styles.modal_questao_info}>
                 <p className={styles.modal_questao_nome}>{q.name}</p>
                 <div className={styles.questao_tags}>
+                  {q.is_applied ? (
+                    <span className={styles.tag} style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeeba' }}>
+                      Aplicada
+                    </span>
+                  ) : (
+                    <span className={styles.tag} style={{ backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb' }}>
+                      Aprovada
+                    </span>
+                  )}
                   {q.grau?.name && <span className={styles.tag}>{q.grau.name}</span>}
                   {q.difficulty_level && (
                     <span className={`${styles.tag} ${styles.tag_dificuldade}`}>

@@ -58,43 +58,35 @@ const CURSOS = [
   "Sistemas de Informação", "Zootecnia", "Outro",
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper
-// ─────────────────────────────────────────────────────────────────────────────
 const formatTelefone = (value) => {
   const d = value.replace(/\D/g, "").slice(0, 11);
   if (d.length <= 10) return d.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trimEnd();
   return d.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trimEnd();
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Componente
-// ─────────────────────────────────────────────────────────────────────────────
 const EditarPerfil = () => {
-  const navigate          = useNavigate();
-  const { user, updateUser } = useAuth(); // updateUser atualiza o contexto sem reload
+  const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
 
   const DEFAULT_IMAGE = "https://placehold.co/150?text=Foto";
 
-  // ── Estado dos campos ────────────────────────────────────────────────────
+  // ── Estado dos campos (A cidade foi removida daqui de forma intencional) ──
   const [name,      setName]      = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [telefone,  setTelefone]  = useState("");
   const [campus,    setCampus]    = useState("");
-  const [cidade,    setCidade]    = useState("");
   const [matricula, setMatricula] = useState("");
   const [curso,     setCurso]     = useState("");
 
-  // UI
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
   const [success, setSuccess] = useState("");
 
-  // ── Preenche com os dados atuais vindos do contexto ──────────────────────
-  // Antes: lia localStorage + chamada manual com token
-  // Agora: lê diretamente de useAuth — já está atualizado e não precisa de token manual
+  // 🌟 FONTE ÚNICA DA VERDADE: A cidade passa a ser derivada em tempo real do campus selecionado
+  const cidade = UNEMAT_CAMPUSES.find((c) => c.value === campus)?.cidade || "";
+
   useEffect(() => {
-  const fetchProfile = async () => {
+    const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('access_token');
         if (!token) return;
@@ -111,10 +103,31 @@ const EditarPerfil = () => {
 
           const p = userData.profile || {};
           setTelefone(p.telefone ? formatTelefone(p.telefone) : '');
-          setCampus(p.campus || '');
-          setCidade(p.cidade || '');
           setMatricula(p.matricula || '');
           setCurso(p.curso || '');
+
+          // 🌟 NORMALIZAÇÃO AVANÇADA: Trata strings cruas vindas do banco de dados
+          if (p.campus) {
+            // Remove prefixos comuns como "UNEMAT - " ou "Polo - " caso existam salvos incorretamente
+            let rawCampus = p.campus.replace(/^(UNEMAT\s*-\s*|Polo\s*-\s*)/i, "");
+            
+            // Substitui espaços por underline, remove acentos básicos e joga para maiúsculas
+            let sanitized = rawCampus
+              .trim()
+              .toUpperCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "") // Remove acentos temporariamente para dar match no value
+              .replace(/\s+/g, '_');
+
+            // Caso o banco traga o label textual, tentamos encontrar pelo label correspondente
+            const matchByLabel = UNEMAT_CAMPUSES.find(
+              c => c.label.toUpperCase() === p.campus.toUpperCase() || c.value === sanitized
+            );
+
+            setCampus(matchByLabel ? matchByLabel.value : sanitized);
+          } else {
+            setCampus('');
+          }
         }
       } catch (err) {
         console.error('Erro ao carregar perfil:', err);
@@ -122,15 +135,12 @@ const EditarPerfil = () => {
     };
 
     fetchProfile();
-  }, []); // array vazio = executa apenas na montagem
+  }, []);
 
   const handleCampusChange = (e) => {
-    const selected = UNEMAT_CAMPUSES.find((c) => c.value === e.target.value);
     setCampus(e.target.value);
-    setCidade(selected ? selected.cidade : "");
   };
 
-  // ── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -146,36 +156,23 @@ const EditarPerfil = () => {
 
     setLoading(true);
     try {
-      // Chamada 1 — dados básicos (endpoint já existia)
-      await api.put('/api/v1/users/me', {
-        name:       name.trim(),
+      // 🌟 UNIFICAÇÃO: Enviamos tudo em uma única chamada PUT, exatamente como o backend espera
+      const response = await api.put('/api/v1/users/me', {
+        name: name.trim(),
         avatar_url: finalAvatar,
+        profile: {
+          telefone: telefone.replace(/\D/g, "") || null,
+          campus: campus || null,
+          cidade: cidade !== "—" ? cidade : null, // Envia o nome real da cidade (ex: "Tangará da Serra")
+          matricula: matricula || null,
+          curso: curso || null,
+        }
       });
 
-      // Chamada 2 — dados acadêmicos (ver endpoint no comentário ao final)
-      await api.patch('/api/v1/users/me/profile', {
-        telefone:  telefone.replace(/\D/g, "") || null,
-        campus:    campus    || null,
-        cidade:    cidade    || null,
-        matricula: matricula || null,
-        curso:     curso     || null,
-      });
-
-      // Atualiza o AuthContext sem recarregar a página
-      // Antes: localStorage.setItem(...) + window.location.reload()
-      // Agora: updateUser() notifica todos os componentes que consomem useAuth
-      if (typeof updateUser === 'function') {
-        updateUser({
-          name: name.trim(),
-          avatar_url: finalAvatar,
-          profile: {
-            telefone: telefone.replace(/\D/g, ""),
-            campus,
-            cidade,
-            matricula: showMatricula ? matricula : null,
-            curso: showCurso ? curso : null,
-          },
-        });
+      // Se o contexto tiver a função de atualização, notificamos o app com os dados retornados do servidor
+      if (typeof updateUser === 'function' && response.data?.data) {
+        const serverData = response.data.data;
+        updateUser(serverData);
       }
 
       setSuccess("Perfil atualizado com sucesso!");
@@ -195,14 +192,8 @@ const EditarPerfil = () => {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-
-        {/* Cabeçalho */}
         <div className={styles.card_header}>
-          <button
-            type="button"
-            className={styles.btn_back}
-            onClick={() => navigate('/usuario')}
-          >
+          <button type="button" className={styles.btn_back} onClick={() => navigate('/usuario')}>
             <FiArrowLeft /> Voltar
           </button>
           <div>
@@ -211,21 +202,15 @@ const EditarPerfil = () => {
           </div>
         </div>
 
-        {/* Feedback */}
         {error   && <div className={styles.alert_error}>{error}</div>}
         {success && <div className={styles.alert_success}>{success}</div>}
 
         <form onSubmit={handleSubmit}>
-
-          {/* ── SEÇÃO: Dados Pessoais ──────────────────────────────── */}
           <div className={styles.section_divider}><span>Dados Pessoais</span></div>
 
           <div className={styles.avatar_row}>
             <img
-              src={
-                avatarUrl ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=random&size=150`
-              }
+              src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=random&size=150`}
               alt="Preview do avatar"
               className={styles.avatar_preview}
               onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }}
@@ -256,11 +241,9 @@ const EditarPerfil = () => {
             </div>
           </div>
 
-          {/* ── SEÇÃO: Dados Acadêmicos ────────────────────────────── */}
           <div className={styles.section_divider}><span>Dados Acadêmicos</span></div>
 
           <div className={styles.fields_grid}>
-
             <div className={styles.form_group}>
               <label htmlFor="ep_telefone"><FiPhone /> Telefone / WhatsApp</label>
               <input
@@ -326,14 +309,8 @@ const EditarPerfil = () => {
             )}
           </div>
 
-          {/* Ações */}
           <div className={styles.form_actions}>
-            <button
-              type="button"
-              className={styles.btn_cancel}
-              onClick={() => navigate('/usuario')}
-              disabled={loading}
-            >
+            <button type="button" className={styles.btn_cancel} onClick={() => navigate('/usuario')} disabled={loading}>
               Cancelar
             </button>
             <button type="submit" className={styles.btn_save} disabled={loading}>

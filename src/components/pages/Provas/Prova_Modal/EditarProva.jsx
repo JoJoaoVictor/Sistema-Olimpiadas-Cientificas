@@ -75,6 +75,7 @@ export default function EditarProva() {
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
     moverQuestaoParaCima, moverQuestaoParaBaixo,
+    toggleAlternativasQuestao,
     confirmandoExclusao, setConfirmandoExclusao,
     excluindo, excluirProva,
     headerImage, setHeaderImage,
@@ -138,7 +139,6 @@ export default function EditarProva() {
               <strong>Esta ação não pode ser desfeita.</strong>
             </p>
             <div className={styles.confirmActions}>
-              {/* translate="no": ícone + texto dentro do botão */}
               <button
                 className={`${styles.action_btn} ${styles.btn_cancel}`}
                 onClick={() => setConfirmandoExclusao(false)}
@@ -181,8 +181,6 @@ export default function EditarProva() {
       <div className={styles.card_container}>
 
         {/* ── HEADER DO CARD ────────────────────────────────────────────────── */}
-        {/* translate="no" em todo o header: contém ícones + texto alternados
-            que o Google Translate envolve em <font> tags, corrompendo o DOM */}
         <header className={styles.card_header} translate="no">
           <div className={styles.header_content}>
             <StatusBadge status={prova.status} />
@@ -228,14 +226,13 @@ export default function EditarProva() {
                 onClick={salvarEdicao}
                 disabled={salvando}
               >
-                <FaSave /> Salvar
+               <FaSave /> {salvando ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             )}
           </div>
         </header>
 
         {/* ── ABAS ──────────────────────────────────────────────────────────── */}
-        {/* translate="no": abas têm ícone + texto */}
         <div className={styles.tabs_bar} translate="no">
           <button
             className={`${styles.tab_btn} ${abaAtiva === 'questoes' ? styles.tab_active : ''}`}
@@ -260,7 +257,6 @@ export default function EditarProva() {
               {/* Modo visualização */}
               {!modoEdicao && (
                 <>
-                  {/* --- CÓDIGO EXISTENTE: Grid de metadados --- */}
                   <section className={styles.info_grid} style={{ marginBottom: '24px' }}>
                     <div className={styles.info_box}>
                       <span className={styles.label}><BsBook style={{ marginRight: 4 }} /> Anos</span>
@@ -284,7 +280,6 @@ export default function EditarProva() {
                     </div>
                   </section>
 
-                  {/* --- Exibição de comentários do revisor (se existirem) --- */}
                   {prova.reviewer_comments && (
                     <div className={styles.comments_block} style={{ marginBottom: '24px' }}>
                       <span className={styles.comments_label}>Comentários do Revisor:</span>
@@ -303,7 +298,6 @@ export default function EditarProva() {
                       <FiAlertCircle /> Edite os metadados da prova abaixo.
                     </p>
                     <div className={styles.edit_grid}>
-                      {/* --- CÓDIGO EXISTENTE: Campos de metadados --- */}
                       <div className={styles.field_group} style={{ gridColumn: '1 / -1' }}>
                         <label className={styles.field_label}>Nome da Prova</label>
                         <input
@@ -370,7 +364,6 @@ export default function EditarProva() {
                         </div>
                       </div>
 
-                      {/* --- NOVO: Campo de comentários do revisor --- */}
                       <div className={styles.field_group} style={{ gridColumn: '1 / -1', marginTop: '8px' }}>
                         <label className={styles.field_label}>Comentários do Revisor</label>
                         <textarea
@@ -381,27 +374,11 @@ export default function EditarProva() {
                           rows={4}
                         />
                         <small style={{ color: '#6c757d', marginTop: '4px', display: 'block' }}>
-                          Esses comentários serão notificados ao autor da prova.
+                          Esse comentário será notificado ao autor da prova.
                         </small>
                       </div>
                     </div>
 
-                    {/* --- CÓDIGO EXISTENTE: Botões de ação --- */}
-                    <div className={styles.edit_actions} translate="no">
-                      <button
-                        className={`${styles.action_btn} ${styles.btn_cancel}`}
-                        onClick={cancelarEdicao}
-                      >
-                        <FaTimes /> Cancelar
-                      </button>
-                      <button
-                        className={`${styles.action_btn} ${styles.btn_save}`}
-                        onClick={salvarEdicao}
-                        disabled={salvando}
-                      >
-                        <FaSave /> {salvando ? 'Salvando...' : 'Salvar Alterações'}
-                      </button>
-                    </div>
                     <hr className={styles.divider} />
                   </div>
                 )}
@@ -435,6 +412,7 @@ export default function EditarProva() {
                       onMoverParaCima={moverQuestaoParaCima}
                       onMoverParaBaixo={moverQuestaoParaBaixo}
                       isLastItem={index === questoes.length - 1}
+                      onToggleAlternativas={toggleAlternativasQuestao} // Passado perfeitamente
                     />
                   ))
                 )}

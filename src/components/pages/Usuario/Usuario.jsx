@@ -114,11 +114,11 @@ function Usuario() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleCampusChange = (e) => {
-  const selected = UNEMAT_CAMPUSES.find((c) => c.value === e.target.value);
-    setEditCampus(e.target.value);
+    const campusValue = e.target.value;
+    const selected = UNEMAT_CAMPUSES.find((c) => c.value === campusValue);
+    setEditCampus(campusValue);
     setEditCidade(selected ? selected.cidade : "");
   };
-
   const handleLogout = () => {
     signout();
     navigate("/login");
@@ -168,7 +168,7 @@ function Usuario() {
     }
 
     try {
-      await api.put('/api/v1/users/me', {
+      const response = await api.put('/api/v1/users/me', {
         name: editName,
         avatar_url: finalAvatarUrl,
         profile: {
@@ -180,13 +180,19 @@ function Usuario() {
         }
       });
 
-      // Atualiza o contexto com os novos dados (sem recarregar a página)
-      if (typeof updateUser === 'function') {
+      // Pega os dados fresquinhos retornados pelo backend blindado
+      const updatedData = response.data?.data;
+
+      if (typeof updateUser === 'function' && updatedData) {
+        updateUser(updatedData);
+      } else if (typeof updateUser === 'function') {
+        // Fallback seguro caso a estrutura mude
         updateUser({
+          ...user,
           name: editName,
           avatar_url: finalAvatarUrl,
           profile: {
-            cpf: user?.profile?.cpf,   // mantém o CPF original (não editável aqui)
+            ...user?.profile,
             telefone: editTelefone.replace(/\D/g, ""),
             campus: editCampus,
             cidade: editCidade,
@@ -197,6 +203,7 @@ function Usuario() {
       }
 
       setProfilePic(finalAvatarUrl);
+      setEditCidade(updatedData?.profile?.cidade || editCidade);
       setShowEditModal(false);
       alert("Perfil atualizado com sucesso!");
     } catch (error) {
@@ -433,7 +440,7 @@ function Usuario() {
                     <select
                       className={styles.custom_select}
                       value={editCampus}
-                      onChange={(e) => setEditCampus(e.target.value)}
+                      onChange={handleCampusChange}
                       required
                     >
                       <option value="">Selecione o campus</option>

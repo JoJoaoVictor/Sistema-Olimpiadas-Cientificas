@@ -7,17 +7,40 @@ function UserCard({
   onRoleChange,
   onViewProfile,
   onDeleteClick,
-  ROLE_META,
-  avatarUrl
+  ROLE_META
 }) {
+  // Tratamento altamente resiliente para encontrar o avatar do usuário
+  const getAvatar = () => {
+    // 1. Garante que o objeto user existe
+    if (!user) return "https://placehold.co/150?text=Foto";
+
+    // 2. Tenta extrair a string do avatar de forma direta ou propriedades similares
+    const avatar = user.avatar_url || user.avatarUrl || user.avatar;
+    
+    if (avatar && avatar.trim() !== "") {
+      return avatar;
+    }
+
+    // 3. Fallback dinâmico usando o nome do usuário seguro
+    const userName = user.name || user.username || "Usuario";
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&size=150`;
+  };
+
   return (
     <div className={styles.user_card}>
       <div className={styles.card_header}>
-        <img src={avatarUrl(user.name)} alt="Avatar" />
+        <img 
+          src={getAvatar()} 
+          alt={user?.name ? `Avatar de ${user.name}` : "Avatar"} 
+          onError={(e) => { 
+            e.target.onerror = null; 
+            e.target.src = "https://placehold.co/150?text=Foto"; 
+          }}
+        />
         <div className={styles.card_info}>
-          <strong>{user.name}</strong>
-          <span className={styles.email_text}>{user.email}</span>
-          <RoleBadge role={user.role} />
+          <strong>{user?.name || "Usuário Sem Nome"}</strong>
+          <span className={styles.email_text}>{user?.email || "E-mail não informado"}</span>
+          <RoleBadge role={user?.role} />
         </div>
         <button
           onClick={() => onViewProfile(user)}
@@ -31,8 +54,8 @@ function UserCard({
       <div className={styles.card_body}>
         <label>Cargo:</label>
         <select
-          value={user.role}
-          onChange={e => onRoleChange(user.id, e.target.value)}
+          value={user?.role || "STUDENT"}
+          onChange={e => onRoleChange(user?.id, e.target.value)}
           className={styles.role_select_mobile}
         >
           <option value="STUDENT">Estudante</option>

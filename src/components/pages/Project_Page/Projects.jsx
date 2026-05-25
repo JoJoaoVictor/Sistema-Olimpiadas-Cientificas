@@ -9,19 +9,19 @@ import ProjectsCard from './../Project_Page/Components_project/Project_Card/Proj
 import ProjectList from './../Project_Page/Components_project/Project_List/ProjectList';
 import Loading from '../../Layout/Loading';
 import SearchBar from '../../form/SearchBar';
+import CalculatorIcon from '../../../img/logov2-fotor.png';
 
 // Dependências Externas
 import Select from 'react-select';
 import { LuLayoutGrid, LuLayoutList, LuPlus, LuCalendarDays } from "react-icons/lu";
 import { FaInbox, FaCheckDouble, FaSadTear } from "react-icons/fa";
+import useAuth from '../../../hooks/useAuth';
+import React from 'react';
 
 // Serviço de API
 import api from '../../../services/api';
 import { authService } from '../../../services/authService';
 
-// ─── Opções de ano SEM valores duplicados ────────────────────────────────────
-// O value deve ser único E deve bater com o campo serieAno que vem do backend
-// (que é o nome do grau, ex: "4º Fundamental", "1º Médio")
 const opcoesAno = [
     { value: '2º Fundamental', label: '2º Fundamental' },
     { value: '3º Fundamental', label: '3º Fundamental' },
@@ -37,13 +37,21 @@ const opcoesAno = [
 ];
 
 function Project() {
+    // === AUTENTICAÇÃO CENTRALIZADA ===
+    const { user } = useAuth();
+
+    // Cria as mesmas flags de segurança da Navbar (Preveem erros de maiúscula/minúscula)
+    const isProfessor = user?.role?.toUpperCase() === "PROFESSOR" || user?.role?.toUpperCase() === "ADMIN";
+    const isEstagiario = user?.role?.toUpperCase() === "STUDENT";
+    const isAdmin       = user?.role?.toUpperCase() === "ADMIN";
+
     // === ESTADOS ===
     const [projects,         setProjects]         = useState([]);
-    const [graus,            setGraus]            = useState([]);
+    const [graus,             setGraus]            = useState([]);
     const [loading,          setLoading]          = useState(true);
-    const [error,            setError]            = useState(null);
+    const [error,             setError]            = useState(null);
 
-    // Filtros e Controle
+    // Filtros e Controle (tipoQuestao alterado para suportar 'aplicadas')
     const [searchTerm,       setSearchTerm]       = useState('');
     const [sortOrder,        setSortOrder]        = useState('recentes');
     const [dificuldade,      setDificuldade]      = useState('');
@@ -58,7 +66,7 @@ function Project() {
 
     // Filtro de Data
     const [dateFilter,  setDateFilter]  = useState('all');
-    const [searchDate,  setSearchDate]  = useState(''); // YYYY-MM-DD exato
+    const [searchDate,  setSearchDate]  = useState('');
 
     // === CARREGAR GRAUS ===
     useEffect(() => {
@@ -78,7 +86,14 @@ function Project() {
         async function fetchProjects() {
             setLoading(true);
             try {
-                const categoryId = tipoQuestao === 'aprovadas' ? 2 : 1;
+                // Mapeia o estado literal do botão para as IDs do banco correspondentes
+                let categoryId = 2; // padrão 'aprovadas'
+                if (tipoQuestao === 'pendentes') {
+                    categoryId = 1;
+                } else if (tipoQuestao === 'aplicadas') {
+                    categoryId = 3;
+                }
+
                 const response = await api.get('/api/v1/questions/', {
                     params: { category_id: categoryId, per_page: 100 },
                 });
@@ -90,7 +105,6 @@ function Project() {
                     name:               q.name,
                     professorName:      q.professor_name,
                     phaseLevel:         q.phase_level,
-                    // serieAno = nome legível do grau (ex: "4º Fundamental")
                     serieAno:           q.grau?.name || q.serie_ano || '',
                     grauId:             q.grau_id,
                     difficultyLevel:    q.difficulty_level,
@@ -141,31 +155,17 @@ function Project() {
 
     // === FILTRAGEM ===
     const filteredProjects = projects
-        // Busca por nome
         .filter(p => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-
-        // Dificuldade
         .filter(p => dificuldade === '' || String(p.difficultyLevel) === dificuldade)
-
-        // Anos escolares — compara o nome completo do grau (ex: "4º Fundamental")
-        // O value de opcoesAno agora é o próprio nome, então a comparação é direta.
         .filter(p => {
             if (anosSelecionados.length === 0) return true;
             return anosSelecionados.some(opcao =>
                 p.serieAno?.toLowerCase().trim() === opcao.value?.toLowerCase().trim()
             );
         })
-
-        // Fase / Nível
         .filter(p => phaseLevel === '' || String(p.phaseLevel) === String(phaseLevel))
-
-        // Habilidade BNCC (código)
         .filter(p => habilidade === '' || p.abilityCode?.toLowerCase().includes(habilidade.toLowerCase()))
-
-        // Unidade Temática BNCC
         .filter(p => bnccTheme === '' || p.bnccTheme?.toLowerCase().includes(bnccTheme.toLowerCase()))
-
-        // Filtro de data
         .filter(p => {
             if (dateFilter === 'all') return true;
             const ts = Math.max(
@@ -184,21 +184,16 @@ function Project() {
             if (dateFilter === 'year')    return data.getFullYear() === new Date().getFullYear();
             return true;
         })
-
-        // Data exata (YYYY-MM-DD) — filtra por createdAt exato
         .filter(p => {
             if (!searchDate) return true;
             const iso = p.createdAt || '';
             return iso.slice(0, 10) === searchDate;
         })
-
-        // Ordenação
         .sort((a, b) => {
             const getTs = p => new Date(sortOrder === 'recentes' ? (p.createdAt || 0) : (p.updatedAt || p.createdAt || 0));
             return getTs(b) - getTs(a);
         });
 
-    // === LIMPAR FILTROS ===
     function limparFiltros() {
         setSearchTerm('');
         setDateFilter('all');
@@ -214,25 +209,50 @@ function Project() {
         <div className={styles.page_container}>
 
             <header className={styles.header}>
-                <div>
-                    <h1 className={styles.page_title}>Banco de Questões</h1>
-                    <p className={styles.subtitle}>Gerencie e organize o conteúdo didático</p>
+                {/* Agrupador da Esquerda: Texto + Imagem da Calculadora */}
+                <div className={styles.header_left_side}>
+                    <div>
+                        <h1 className={styles.page_title}>Banco de Questões</h1>
+                        <p className={styles.subtitle}>Gerencie e organize o conteúdo didático</p>
+                    </div>
+                
+                    {/* Contentor do Ícone da Calculadora com um círculo sutil de fundo */}
+                    <div className={styles.icon_wrapper_questions}>
+                        <div className={styles.bg_circle_questions}></div>
+                        <img 
+                            src={CalculatorIcon} 
+                            alt="Ícone Calculadora" 
+                            className={styles.questions_icon_img} 
+                        />
+                    </div>
                 </div>
-                <Link to="/newproject" className={styles.create_btn}>
-                    <LuPlus /> Nova Questão
-                </Link>
+
+                {/* Lado Direito: Botão de criar nova questão */}
+                {(isProfessor || isEstagiario || isAdmin) && (
+                    <Link to="/newproject" className={styles.create_btn}>
+                        <LuPlus /> Nova Questão
+                    </Link>
+                )}
             </header>
 
-            {/* Abas Aprovadas / Pendentes */}
+            {/* Abas Dinâmicas de Categoria (Aprovadas / Aplicadas / Pendentes) */}
             <div className={styles.tabs_container}>
                 <button
-                    className={`${styles.tab} ${tipoQuestao === 'aprovadas' ? styles.active_tab : ''}`}
+                    className={`${styles.tab} ${tipoQuestao === 'aprovadas' ? `${styles.active_tab} ${styles.active_aprovadas}` : ''}`}
                     onClick={() => setTipoQuestao('aprovadas')}
                 >
                     <FaCheckDouble /> Aprovadas
                 </button>
+                
+                <button 
+                    className={`${styles.tab} ${tipoQuestao === 'aplicadas' ? `${styles.active_tab} ${styles.active_aplicadas}` : ''}`}
+                    onClick={() => setTipoQuestao('aplicadas')}
+                >
+                    <LuCalendarDays /> Aplicadas em Prova
+                </button>
+                
                 <button
-                    className={`${styles.tab} ${tipoQuestao === 'pendentes' ? styles.active_tab : ''}`}
+                    className={`${styles.tab} ${tipoQuestao === 'pendentes' ? `${styles.active_tab} ${styles.active_pendentes}` : ''}`}
                     onClick={() => setTipoQuestao('pendentes')}
                 >
                     <FaInbox /> Pendentes
@@ -241,7 +261,6 @@ function Project() {
 
             {/* Barra de ferramentas / filtros */}
             <div className={styles.toolbar}>
-
                 <div className={styles.search_wrapper}>
                     <SearchBar
                         value={searchTerm}
@@ -251,7 +270,6 @@ function Project() {
                 </div>
 
                 <div className={styles.filters_wrapper}>
-
                     {/* Filtro de data */}
                     <div className={styles.date_filter_container}>
                         <LuCalendarDays className={styles.calendar_icon} />
@@ -269,9 +287,6 @@ function Project() {
                         </select>
                     </div>
 
-                    {/* Filtro de anos — envolvido em translate="no" para evitar crash
-                        causado por extensões de browser (Google Translate, Grammarly etc.)
-                        que modificam o DOM interno do react-select */}
                     <div className="notranslate" translate="no">
                         <Select
                             instanceId="filtro-anos"
@@ -352,9 +367,8 @@ function Project() {
                         <option value="Álgebra">Álgebra</option>
                         <option value="Geometria">Geometria</option>
                         <option value="Estatística">Estatística</option>
-                        <option value="Álgebra/Geometria">Álgebra / Geometria</option>
-                        <option value="Grandezas/Geometria">Grandezas / Geometria</option>
-                        <option value="Grandezas/Medidas">Grandezas / Medidas</option>
+                        <option value="Álgebra e Geometria">Álgebra e Geometria</option>
+                        <option value="Grandezas e Medidas">Grandezas e Medidas</option>
                         <option value="Números">Números</option>
                         <option value="Números/Álgebra">Números e Álgebra</option>
                         <option value="Probabilidade">Probabilidade</option>

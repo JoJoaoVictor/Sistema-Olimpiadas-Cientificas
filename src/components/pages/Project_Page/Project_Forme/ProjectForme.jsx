@@ -30,6 +30,9 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         { value: '3º Médio', label: '3º Médio' },
     ];
 
+    const handleChange = (e) => {
+        setProject({ ...project, [e.target.name]: e.target.value });
+    };
     // --- 1. LÓGICA DE PERMISSÃO (ROLE) ---
     const [currentUserRole, setCurrentUserRole] = useState("");
     useEffect(() => {
@@ -86,7 +89,23 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
         const fetchData = async () => {
             try {
                 const catsRes = await api.get('/api/v1/categories/');
-                setCategories(catsRes.data?.data?.categories || []);
+                let fetchedCategories = catsRes.data?.data?.categories || [];
+
+                const nomesOficiais = {
+                    1: "Pendentes (Revisão)",
+                    2: "Aprovadas (Banco)",
+                    3: "Aplicadas (Em Prova)"
+                };
+
+                fetchedCategories = fetchedCategories
+                    .filter(cat => [1, 2, 3].includes(cat.id)) // Corta qualquer ID duplicado (4, 5, etc)
+                    .map(cat => ({
+                        ...cat,
+                        name: nomesOficiais[cat.id] || cat.name // Força o nome correto para não haver confusão
+                    }));
+
+                setCategories(fetchedCategories);
+                
                 const grausRes = await api.get('/api/v1/graus/');
                 const grausData = grausRes.data?.data?.graus || [];
                 setGraus(grausData);
@@ -133,8 +152,18 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno) {
             const grauId = Number(project.serieAno);
-            const temas = getTemasByGrauId(grauId);
-            setTemasList(temas);
+            
+            // 1. Pega os temas originais do MEC
+            const temasMEC = getTemasByGrauId(grauId);
+            
+            // 2. Pega os temas customizados do cache local
+            const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
+            const temasCustom = customBNCC
+                .filter(item => item.grauId === grauId)
+                .map(item => item.unidadeTematica);
+
+            // 3. Junta tudo e remove nomes duplicados (usando Set)
+            setTemasList([...new Set([...temasMEC, ...temasCustom])]);
             setObjetosList([]);
             setHabilidadesList([]);
         } else {
@@ -148,8 +177,15 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno && project.bnccTheme) {
             const grauId = Number(project.serieAno);
-            const objetos = getObjetosByTema(grauId, project.bnccTheme);
-            setObjetosList(objetos);
+            
+            const objetosMEC = getObjetosByTema(grauId, project.bnccTheme);
+            
+            const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
+            const objetosCustom = customBNCC
+                .filter(item => item.grauId === grauId && item.unidadeTematica === project.bnccTheme)
+                .map(item => item.objetosDeConhecimento);
+
+            setObjetosList([...new Set([...objetosMEC, ...objetosCustom])]);
             setHabilidadesList([]);
         } else {
             setObjetosList([]);
@@ -161,37 +197,29 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno && project.bnccTheme && project.knowledgeObjects) {
             const grauId = Number(project.serieAno);
-            const habilidades = getHabilidadesByObjeto(grauId, project.bnccTheme, project.knowledgeObjects);
-            setHabilidadesList(habilidades);
+            
+            const habsMEC = getHabilidadesByObjeto(grauId, project.bnccTheme, project.knowledgeObjects);
+            
+            const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
+            const habsCustom = customBNCC
+                .filter(item => 
+                    item.grauId === grauId && 
+                    item.unidadeTematica === project.bnccTheme && 
+                    item.objetosDeConhecimento === project.knowledgeObjects
+                )
+                .map(item => ({ codigo: item.habilidade, descricao: item.abilityDescription }));
+
+            // Junta as habilidades do MEC com as customizadas
+            const todasHabs = [...habsMEC, ...habsCustom];
+            
+            // Remove códigos de habilidade duplicados (caso exista algum conflito)
+            const habsUnicas = Array.from(new Map(todasHabs.map(h => [h.codigo, h])).values());
+
+            setHabilidadesList(habsUnicas);
         } else {
             setHabilidadesList([]);
         }
     }, [project.serieAno, project.bnccTheme, project.knowledgeObjects]);
-
-    // --- 5. HANDLERS ---
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProject((prev) => ({ ...prev, [name]: value }));
-        if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: null }));
-        if (formError) setFormError("");
-
-        if (name === "bnccTheme" && value !== project.bnccTheme) {
-            setProject((prev) => ({
-                ...prev,
-                knowledgeObjects: "",
-                abilityCode: "",
-                abilityDescription: ""
-            }));
-        }
-
-        if (name === "knowledgeObjects" && value !== project.knowledgeObjects) {
-            setProject((prev) => ({
-                ...prev,
-                abilityCode: "",
-                abilityDescription: ""
-            }));
-        }
-    };
 
     const handleSelectHabilidade = (e) => {
         const codigoSelecionado = e.target.value;
@@ -331,7 +359,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     <div style={{ width: '100%' }}>
                         <Input
                             type="text" text="Título da Questão" name="name"
-                            placeholder="Ex: Teorema de Pitágoras #01"
+                            placeholder="Ex: Teorema de Pitágoras_2024"
                             value={project.name} handleOnChange={handleChange}
                         />
                         {renderError('name')}
@@ -456,12 +484,27 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
 
                 {/* Código e Descrição */}
                 <div className={styles.grid_row_auto}>
-                    <Input
-                        type="text" text="Descrição da Habilidade" name="abilityDescription"
-                        placeholder="Preenchida automaticamente ou edite manualmente"
-                        value={project.abilityDescription}
-                        handleOnChange={handleChange}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <label style={{ marginBottom: '.5em', fontWeight: 'bold', color: '#333' }}>
+                            Descrição da Habilidade:
+                        </label>
+                        <textarea
+                            name="abilityDescription"
+                            value={project.abilityDescription || ''}
+                            onChange={handleChange}
+                            placeholder="Preenchida automaticamente ou edite manualmente"
+                            className={styles.custom_textarea}
+                            style={{ 
+                                width: '100%', 
+                                minHeight: '120px', 
+                                padding: '10px', 
+                                borderRadius: '5px', 
+                                border: '1px solid #ccc',
+                                fontFamily: 'inherit',
+                                resize: 'vertical' /* Permite que o usuário estique a caixa para baixo se o texto for muito grande */
+                            }}
+                        />
+                    </div>
                     {renderError('abilityDescription')}
                 </div>
             </section>
@@ -616,6 +659,8 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
             {isEditMode && canEditComments && (
                 <section className={`${styles.form_section} ${styles.admin_section}`}>
                     <div className={styles.section_title}>Revisão e Status</div>
+                    <BsPersonBadge />
+                    <h3>Avaliação do Revisor</h3>
                     <div style={{ width: '100%' }}>
                         <Select
                             text="Situação da Questão"
@@ -636,6 +681,13 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                             className={styles.custom_textarea}
                             style={{ width: '100%', minHeight: '80px', marginTop: '5px' }}
                         />
+                    </div>
+                    {/* Se for apenas visualização de erro/status para o usuário comum */}
+                    <div className={styles.review_preview}>
+                        <label>Comentários do Revisor (Visualização):</label>
+                        <div className={styles.preview_box}>
+                            <LatexText content={project.reviewerComments} />
+                        </div>
                     </div>
                 </section>
             )}

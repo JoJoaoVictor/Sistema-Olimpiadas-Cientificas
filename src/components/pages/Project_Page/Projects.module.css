@@ -279,3 +279,82 @@
         grid-template-columns: 1fr;
     }
 }
+ /* Cor quando a aba Aprovadas estiver ativa (Verde) */
+.active_aprovadas {
+    color: #2e7d32 !important;
+    border-bottom-color: #2e7d32 !important; /* Caso use linha embaixo */
+}
+
+/* Cor quando a aba Aplicadas estiver ativa (Azul) */
+.active_aplicadas {
+    color: #1565c0 !important;
+    border-bottom-color: #1565c0 !important;
+}
+
+/* Cor quando a aba Pendentes estiver ativa (Laranja/Amarelo) */
+.active_pendentes {
+    color: #ef6c00 !important;
+    border-bottom-color: #ef6c00 !important;
+} 
+
+/* Garante que o header distribua o grupo do texto/imagem e o botão nas extremidades */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f5f3ff; /* Um fundo roxo/índigo extremamente sutil */
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* Alinha o bloco de texto e a imagem lado a lado */
+.header_left_side {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Espaço entre o texto e a calculadora */
+}
+
+.page_title {
+    font-size: 2.4rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 0;
+    color: #4b5563;
+    font-size: 1.1rem;
+}
+
+/* Contentor da imagem da calculadora */
+.icon_wrapper_questions {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+}
+
+/* Círculo sutil atrás da calculadora */
+.bg_circle_questions {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #e0e7ff; /* Índigo suave */
+    z-index: 1;
+}
+
+/* Estilização da imagem da calculadora */
+.questions_icon_img {
+    position: relative;
+    z-index: 2;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    /* Adiciona uma sombra suave projetada na imagem */
+    filter: drop-shadow(0 4px 6px rgba(79, 70, 229, 0.3));
+}
+

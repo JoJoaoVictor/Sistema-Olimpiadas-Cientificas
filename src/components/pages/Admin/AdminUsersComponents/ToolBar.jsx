@@ -9,12 +9,27 @@ function ToolBar({
   cityFilter, 
   onCityFilterChange, 
   users, 
+  filteredUsers, // 🌟 Nova prop para sincronizar os contadores de abas
   cities, 
-  countByRole, 
   roleTabsConfig 
 }) {
+
+  // ── Contador Inteligente local ─────────────────────────────────────────────
+  // Conta quantos usuários de cada role existem baseando-se no que está atualmente filtrado
+  const getCountForTab = (tabKey) => {
+    // Lista de referência: se já filtramos por cidade ou texto, calcula em cima dela
+    const listToCount = filteredUsers || users; 
+
+    if (tabKey === 'ALL') {
+      return listToCount.length;
+    }
+    return listToCount.filter(u => u.role?.toUpperCase() === tabKey.toUpperCase()).length;
+  };
+
   return (
     <div className={styles.toolbar}>
+      
+      {/* 1. Campo de Busca por Texto */}
       <div className={styles.search_box}>
         <FiSearch />
         <input
@@ -25,7 +40,7 @@ function ToolBar({
         />
       </div>
 
-      {/* Filtro de Cidade/Polo */}
+      {/* 2. Filtro de Cidade/Polo (Alinhado ao Pydantic) */}
       <div className={styles.city_filter_wrapper}>
         <FiMapPin style={{ color: '#888', flexShrink: 0 }} />
         <select
@@ -42,6 +57,7 @@ function ToolBar({
         </select>
       </div>
 
+      {/* 3. Abas de Cargos (Roles) */}
       <div className={styles.role_tabs}>
         <FiFilter style={{ color: '#888', flexShrink: 0 }} />
         {roleTabsConfig.map(t => (
@@ -52,7 +68,7 @@ function ToolBar({
           >
             {t.label}
             <span className={styles.tab_count}>
-              {t.key === 'ALL' ? users.length : countByRole(t.key)}
+              {getCountForTab(t.key)} {/* 🌟 Contador dinâmico e reativo */}
             </span>
           </button>
         ))}

@@ -1,4 +1,5 @@
 import { FiX, FiMail, FiCalendar, FiBook, FiFileText, FiExternalLink, FiTrash2 } from 'react-icons/fi';
+import { RiIdCardLine } from 'react-icons/ri'; // Ícone para CPF e Matrícula
 import { useNavigate } from 'react-router-dom';
 import styles from '../AdminUsers.module.css';
 import RoleBadge from './RoleBadge';
@@ -11,12 +12,35 @@ function ProfileModal({
   onRoleChange,
   onDeleteClick,
   ROLE_META,
-  formatDate,
-  avatarUrl
+  formatDate
 }) {
   const navigate = useNavigate();
 
   if (!profileUser) return null;
+
+  // 1. Tratamento resiliente do Avatar (Igual ao UsersTable e UserCard)
+  const getAvatar = () => {
+    const avatar = profileUser.avatar_url || profileUser.avatarUrl || profileUser.avatar;
+    if (avatar && avatar.trim() !== "") {
+      return avatar;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(profileUser.name || 'JA')}&background=random&size=150`;
+  };
+
+  // 2. Acesso seguro ao perfil aninhado retornado pelo joinedload do Backend
+  const perfil = profileUser.profile || {};
+
+  // 3. Formatação local simples para exibição limpa no modal admin
+  const formatCPF = (cpf) => {
+    if (!cpf) return "—";
+    const d = cpf.replace(/\D/g, "");
+    if (d.length !== 11) return cpf;
+    return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
+  // Regras de exibição de campos com base no cargo (role)
+  const isStudent = profileUser.role === "STUDENT";
+  const isProfessorOrRevisor = ["PROFESSOR", "REVISOR"].includes(profileUser.role);
 
   return (
     <div className={styles.modal_overlay} onClick={onClose}>
@@ -28,14 +52,22 @@ function ProfileModal({
 
         {/* Topo do perfil */}
         <div className={styles.profile_hero}>
-          <img src={avatarUrl(profileUser.name)} alt="Avatar" className={styles.profile_avatar} />
+          <img 
+            src={getAvatar()} 
+            alt="Avatar" 
+            className={styles.profile_avatar} 
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "https://placehold.co/150?text=Foto";
+            }}
+          />
           <div>
             <h2 className={styles.profile_name}>{profileUser.name}</h2>
             <RoleBadge role={profileUser.role} />
           </div>
         </div>
 
-        {/* Infos */}
+        {/* Grade de Informações Gerais e Acadêmicas */}
         <div className={styles.profile_info_grid}>
           <div className={styles.profile_info_item}>
             <FiMail className={styles.profile_info_icon} />
@@ -44,6 +76,7 @@ function ProfileModal({
               <span className={styles.info_value}>{profileUser.email}</span>
             </div>
           </div>
+          
           <div className={styles.profile_info_item}>
             <FiCalendar className={styles.profile_info_icon} />
             <div>
@@ -51,6 +84,37 @@ function ProfileModal({
               <span className={styles.info_value}>{formatDate(profileUser.created_at)}</span>
             </div>
           </div>
+
+          {/* Sempre exibe o CPF se ele existir no perfil */}
+          <div className={styles.profile_info_item}>
+            <RiIdCardLine className={styles.profile_info_icon} />
+            <div>
+              <span className={styles.info_label}>CPF</span>
+              <span className={styles.info_value}>{formatCPF(perfil.cpf)}</span>
+            </div>
+          </div>
+
+          {/* Exibe Matrícula se for Estudante */}
+          {isStudent && (
+            <div className={styles.profile_info_item}>
+              <RiIdCardLine className={styles.profile_info_icon} />
+              <div>
+                <span className={styles.info_label}>Matrícula</span>
+                <span className={styles.info_value}>{perfil.matricula || "—"}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Exibe Número Funcional se for Professor ou Revisor */}
+          {isProfessorOrRevisor && (
+            <div className={styles.profile_info_item}>
+              <RiIdCardLine className={styles.profile_info_icon} />
+              <div>
+                <span className={styles.info_label}>Nº Funcional</span>
+                <span className={styles.info_value}>{perfil.matricula || "—"}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Stats de produção */}
@@ -73,7 +137,7 @@ function ProfileModal({
               {profileStats?.questionsTotal > 0 && (
                 <button
                   className={styles.pstat_link}
-                  onClick={() => navigate(`/projects?professor_id=${profileUser.id}`)}
+                  onClick={() => { onClose(); navigate(`/projects?professor_id=${profileUser.id}`); }}
                   title="Ver questões deste usuário"
                 >
                   <FiExternalLink size={15} /> Ver
@@ -95,7 +159,7 @@ function ProfileModal({
               {profileStats?.examsTotal > 0 && (
                 <button
                   className={styles.pstat_link}
-                  onClick={() => navigate(`/provas?professor_id=${profileUser.id}`)}
+                  onClick={() => { onClose(); navigate(`/provas?professor_id=${profileUser.id}`); }}
                   title="Ver provas deste usuário"
                 >
                   <FiExternalLink size={15} /> Ver

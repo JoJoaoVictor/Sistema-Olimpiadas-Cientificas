@@ -1,14 +1,56 @@
+import { useState, useEffect } from 'react';
 import styles from './Home.module.css';
 import LinkButton from '../../Layout/LinkButton.jsx';
 import Swipe from './Swipe.jsx';
 import Imagens from './Imgs/ferramentas.png';
 import Imagens2 from './Imgs/t2.jpg';
 import Imagens3 from './Imgs/t3.jpg';
-import { FaCheckCircle } from 'react-icons/fa'; // Opcional: Para ícones na lista (instale react-icons se não tiver)
+import { FaCheckCircle } from 'react-icons/fa';
+
+// Importação do Hook de Autenticação Centralizado
+import useAuth from '../.././../hooks/useAuth.jsx';
+
+// Importação do Novo Componente de LGPD
+import TermsOverlay from './../Usuario/TermsOverlay.jsx'; 
 
 function Home() {
+    // === AUTENTICAÇÃO E PERFIS ===
+    const { user, signed, updateUser } = useAuth();
+    
+    // Estado local para controle de exibição do Overlay de privacidade
+    const [showTerms, setShowTerms] = useState(false);
+
+    // Monitora se o usuário está logado e se precisa aceitar as políticas de LGPD
+    useEffect(() => {
+        if (signed && user && user.accepted_terms === false) {
+            setShowTerms(true);
+        }
+    }, [user, signed]);
+
+    // Trata o callback de sucesso pós-clique no aceite do modal
+    const handleTermsAccepted = () => {
+        setShowTerms(false);
+        if (typeof updateUser === 'function') {
+            updateUser({ accepted_terms: true });
+        }
+    };
+
+    // Mesma lógica padronizada e blindada contra maiúsculas/minúsculas
+    const isProfessor  = user?.role?.toUpperCase() === "PROFESSOR" || user?.role?.toUpperCase() === "ADMIN";
+    const isEstagiario = user?.role?.toUpperCase() === "STUDENT";
+    const isAdmin      = user?.role?.toUpperCase() === "ADMIN";
+    const isRevisor    = user?.role?.toUpperCase() === "REVISOR";
+
+    // Pode criar projeto se for Professor, Estagiário ou Admin
+    const podeCriar = isProfessor || isEstagiario || isAdmin;
+
     return (
         <section className={styles.home_wrapper}>
+            
+            {/* OVERLAY DA LGPD (Bloqueante caso seja o primeiro acesso do usuário) */}
+            {showTerms && (
+                <TermsOverlay user={user} onAcceptComplete={handleTermsAccepted} />
+            )}
             
             {/* === CAROUSEL === */}
             <div className={styles.carousel_area}>
@@ -21,7 +63,7 @@ function Home() {
                 <p>Sistema de Gestão da Olimpíada de Matemática</p>
             </div>
 
-            {/* === SEÇÃO 1: CRIAÇÃO DE EXAMES (Fundo Branco) === */}
+            {/* === SEÇÃO 1: CRIAÇÃO DE EXAMES === */}
             <div className={`${styles.content_card} ${styles.bg_white}`}>
                 <div className={styles.text_column}>
                     <h2>Criação de Exames</h2>
@@ -35,7 +77,6 @@ function Home() {
                         envolvidas na criação das provas para a Olimpíada de Matemática da UNEMAT.
                     </p>
 
-                    {/* Lista de Funcionalidades */}
                     <ul className={styles.feature_list}>
                         <li><span>1</span> Elaboração de questões (LaTeX, BNCC, dificuldade).</li>
                         <li><span>2</span> Revisão restrita a professores para aprovação preliminar.</li>
@@ -56,7 +97,7 @@ function Home() {
                 </div>
             </div>
 
-            {/* === SEÇÃO 2: UNEMAT (Fundo Escuro/Translucido) === */}
+            {/* === SEÇÃO 2: UNEMAT === */}
             <div className={`${styles.content_card} ${styles.bg_dark}`}>
                 <div className={styles.image_column}>
                     <img src={Imagens3} alt="Campus Unemat" />
@@ -82,9 +123,28 @@ function Home() {
             <div className={`${styles.cta_card} ${styles.bg_white}`}>
                 <div className={styles.cta_text}>
                     <h3>Pronto para começar?</h3>
-                    <p>Inicie agora mesmo o gerenciamento do seu projeto ou banco de questões.</p>
+                    
+                    {/* Texto dinâmico baseado no status do usuário */}
+                    {!signed ? (
+                        <p>Faça login para acessar suas ferramentas de gerenciamento.</p>
+                    ) : isRevisor ? (
+                        <p>Acesse o painel para moderar e revisar as questões pendentes.</p>
+                    ) : (
+                        <p>Inicie agora mesmo o gerenciamento do seu projeto ou banco de questões.</p>
+                    )}
+
                     <div className={styles.cta_button_wrapper}>
-                         <LinkButton to="/newproject" text="Criar Projeto" />
+                        {/* LÓGICA DE BOTÃO DINÂMICO  */}
+                        {!signed ? (
+                            // Se não está logado, manda para o Login
+                            <LinkButton to="/login" text="Entrar no Sistema" />
+                        ) : isRevisor ? (
+                            // Se for revisor puro, manda direto para a fila de revisão
+                            <LinkButton to="/projects" text="Revisar Questões" />
+                        ) : podeCriar ? (
+                            // Se for Professor, Student ou Admin, mantém a criação livre
+                            <LinkButton to="/newproject" text="Criar Projeto" />
+                        ) : null}
                     </div>
                 </div>
                 

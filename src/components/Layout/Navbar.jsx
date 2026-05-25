@@ -55,7 +55,7 @@ function Navbar() {
               <Link to="/" onClick={handleLinkClick}>Home</Link>
             </li>
 
-            {/* ÁREA DO ESTAGIÁRIO */}
+            {/* ÁREA DO STUDANT */}
             {signed && isEstagiario && (
               <>
                 <li className={styles.item}>

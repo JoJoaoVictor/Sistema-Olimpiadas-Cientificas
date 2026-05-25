@@ -11,12 +11,19 @@ function UsersTable({
   onViewProfile,
   onDeleteClick,
   ROLE_META,
-  formatDate,
-  avatarUrl
+  formatDate
 }) {
   const SortIcon = ({ field }) => {
     if (sortField !== field) return <FiChevronUp style={{ opacity: 0.3 }} />;
     return sortDir === 'asc' ? <FiChevronUp /> : <FiChevronDown />;
+  };
+
+  // Resolve a renderização do avatar dinâmico por linha da tabela
+  const getAvatar = (user) => {
+    if (user.avatar_url && user.avatar_url.trim() !== "") {
+      return user.avatar_url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&size=40`;
   };
 
   return (
@@ -41,7 +48,14 @@ function UsersTable({
           <tr key={user.id}>
             <td>
               <div className={styles.user_cell}>
-                <img src={avatarUrl(user.name)} alt="Avatar" />
+                <img 
+                  src={getAvatar(user)} 
+                  alt="Avatar" 
+                  onError={(e) => { 
+                    e.target.onerror = null; 
+                    e.target.src = "https://placehold.co/150?text=Foto"; 
+                  }}
+                />
                 <strong>{user.name}</strong>
               </div>
             </td>

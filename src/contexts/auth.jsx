@@ -67,24 +67,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ═══════════════════════════════════════════════════════════════
-  // FUNÇÃO — atualiza o usuário sem recarregar a página
+  // FUNÇÃO — atualiza o usuário sem recarregar a página (Ajustada)
   // ═══════════════════════════════════════════════════════════════
   const updateUser = (userData) => {
     setUser(prev => {
       if (!prev) return null;
+      
       const updated = {
         ...prev,
         ...userData,
+        // Mantém a clonagem do perfil se enviado, senão preserva o anterior intacto
         profile: userData.profile
           ? { ...prev.profile, ...userData.profile }
           : prev.profile,
       };
-      // Persiste no localStorage
-      const authData = authService.getAuthData();
-      if (authData) {
-        authData.user = updated;
-        localStorage.setItem('user_token', JSON.stringify(authData));
+
+      // Sincroniza e persiste a informação no local storage baseado na estrutura do seu authService
+      try {
+        const authData = authService.getAuthData();
+        if (authData) {
+          authData.user = updated;
+          localStorage.setItem('user_token', JSON.stringify(authData));
+        }
+      } catch (err) {
+        console.error("Erro ao sincronizar dados de atualização no localStorage:", err);
       }
+      
       return updated;
     });
   };

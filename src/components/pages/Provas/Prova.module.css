@@ -347,6 +347,28 @@
 .edit_btn:hover { background-color: #e7f1ff; color: #0d6efd; }
 .view_btn:hover { background-color: #e6fcf5; color: #0ca678; }
 
+/* ==========================================================================
+   CORES ESPECÍFICAS PARA CADA ESTADO DE PROVA (ABAS ATIVAS)
+   ========================================================================== */
+
+/* Cor para quando a aba Aprovadas estiver ativa (Verde) */
+.active_aprovadas {
+    color: #2e7d32 !important;
+    border-bottom: 2px solid #2e7d32 !important; /* Caso use linha indicadora embaixo */
+}
+
+/* Cor para quando a aba Aplicadas estiver ativa (Azul) */
+.active_aplicadas {
+    color: #0284c7 !important;
+    border-bottom: 2px solid #0284c7 !important;
+}
+
+/* Cor para quando a aba Pendentes estiver ativa (Laranja) */
+.active_pendentes {
+    color: #ef6c00 !important;
+    border-bottom: 2px solid #ef6c00 !important;
+}
+
 /* ── Empty / Loading ──────────────────────────────────────────────────────── */
 .loading_wrapper {
   display: flex;
@@ -469,3 +491,58 @@
     width: 100%;
   }
 }
+
+/* O cabeçalho flexível com distribuição nas extremidades */
+.header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 10px;
+    background-color: #f0f9ff; 
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.page_title {
+    font-size: 2.4rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 0;
+    color: #4b5563; 
+    font-size: 1.1rem;
+}
+
+/* Contentor da imagem dos livros */
+.icon_wrapper_exams {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+}
+
+/* Círculo sutil azul atrás dos livros */
+.bg_circle_exams {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #e0f2fe; /* Azul suave */
+    z-index: 1;
+}
+
+/* Estilização da imagem dos livros */
+.exams_icon_img {
+    position: relative;
+    z-index: 2;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    /* Adiciona uma sombra suave projetada com base no tom azul do tema */
+    filter: drop-shadow(0 4px 6px rgba(2, 132, 199, 0.3));
+}
+

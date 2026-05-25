@@ -3,14 +3,11 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
 /**
- * LatexText v2.0 - Renderizador robusto de LaTeX
- * 
- * Melhorias vs v1.0:
- * - Sanitização de R$ antes do parsing (previne bugs)
- * - Regex simplificada e mais confiável
- * - Performance otimizada (useMemo depende apenas de content)
- * - Keys únicas no map (previne bugs de re-render)
- * - Segurança melhorada (trust: false)
+ * LatexText v3.0 - Renderizador focado estritamente em delimitadores LaTeX padrão.
+ * * Correções nesta versão:
+ * - Desativado o uso de '$' e '$$' como delimitadores matemáticos.
+ * - Valores monetários como 'R$ 239,00' agora são processados naturalmente como texto.
+ * - Remoção de regexes agressivas de sanitização que injetavam barras invertidas extras.
  */
 
 const LatexText = ({ 
@@ -19,31 +16,8 @@ const LatexText = ({
   fontSize = 'inherit',
   lineHeight = 1.6
 }) => {
-  // Sanitização de LaTeX (camada extra de proteção no frontend)
-  const sanitizeLatex = (text) => {
-    if (!text) return '';
-    
-    // 1. Protege R$ (principal problema que quebra layout)
-    // "R$ 13,00" → "R\$ 13,00" (escapa o $)
-    text = text.replace(/R\$\s*(?=\d)/g, 'R\\$ ');
-    
-    // 2. Remove fórmulas vazias (geram problemas de renderização)
-    text = text.replace(/\$\s{0,3}\$/g, '');
-    text = text.replace(/\\\(\s{0,3}\\\)/g, '');
-    
-    // 3. Balanceia delimitadores $ (remove $ ímpar)
-    const dollarCount = (text.match(/\$/g) || []).length - (text.match(/\\\$/g) || []).length;
-    if (dollarCount % 2 !== 0) {
-      const idx = text.lastIndexOf('$');
-      if (idx !== -1 && (idx === 0 || text[idx-1] !== '\\')) {
-        text = text.substring(0, idx) + text.substring(idx + 1);
-      }
-    }
-    
-    return text;
-  };
 
-  // Configurações do KaTeX
+  // Configurações padrão do KaTeX
   const katexOptions = useMemo(() => ({
     displayMode: false,
     throwOnError: false,
@@ -51,50 +25,42 @@ const LatexText = ({
     strict: false,
     maxSize: Infinity,
     maxExpand: 1000,
-    trust: false, // Segurança: não permite comandos perigosos
+    trust: false, 
   }), []);
 
-  // Processa o conteúdo e cria array de parts (OTIMIZADO)
+  // Processa o conteúdo dividindo o que é texto puro do que é LaTeX real \([...]\)
+  // Processa o conteúdo dividindo o que é texto puro do que é LaTeX real \([...]\)
   const parts = useMemo(() => {
     if (!content || typeof content !== 'string') return [];
 
     try {
-      // SANITIZA ANTES de processar
-      const sanitized = sanitizeLatex(content);
-      
-      // Regex SIMPLIFICADA (confiamos na sanitização para proteger R$)
-      // Captura: \[...\], $$...$$, \(...\), $...$
-      const mathRegex = /(\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$|\\\([^)]*?\\\)|\$[^$\n]+?\$)/g;
+      // REGEX CORRIGIDA: Sem espaços, captura exatamente \(...\) e \[...\]
+      const mathRegex = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
       
       const result = [];
       let lastIndex = 0;
       let match;
 
-      while ((match = mathRegex.exec(sanitized)) !== null) {
-        // Texto antes da fórmula
+      while ((match = mathRegex.exec(content)) !== null) {
+        // 1. Captura o texto puro contido antes da fórmula matemática
         if (match.index > lastIndex) {
           result.push({
             type: 'text',
-            content: sanitized.substring(lastIndex, match.index)
+            content: content.substring(lastIndex, match.index)
           });
         }
 
-        // Fórmula matemática
+        // 2. Captura a fórmula matemática encontrada
         const mathContent = match[0];
         let displayMode = false;
         let formula = mathContent;
 
-        // Determina o tipo de fórmula e extrai conteúdo
+        // Extrai o conteúdo interno das tags de bloco ou inline
         if (mathContent.startsWith('\\[') && mathContent.endsWith('\\]')) {
-          formula = mathContent.slice(2, -2).trim();
-          displayMode = true;
-        } else if (mathContent.startsWith('$$') && mathContent.endsWith('$$')) {
           formula = mathContent.slice(2, -2).trim();
           displayMode = true;
         } else if (mathContent.startsWith('\\(') && mathContent.endsWith('\\)')) {
           formula = mathContent.slice(2, -2).trim();
-        } else if (mathContent.startsWith('$') && mathContent.endsWith('$')) {
-          formula = mathContent.slice(1, -1).trim();
         }
 
         try {
@@ -108,8 +74,7 @@ const LatexText = ({
             displayMode
           });
         } catch (error) {
-          console.warn('Erro ao renderizar fórmula:', formula, error);
-          // Fallback: mostra como texto se der erro
+          console.warn('Erro ao renderizar fórmula KaTeX:', formula, error);
           result.push({
             type: 'text',
             content: mathContent
@@ -119,27 +84,25 @@ const LatexText = ({
         lastIndex = match.index + mathContent.length;
       }
 
-      // Texto restante após a última fórmula
-      if (lastIndex < sanitized.length) {
+      // 3. Captura o restante do texto após a última fórmula encontrada
+      if (lastIndex < content.length) {
         result.push({
           type: 'text',
-          content: sanitized.substring(lastIndex)
+          content: content.substring(lastIndex)
         });
       }
 
       return result;
       
     } catch (error) {
-      console.error('Erro ao processar conteúdo:', error);
-      // Fallback: retorna conteúdo original como texto
+      console.error('Erro ao processar conteúdo no interpretador:', error);
       return [{
         type: 'text',
         content: content
       }];
     }
-  }, [content, katexOptions]); // Depende apenas de content e katexOptions
-
-  // Renderiza (separado do useMemo para aplicar estilos dinâmicos)
+  }, [content, katexOptions]);
+  
   return (
     <div 
       className={`latex-container ${className}`}
@@ -154,7 +117,7 @@ const LatexText = ({
         if (part.type === 'math') {
           return (
             <span
-              key={`math-${index}-${part.content.substring(0, 20)}`}
+              key={`math-${index}-${part.content.substring(0, 15)}`}
               className={part.displayMode ? 'katex-display' : 'katex'}
               style={{ fontSize, lineHeight }}
               dangerouslySetInnerHTML={{ __html: part.content }}
@@ -163,7 +126,7 @@ const LatexText = ({
         }
         return (
           <span 
-            key={`text-${index}-${part.content.substring(0, 20)}`}
+            key={`text-${index}-${part.content.substring(0, 15)}`}
             style={{ fontSize, lineHeight }}
           >
             {part.content}
@@ -174,7 +137,7 @@ const LatexText = ({
   );
 };
 
-// Componente específico para textos com LaTeX inline
+// Componente utilitário para textos puramente matemáticos inline
 export const InlineMathText = ({ children, ...props }) => {
   return (
     <LatexText 
@@ -185,12 +148,12 @@ export const InlineMathText = ({ children, ...props }) => {
   );
 };
 
-// Componente para blocos de matemática
+// Componente utilitário para blocos de matemática isolados
 export const BlockMathText = ({ children, ...props }) => {
   return (
     <div style={{ margin: '1em 0' }}>
       <LatexText 
-        content={`$$${children}$$`}
+        content={`\\[${children}\\]`}
         {...props}
       />
     </div>

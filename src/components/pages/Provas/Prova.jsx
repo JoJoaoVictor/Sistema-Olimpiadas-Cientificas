@@ -6,7 +6,7 @@ import { BsPencil, BsBook } from 'react-icons/bs';
 import { FaInbox, FaCheckDouble, FaPlay } from 'react-icons/fa';
 import { LuCalendarDays, LuLayers } from 'react-icons/lu';
 import Select from 'react-select';
-
+import BooksIcon from '../../../img/books_library_study_icon.png' 
 // Serviços de API
 import api from '../../../services/api';
 import { authService } from '../../../services/authService';
@@ -200,18 +200,34 @@ function Prova() {
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <header className={styles.header}>
-        <div>
-          <h1 className={styles.page_title}>Banco de Provas</h1>
-          <p className={styles.subtitle}>Gerencie e aplique as provas cadastradas</p>
-        </div>
-      </header>
+                {/* Lado Esquerdo: Bloco de Texto (Título + Subtítulo) */}
+                <div>
+                    <h1 className={styles.page_title}>Banco de Provas</h1>
+                    <p className={styles.subtitle}>Gerencie e aplique as provas cadastradas</p>
+                </div>
+
+                {/* Lado Direito: Contentor da imagem BooksIcon com círculo de fundo */}
+                <div className={styles.icon_wrapper_exams}>
+                    <div className={styles.bg_circle_exams}></div>
+                    <img 
+                        src={BooksIcon} 
+                        alt="Ícone Biblioteca de Livros" 
+                        className={styles.exams_icon_img} 
+                    />
+                </div>
+            </header>
 
       {/* ── Tabs: Aprovadas / Aplicadas / Pendentes ───────────────────────────── */}
       <div className={styles.tabs_container}>
         {TABS.map(tab => (
           <button
             key={tab.key}
-            className={`${styles.tab} ${tabAtiva === tab.key ? styles.active_tab : ''}`}
+            /* Adicionamos uma terceira interpolação que injeta styles.active_aprovadas, styles.active_aplicadas, etc. */
+            className={`
+              ${styles.tab} 
+              ${tabAtiva === tab.key ? styles.active_tab : ''} 
+              ${tabAtiva === tab.key ? styles[`active_${tab.key}`] : ''}
+            `}
             onClick={() => setTabAtiva(tab.key)}
           >
             {tab.icon} {tab.label}

@@ -1,5 +1,416 @@
-﻿{
-          "bncc_4ano": [
+﻿{           "bncc_2ano":[
+            {
+            "id": "1",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
+            "habilidade": "(EF02MA01)",
+            "abilityDescription": "Comparar e ordenar números naturais (até a ordem de centenas) pela compreensão de características do sistema de numeração decimal (valor posicional e função do zero)."
+              },
+              {
+            "id": "2",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
+            "habilidade": "(EF02MA02)",
+            "abilityDescription": "Fazer estimativas por meio de estratégias diversas a respeito da quantidade de objetos de coleções e registrar o resultado da contagem desses objetos (até 1000 unidades)."
+              },
+              {
+            "id": "3",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
+            "habilidade": "(EF02MA03)",
+            "abilityDescription": "Comparar quantidades de objetos de dois conjuntos, por estimativa e/ou por correspondência (um a um, dois a dois, entre outros), para indicar “tem mais”, “tem menos” ou “tem a mesma quantidade”, indicando, quando for o caso, quantos a mais e quantos a menos."
+              },
+               {
+            "id": "3",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Composição e decomposição de números naturais (até 1000)",
+            "habilidade": "(EF02MA04)",
+            "abilityDescription": "Compor e decompor números naturais de até três ordens, com suporte de material manipulável, por meio de diferentes adições."
+              },
+              {
+            "id": "4",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Construção de fatos fundamentais da adição e da subtração",
+            "habilidade": "(EF02MA05)",
+            "abilityDescription": "Construir fatos básicos da adição e subtração e utilizá-los no cálculo mental ou escrito."
+              },
+              {
+            "id": "5",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da adição e da subtração (juntar, acrescentar, separar, retirar)",
+            "habilidade": "(EF02MA06)",
+            "abilityDescription": "Resolver e elaborar problemas de adição e de subtração, envolvendo números de até três ordens, com os significados de juntar, acrescentar, separar, retirar, utilizando estratégias pessoais."
+              },
+              {
+            "id": "6",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo adição de parcelas iguais (multiplicação)",
+            "habilidade": "(EF02MA07)",
+            "abilityDescription": "Resolver e elaborar problemas de multiplicação (por 2, 3, 4 e 5) com a ideia de adição de parcelas iguais por meio de estratégias e formas de registro pessoais, utilizando ou não suporte de imagens e/ou material manipulável."
+              },
+              {
+            "id": "7",
+            "ano": "2º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo significados de dobro, metade, triplo e terça parte)",
+            "habilidade": "(EF02MA08)",
+            "abilityDescription": "Resolver e elaborar problemas envolvendo dobro, metade, triplo e terça parte, com o suporte de imagens ou material manipulável, utilizando estratégias pessoais."
+              },
+              {
+            "id": "8",
+            "ano": "2º ano",
+            "unidadeTematica": "Álgebra",
+            "objetosDeConhecimento": "Construção de sequências repetitivas e de sequências recursivas",
+            "habilidade": "(EF02MA09)",
+            "abilityDescription": "Construir sequências de números naturais em ordem crescente ou decrescente a partir de um número qualquer, utilizando uma regularidade estabelecida."
+              },
+              {
+            "id": "9",
+            "ano": "2º ano",
+            "unidadeTematica": "Álgebra",
+            "objetosDeConhecimento": "Identificação de regularidade de sequências e determinação de elementos ausentes na sequência",
+            "habilidade": "(EF02MA10)",
+            "abilityDescription": "Descrever um padrão (ou regularidade) de sequências repetitivas e de sequências recursivas, por meio de palavras, símbolos ou desenhos."
+              },
+              {
+            "id": "10",
+            "ano": "2º ano",
+            "unidadeTematica": "Álgebra",
+            "objetosDeConhecimento": "Identificação de regularidade de sequências e determinação de elementos ausentes na sequência",
+            "habilidade": "(EF02MA11)",
+            "abilityDescription": "Descrever os elementos ausentes em sequências repetitivas e em sequências recursivas de números naturais, objetos ou figuras."
+              },
+              {
+            "id": "11",
+            "ano": "2º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Localização e movimentação de pessoas e objetos no espaço, segundo pontos de referência, e indicação de mudanças de direção e sentido",
+            "habilidade": "(EF02MA12)",
+            "abilityDescription": "Identificar e registrar, em linguagem verbal ou não verbal, a localização e os deslocamentos de pessoas e de objetos no espaço, considerando mais de um ponto de referência, e indicar as mudanças de direção e de sentido."
+              },
+              {
+            "id": "12",
+            "ano": "2º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Esboço de roteiros e de plantas simples",
+            "habilidade": "(EF02MA13)",
+            "abilityDescription": "Esboçar roteiros a ser seguidos ou plantas de ambientes familiares, assinalando entradas, saídas e alguns pontos de referência."
+              },
+              {
+            "id": "13",
+            "ano": "2º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento e características",
+            "habilidade": "(EF02MA14)",
+            "abilityDescription": "Reconhecer, nomear e comparar figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera), relacionando-as com objetos do mundo físico."
+              },
+              {
+            "id": "14",
+            "ano": "2º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Figuras geométricas planas (círculo, quadrado, retângulo e triângulo): reconhecimento e características",
+            "habilidade": "(EF02MA15)",
+            "abilityDescription": "Reconhecer, comparar e nomear figuras planas (círculo, quadrado, retângulo e triângulo), por meio de características comuns, em desenhos apresentados em diferentes disposições ou em sólidos geométricos."
+              },
+              {
+            "id": "15",
+            "ano": "2º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medida de comprimento: unidades não padronizadas e padronizadas (metro, centímetro e milímetro)",
+            "habilidade": "(EF02MA16)",
+            "abilityDescription": "Estimar, medir e comparar comprimentos de lados de salas (incluindo contorno) e de polígonos, utilizando unidades de medida não padronizadas e padronizadas (metro, centímetro e milímetro) e instrumentos adequados."
+              },
+              {
+            "id": "16",
+            "ano": "2º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medida de capacidade e de massa: unidades de medida não convencionais e convencionais (litro, mililitro, cm3, grama e quilograma)",
+            "habilidade": "(EF02MA17)",
+            "abilityDescription": "Estimar, medir e comparar capacidade e massa, utilizando estratégias pessoais e unidades de medida não padronizadas ou padronizadas (litro, mililitro, grama e quilograma)."
+              },
+              {
+            "id": "17",
+            "ano": "2º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
+            "habilidade": "(EF02MA18)",
+            "abilityDescription": "Indicar a duração de intervalos de tempo entre duas datas, como dias da semana e meses do ano, utilizando calendário, para planejamentos e organização de agenda."
+              },
+              {
+            "id": "18",
+            "ano": "2º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
+            "habilidade": "(EF02MA19)",
+            "abilityDescription": "Medir a duração de um intervalo de tempo por meio de relógio digital e registrar o horário do início e do fim do intervalo."
+              },
+              {
+            "id": "19",
+            "ano": "2º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Sistema monetário brasileiro: reconhecimento de cédulas e moedas e equivalência de valores",
+            "habilidade": "(EF02MA20)",
+            "abilityDescription": "Estabelecer a equivalência de valores entre moedas e cédulas do sistema monetário brasileiro para resolver situações cotidianas."
+              },
+              {
+            "id": "20",
+            "ano": "2º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Análise da ideia de aleatório em situações do cotidiano",
+            "habilidade": "(EF02MA21)",
+            "abilityDescription": "Classificar resultados de eventos cotidianos aleatórios como “pouco prováveis”, “muito prováveis”, “improváveis” e “impossíveis”."
+              },
+              {
+            "id": "21",
+            "ano": "2º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
+            "habilidade": "(EF02MA22)",
+            "abilityDescription": "Comparar informações de pesquisas apresentadas por meio de tabelas de dupla entrada e em gráficos de colunas simples ou barras, para melhor compreender aspectos da realidade próxima."
+              },
+              {
+            "id": "22",
+            "ano": "2º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
+            "habilidade": "(EF02MA23)",
+            "abilityDescription": "Realizar pesquisa em universo de até 30 elementos, escolhendo até três variáveis categóricas de seu interesse, organizando os dados coletados em listas, tabelas e gráficos de colunas simples."
+              }
+            ], 
+            "bncc_3ano":[
+              {
+            "id": "1",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números naturais de quatro ordens",
+            "habilidade": "(EF03MA01)",
+            "abilityDescription": "Ler, escrever e comparar números naturais de até a ordem de unidade de milhar, estabelecendo relações entre os registros numéricos e em língua materna."
+              },
+              {
+            "id": "2",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Composição e decomposição de números naturais",
+            "habilidade": "(EF03MA02)",
+            "abilityDescription": "Identificar características do sistema de numeração decimal, utilizando a composição e a decomposição de número natural de até quatro ordens."
+              },
+              {
+            "id": "3",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Construção de fatos fundamentais da adição, subtração e multiplicação Reta numérica",
+            "habilidade": "(EF03MA03)",
+            "abilityDescription": "Construir e utilizar fatos básicos da adição e da multiplicação para o cálculo mental ou escrito."
+              },
+              {
+            "id": "4",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Construção de fatos fundamentais da adição, subtração e multiplicação Reta numérica",
+            "habilidade": "(EF03MA04)",
+            "abilityDescription": "Estabelecer a relação entre números naturais e pontos da reta numérica para utilizá-la na ordenação dos números naturais e também na construção de fatos da adição e da subtração, relacionando-os com deslocamentos para a direita ou para a esquerda."
+              },
+              {
+            "id": "5",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Procedimentos de cálculo (mental e escrito) com números naturais: adição e subtração",
+            "habilidade": "(EF03MA05)",
+            "abilityDescription": "Utilizar diferentes procedimentos de cálculo mental e escrito, inclusive os convencionais, para resolver problemas significativos envolvendo adição e subtração com números naturais."
+              },
+              {
+            "id": "5",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo significados da adição e da subtração: juntar, acrescentar, separar, retirar, comparar e completar quantidades",
+            "habilidade": "(EF03MA06)",
+            "abilityDescription": "Resolver e elaborar problemas de adição e subtração com os significados de juntar, acrescentar, separar, retirar, comparar e completar quantidades, utilizando diferentes estratégias de cálculo exato ou aproximado, incluindo cálculo mental."
+              },
+              {
+            "id": "6",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da multiplicação e da divisão: adição de parcelas iguais, configuração retangular, repartição em partes iguais e medida",
+            "habilidade": "(EF03MA07)",
+            "abilityDescription": "Resolver e elaborar problemas de multiplicação (por 2, 3, 4, 5 e 10) com os significados de adição de parcelas iguais e elementos apresentados em disposição retangular, utilizando diferentes estratégias de cálculo e registros."
+              },
+              {
+            "id": "7",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da multiplicação e da divisão: adição de parcelas iguais, configuração retangular, repartição em partes iguais e medida",
+            "habilidade": "(EF03MA08)",
+            "abilityDescription": "Resolver e elaborar problemas de divisão de um número natural por outro (até 10), com resto zero e com resto diferente de zero, com os significados de repartição equitativa e de medida, por meio de estratégias e registros pessoais."
+              },
+              {
+            "id": "8",
+            "ano": "3º ano",
+            "unidadeTematica": "Números",
+            "objetosDeConhecimento": "Significados de metade, terça parte, quarta parte, quinta parte e décima parte",
+            "habilidade": "(EF03MA09)",
+            "abilityDescription": "Associar o quociente de uma divisão com resto zero de um número natural por 2, 3, 4, 5 e 10 às ideias de metade, terça, quarta, quinta e décima partes."
+              },
+              {
+            "id": "9",
+            "ano": "3º ano",
+            "unidadeTematica": "Álgebra",
+            "objetosDeConhecimento": "Identificação e descrição de regularidades em sequências numéricas recursivas",
+            "habilidade": "(EF03MA10)",
+            "abilityDescription": "Identificar regularidades em sequências ordenadas de números naturais, resultantes da realização de adições ou subtrações sucessivas, por um mesmo número, descrever uma regra de formação da sequência e determinar elementos faltantes ou seguintes."
+              },
+              {
+            "id": "10",
+            "ano": "3º ano",
+            "unidadeTematica": "Álgebra",
+            "objetosDeConhecimento": "Relação de igualdade",
+            "habilidade": "(EF03MA11)",
+            "abilityDescription": "Compreender a ideia de igualdade para escrever diferentes sentenças de adições ou de subtrações de dois números naturais que resultem na mesma soma ou diferença."
+              },
+              {
+            "id": "11",
+            "ano": "3º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Localização e movimentação: representação de objetos e pontos de referência",
+            "habilidade": "(EF03MA12)",
+            "abilityDescription": "Descrever e representar, por meio de esboços de trajetos ou utilizando croquis e maquetes, a movimentação de pessoas ou de objetos no espaço, incluindo mudanças de direção e sentido, com base em diferentes pontos de referência."
+              },
+              {
+            "id": "12",
+            "ano": "3º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento, análise de características e planificações",
+            "habilidade": "(EF03MA13)",
+            "abilityDescription": "Associar figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera) a objetos do mundo físico e nomear essas figuras."
+              },
+              {
+            "id": "13",
+            "ano": "3º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento, análise de características e planificações",
+            "habilidade": "(EF03MA14)",
+            "abilityDescription": "Descrever características de algumas figuras geométricas espaciais (prismas retos, pirâmides, cilindros, cones), relacionando-as com suas planificações."
+              },
+              {
+            "id": "14",
+            "ano": "3º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Figuras geométricas planas (triângulo, quadrado, retângulo, trapézio e paralelogramo): reconhecimento e análise de características",
+            "habilidade": "(EF03MA15)",
+            "abilityDescription": "Classificar e comparar figuras planas (triângulo, quadrado, retângulo, trapézio e paralelogramo) em relação a seus lados (quantidade, posições relativas e comprimento) e vértices."
+              },
+              {
+            "id": "15",
+            "ano": "3º ano",
+            "unidadeTematica": "Geometria",
+            "objetosDeConhecimento": "Congruência de figuras geométricas planas",
+            "habilidade": "(EF03MA16)",
+            "abilityDescription": "Reconhecer figuras congruentes, usando sobreposição e desenhos em malhas quadriculadas ou triangulares, incluindo o uso de tecnologias digitais."
+              },
+              {
+            "id": "16",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Significado de medida e de unidade de medida",
+            "habilidade": "(EF03MA17)",
+            "abilityDescription": "Reconhecer que o resultado de uma medida depende da unidade de medida utilizada."
+              },
+              {
+            "id": "17",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Significado de medida e de unidade de medida",
+            "habilidade": "(EF03MA18)",
+            "abilityDescription": "Escolher a unidade de medida e o instrumento mais apropriado para medições de comprimento, tempo e capacidade."
+              },
+              {
+            "id": "18",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de comprimento (unidades não convencionais e convencionais): registro, instrumentos de medida, estimativas e comparações",
+            "habilidade": "(EF03MA19)",
+            "abilityDescription": "Estimar, medir e comparar comprimentos, utilizando unidades de medida não padronizadas e padronizadas mais usuais (metro, centímetro e milímetro) e diversos instrumentos de medida."
+              },
+              {
+            "id": "19",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de capacidade e de massa (unidades não convencionais e convencionais): registro, estimativas e comparações",
+            "habilidade": "(EF03MA20)",
+            "abilityDescription": "Estimar e medir capacidade e massa, utilizando unidades de medida não padronizadas e padronizadas mais usuais (litro, mililitro, quilograma, grama e miligrama), reconhecendo-as em leitura de rótulos e embalagens, entre outros."
+              },
+              {
+            "id": "20",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Comparação de áreas por superposição",
+            "habilidade": "(EF03MA21)",
+            "abilityDescription": "Comparar, visualmente ou por superposição, áreas de faces de objetos, de figuras planas ou de desenhos."
+              },
+              {
+            "id": "21",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
+            "habilidade": "(EF03MA22)",
+            "abilityDescription": "Ler e registrar medidas e intervalos de tempo, utilizando relógios (analógico e digital) para informar os horários de início e término de realização de uma atividade e sua duração."
+              },
+              {
+            "id": "22",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
+            "habilidade": "(EF03MA23)",
+            "abilityDescription": "Ler horas em relógios digitais e em relógios analógicos e reconhecer a relação entre hora e minutos e entre minuto e segundos."
+              },
+              {
+            "id": "23",
+            "ano": "3º ano",
+            "unidadeTematica": "Grandezas e medidas",
+            "objetosDeConhecimento": "Sistema monetário brasileiro: estabelecimento de equivalências de um mesmo valor na utilização de diferentes cédulas e moedas",
+            "habilidade": "(EF03MA24)",
+            "abilityDescription": "Resolver e elaborar problemas que envolvam a comparação e a equivalência de valores monetários do sistema brasileiro em situações de compra, venda e troca."
+              },
+              {
+            "id": "24",
+            "ano": "3º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Análise da ideia de acaso em situações do cotidiano: espaço amostral",
+            "habilidade": "(EF03MA25)",
+            "abilityDescription": "Identificar, em eventos familiares aleatórios, todos os resultados possíveis, estimando os que têm maiores ou menores chances de ocorrência."
+              },
+              {
+            "id": "25",
+            "ano": "3º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
+            "habilidade": "(EF03MA26)",
+            "abilityDescription": "Resolver problemas cujos dados estão apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas."
+              },
+              {
+            "id": "26",
+            "ano": "3º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
+            "habilidade": "(EF03MA27)",
+            "abilityDescription": "Ler, interpretar e comparar dados apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas, envolvendo resultados de pesquisas significativas, utilizando termos como maior e menor frequência, apropriando-se desse tipo de linguagem para compreender aspectos da realidade sociocultural significativos."
+              },
+              {
+            "id": "27",
+            "ano": "3º ano",
+            "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "Coleta, classificação e representação de dados referentes a variáveis categóricas, por meio de tabelas e gráficos",
+            "habilidade": "(EF03MA28)",
+            "abilityDescription": "Realizar pesquisa envolvendo variáveis categóricas em um universo de até 50 elementos, organizar os dados coletados utilizando listas, tabelas simples ou de dupla entrada e representá-los em gráficos de colunas simples, com e sem uso de tecnologias digitais."
+              }
+            ],
+            "bncc_4ano": [
           {
             "id": "1",
             "ano": "4º ano",
@@ -221,7 +632,7 @@
             "habilidade": "(EF04MA28)",
             "abilityDescription": " Realizar pesquisa envolvendo variáveis categóricas e numéricas e organizar dados coletados por meio de tabelas e gráficos de colunas simples ou agrupadas, com e sem uso de tecnologias digitais."
         }
-  ],
+            ],
             "bncc_5ano": [  
             {
             "id": "1",
@@ -420,7 +831,7 @@
             "habilidade": "(EF05MA25) ",
             "abilityDescription": "Realizar pesquisa envolvendo variáveis categóricas e numéricas, organizar dados coletados por meio de tabelas, gráficos de colunas, pictóricos e de linhas, com e sem uso de tecnologias digitais, e apresentar texto escrito sobre a finalidade da pesquisa e a síntese dos resultados."
           }
-        ],
+            ],
             "bncc_6ano": [
                   {
             "id": "1",
@@ -694,8 +1105,7 @@
             "habilidade": "(EF06MA34)  ",
             "abilityDescription": "Interpretar e desenvolver fluxogramas simples, identificando as relações entre os objetos representados (por exemplo, posição de cidades considerando as estradas que as unem, hierarquia dos funcionários de uma empresa etc.)."
           }
-      ],
-  
+            ],
             "bncc_7ano": [
              {
             "id": "1",
@@ -718,7 +1128,8 @@
             "ano": "7º ano",
             "unidadeTematica": "Números",
             "objetosDeConhecimento": "Números inteiros: usos, história, ordenação, associação com pontos da reta numérica e operações",
-            "habilidade": "(EF07MA03) Comparar e ordenar números inteiros em diferentes contextos, incluindo o histórico, associá-los a pontos da reta numérica e utilizá-los em situações que envolvam adição e subtração."
+            "habilidade": "(EF07MA03)",
+            "abilityDescription": "Comparar e ordenar números inteiros em diferentes contextos, incluindo o histórico, associá-los a pontos da reta numérica e utilizá-los em situações que envolvam adição e subtração."
           },
           {
             "id": "4",
@@ -741,7 +1152,8 @@
             "ano": "7º ano",
             "unidadeTematica": "Números",
             "objetosDeConhecimento": "Fração e seus significados: como parte de inteiros, resultado da divisão, razão e operador",
-            "habilidade": "(EF07MA06) Reconhecer que as resoluções de um grupo de problemas que têm a mesma estrutura podem ser obtidas utilizando os mesmos procedimentos."
+            "habilidade": "(EF07MA06)",
+            "abilityDescription":" Reconhecer que as resoluções de um grupo de problemas que têm a mesma estrutura podem ser obtidas utilizando os mesmos procedimentos."
           },
           {
             "id": "7",
@@ -1036,7 +1448,8 @@
             "ano": "8º ano",
             "unidadeTematica": "Álgebra",
             "objetosDeConhecimento": "Valor numérico de expressões algébricas",
-            "habilidade": "(EF08MA06) Resolver e elaborar problemas que envolvam cálculo do valor numérico de expressões algébricas, utilizando as propriedades das operações."
+            "habilidade": "(EF08MA06)",
+            "abilityDescription":" Resolver e elaborar problemas que envolvam cálculo do valor numérico de expressões algébricas, utilizando as propriedades das operações."
           },
           {
             "id": "7",
@@ -1398,6 +1811,7 @@
             "id": "1",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT101) ",
             "abilityDescription": "Interpretar criticamente situações econômicas, sociais e fatos relativos às Ciências da Natureza que envolvam a variação de grandezas, pela análise dos gráficos das funções representadas e das taxas de variação, com ou sem apoio de tecnologias digitais."
               },
@@ -1405,661 +1819,297 @@
             "id": "2",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT102) ",
             "abilityDescription": "Analisar tabelas, gráficos e amostras de pesquisas estatísticas apresentadas em relatórios divulgados por diferentes meios de comunicação, identificando, quando for o caso, inadequações que possam induzir a erros de interpretação, como escalas e amostras não apropriadas."
               },  {
             "id": "3",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
-            "habilidade": "(EM13MAT103) Interpretar e compreender textos científicos ou divulgados pelas mídias, que empregam unidades de medida de diferentes grandezas e as conversões possíveis entre elas, adotadas ou não pelo Sistema Internacional (SI), como as de armazenamento e velocidade de transferência de dados, ligadas aos avanços tecnológicos."
-              },  {
+            "objetosDeConhecimento": "-",
+            "habilidade": "(EM13MAT103) ",
+            "abilityDescription": " Interpretar e compreender textos científicos ou divulgados pelas mídias, que empregam unidades de medida de diferentes grandezas e as conversões possíveis entre elas, adotadas ou não pelo Sistema Internacional (SI), como as de armazenamento e velocidade de transferência de dados, ligadas aos avanços tecnológicos."
+             
+            },  {
             "id": "4",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT104) ",
             "abilityDescription": "Interpretar taxas e índices de natureza socioeconômica (índice de desenvolvimento humano, taxas de inflação, entre outros), investigando os processos de cálculo desses números, para analisar criticamente a realidade e produzir argumentos."
               },  {
             "id": "5",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT105) ",
             "abilityDescription": "Utilizar as noções de transformações isométricas (translação, reflexão, rotação e composições destas) e transformações homotéticas para construir figuras e analisar elementos da natureza e diferentes produções humanas (fractais, construções civis, obras de arte, entre outras)."
               },  {
             "id": "6",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT106) ",
             "abilityDescription": "Identificar situações da vida cotidiana nas quais seja necessário fazer escolhas levando-se em conta os riscos probabilísticos (usar este ou aquele método contraceptivo, optar por um tratamento médico em detrimento de outro etc.)."
               },  {
             "id": "7",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT201) ",
             "abilityDescription": "Propor ou participar de ações adequadas às demandas da região, preferencialmente para sua comunidade, envolvendo medições e cálculos de perímetro, de área, de volume, de capacidade ou de massa."
               },  {
             "id": "8",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT202) ",
             "abilityDescription": "Planejar e executar pesquisa amostral sobre questões relevantes, usando dados coletados diretamente ou em diferentes fontes, e comunicar os resultados por meio de relatório contendo gráficos e interpretação das medidas de tendência central e das medidas de dispersão (amplitude e desvio padrão), utilizando ou não recursos tecnológicos."
               },  {
             "id": "9",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT203) ",
             "abilityDescription": "Aplicar conceitos matemáticos no planejamento, na execução e na análise de ações envolvendo a utilização de aplicativos e a criação de planilhas (para o controle de orçamento familiar, simuladores de cálculos de juros simples e compostos, entre outros), para tomar decisões."
               },  {
             "id": "10",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT301) ",
             "abilityDescription": "Resolver e elaborar problemas do cotidiano, da Matemática e de outras áreas do conhecimento, que envolvem equações lineares simultâneas, usando técnicas algébricas e gráficas, com ou sem apoio de tecnologias digitais."
               },  {
             "id": "11",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT302) ",
             "abilityDescription": "Construir modelos empregando as funções polinomiais de 1º ou 2º graus, para resolver problemas em contextos diversos, com ou sem apoio de tecnologias digitais."
               },  {
             "id": "12",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT303) ",
             "abilityDescription": "Interpretar e comparar situações que envolvam juros simples com as que envolvem juros compostos, por meio de representações gráficas ou análise de planilhas, destacando o crescimento linear ou exponencial de cada caso."
               },  {
             "id": "13",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT304) ",
             "abilityDescription": "Resolver e elaborar problemas com funções exponenciais nos quais seja necessário compreender e interpretar a variação das grandezas envolvidas, em contextos como o da Matemática Financeira, entre outros."
               },  {
             "id": "14",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT305) ",
             "abilityDescription": "Resolver e elaborar problemas com funções logarítmicas nos quais seja necessário compreender e interpretar a variação das grandezas envolvidas, em contextos como os de abalos sísmicos, pH, radioatividade, Matemática Financeira, entre outros."
               },  {
             "id": "15",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT306) ",
             "abilityDescription": "Resolver e elaborar problemas em contextos que envolvem fenômenos periódicos reais (ondas sonoras, fases da lua, movimentos cíclicos, entre outros) e comparar suas representações com as funções seno e cosseno, no plano cartesiano, com ou sem apoio de aplicativos de álgebra e geometria."
               },  {
             "id": "16",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT307) ",
             "abilityDescription": "Empregar diferentes métodos para a obtenção da medida da área de uma superfície (reconfigurações, aproximação por cortes etc.) e deduzir expressões de cálculo para aplicá-las em situações reais (como o remanejamento e a distribuição de plantações, entre outros), com ou sem apoio de tecnologias digitais."
               },  {
             "id": "17",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT308) ",
             "abilityDescription": "Aplicar as relações métricas, incluindo as leis do seno e do cosseno ou as noções de congruência e semelhança, para resolver e elaborar problemas que envolvem triângulos, em variados contextos."
               },  {
             "id": "18",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT309) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvem o cálculo de áreas totais e de volumes de prismas, pirâmides e corpos redondos em situações reais (como o cálculo do gasto de material para revestimento ou pinturas de objetos cujos formatos sejam composições dos sólidos estudados), com ou sem apoio de tecnologias digitais."
               },  {
             "id": "19",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT310)",
             "abilityDescription": " Resolver e elaborar problemas de contagem envolvendo agrupamentos ordenáveis ou não de elementos, por meio dos princípios multiplicativo e aditivo, recorrendo a estratégias diversas, como o diagrama de árvore."
               },  {
             "id": "20",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT311) ",
             "abilityDescription": "Identificar e descrever o espaço amostral de eventos aleatórios, realizando contagem das possibilidades, para resolver e elaborar problemas que envolvem o cálculo da probabilidade."
               },  {
             "id": "21",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT312) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvem o cálculo de probabilidade de eventos em experimentos aleatórios sucessivos."
               },  {
             "id": "22",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT313) ",
             "abilityDescription": "Utilizar, quando necessário, a notação científica para expressar uma medida, compreendendo as noções de algarismos significativos e algarismos duvidosos, e reconhecendo que toda medida é inevitavelmente acompanhada de erro."
               },  {
             "id": "23",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT314) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvem grandezas determinadas pela razão ou pelo produto de outras (velocidade, densidade demográfica, energia elétrica etc.)."
               },{
             "id": "24",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT315) ",
             "abilityDescription": "Investigar e registrar, por meio de um fluxograma, quando possível, um algoritmo que resolve um problema."
               },{
             "id": "25",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT316) ",
             "abilityDescription": "Resolver e elaborar problemas, em diferentes contextos, que envolvem cálculo e interpretação das medidas de tendência central (média, moda, mediana) e das medidas de dispersão (amplitude, variância e desvio padrão)."
               },{
             "id": "26",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT401) ",
             "abilityDescription": "Converter representações algébricas de funções polinomiais de 1º grau em representações geométricas no plano cartesiano, distinguindo os casos nos quais o comportamento é proporcional, recorrendo ou não a softwares ou aplicativos de álgebra e geometria dinâmica."
               },{
             "id": "27",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT402)",
             "abilityDescription": " Converter representações algébricas de funções polinomiais de 2º grau em representações geométricas no plano cartesiano, distinguindo os casos nos quais uma variável for diretamente proporcional ao quadrado da outra, recorrendo ou não a softwares ou aplicativos de álgebra e geometria dinâmica, entre outros materiais."
               },{
             "id": "28",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT403) ",
             "abilityDescription": "Analisar e estabelecer relações, com ou sem apoio de tecnologias digitais, entre as representações de funções exponencial e logarítmica expressas em tabelas e em plano cartesiano, para identificar as características fundamentais (domínio, imagem, crescimento) de cada função."
               },{
             "id": "29",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT404) ",
             "abilityDescription": "Analisar funções definidas por uma ou mais sentenças (tabela do Imposto de Renda, contas de luz, água, gás etc.), em suas representações algébrica e gráfica, identificando domínios de validade, imagem, crescimento e decrescimento, e convertendo essas representações de uma para outra, com ou sem apoio de tecnologias digitais."
               },{
             "id": "30",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT405) ",
             "abilityDescription": "Utilizar conceitos iniciais de uma linguagem de programação na implementação de algoritmos escritos em linguagem corrente e/ou matemática."
               },{
             "id": "31",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT406) ",
             "abilityDescription": "Construir e interpretar tabelas e gráficos de frequências com base em dados obtidos em pesquisas por amostras estatísticas, incluindo ou não o uso de softwares que inter-relacionem estatística, geometria e álgebra."
               },{
             "id": "32",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT407)",
             "abilityDescription": " Interpretar e comparar conjuntos de dados estatísticos por meio de diferentes diagramas e gráficos (histograma, de caixa (box-plot), de ramos e folhas, entre outros), reconhecendo os mais eficientes para sua análise."
               },{
             "id": "33",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT501) ",
             "abilityDescription": "Investigar relações entre números expressos em tabelas para representá-los no plano cartesiano, identificando padrões e criando conjecturas para generalizar e expressar algebricamente essa generalização, reconhecendo quando essa representação é de função polinomial de 1º grau."
               },{
             "id": "34",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT502) ",
             "abilityDescription": "Investigar relações entre números expressos em tabelas para representá-los no plano cartesiano, identificando padrões e criando conjecturas para generalizar e expressar algebricamente essa generalização, reconhecendo quando essa representação é de função polinomial de 2º grau do tipo y = ax2."
               },{
             "id": "35",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT503) ",
             "abilityDescription": "Investigar pontos de máximo ou de mínimo de funções quadráticas em contextos envolvendo superfícies, Matemática Financeira ou Cinemática, entre outros, com apoio de tecnologias digitais."
               },{
             "id": "36",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT504) ",
             "abilityDescription": "Investigar processos de obtenção da medida do volume de prismas, pirâmides, cilindros e cones, incluindo o princípio de Cavalieri, para a obtenção das fórmulas de cálculo da medida do volume dessas figuras."
               },{
             "id": "37",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT505) ",
             "abilityDescription": "Resolver problemas sobre ladrilhamento do plano, com ou sem apoio de aplicativos de geometria dinâmica, para conjecturar a respeito dos tipos ou composição de polígonos que podem ser utilizados em ladrilhamento, generalizando padrões observados."
               },{
             "id": "38",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT506) ",
             "abilityDescription": "Representar graficamente a variação da área e do perímetro de um polígono regular quando os comprimentos de seus lados variam, analisando e classificando as funções envolvidas."
               },{
             "id": "39",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT507)",
             "abilityDescription": " Identificar e associar progressões aritméticas (PA) a funções afins de domínios discretos, para análise de propriedades, dedução de algumas fórmulas e resolução de problemas."
               },{
             "id": "40",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT508)",
             "abilityDescription": " Identificar e associar progressões geométricas (PG) a funções exponenciais de domínios discretos, para análise de propriedades, dedução de algumas fórmulas e resolução de problemas."
               },{
             "id": "41",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Geometria e Medidas",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT509)",
             "abilityDescription": " Investigar a deformação de ângulos e áreas provocada pelas diferentes projeções usadas em cartografia (como a cilíndrica e a cônica), com ou sem suporte de tecnologia digital."
               },{
             "id": "42",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Números e Álgebra",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT510)" ,
             "abilityDescription":"Investigar conjuntos de dados relativos ao comportamento de duas variáveis numéricas, usando ou não tecnologias da informação, e, quando apropriado, levar em conta a variação e utilizar uma reta para descrever a relação observada."
               },{
             "id": "43",
             "ano": "1º, 2º e 3º ano do Ensino Médio",
             "unidadeTematica": "Probabilidade e Estatística",
+            "objetosDeConhecimento": "-",
             "habilidade": "(EM13MAT511)",
             "abilityDescription":" Reconhecer a existência de diferentes tipos de espaços amostrais, discretos ou não, e de eventos, equiprováveis ou não, e investigar implicações no cálculo de probabilidades."
-              },
-              {
-            "id": "44",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
-            "habilidade": "(EF02MA01)",
-            "abilityDescription": "Comparar e ordenar números naturais (até a ordem de centenas) pela compreensão de características do sistema de numeração decimal (valor posicional e função do zero)."
-              },
-              {
-            "id": "45",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
-            "habilidade": "(EF02MA02)",
-            "abilityDescription": "Fazer estimativas por meio de estratégias diversas a respeito da quantidade de objetos de coleções e registrar o resultado da contagem desses objetos (até 1000 unidades)."
-              },
-              {
-            "id": "46",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números de até três ordens pela compreensão de características do sistema de numeração decimal (valor posicional e papel do zero)",
-            "habilidade": "(EF02MA03)",
-            "abilityDescription": "Comparar quantidades de objetos de dois conjuntos, por estimativa e/ou por correspondência (um a um, dois a dois, entre outros), para indicar “tem mais”, “tem menos” ou “tem a mesma quantidade”, indicando, quando for o caso, quantos a mais e quantos a menos."
-              },
-               {
-            "id": "47",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Composição e decomposição de números naturais (até 1000)",
-            "habilidade": "(EF02MA04)",
-            "abilityDescription": "Compor e decompor números naturais de até três ordens, com suporte de material manipulável, por meio de diferentes adições."
-              },
-              {
-            "id": "48",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Construção de fatos fundamentais da adição e da subtração",
-            "habilidade": "(EF02MA05)",
-            "abilityDescription": "Construir fatos básicos da adição e subtração e utilizá-los no cálculo mental ou escrito."
-              },
-              {
-            "id": "49",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da adição e da subtração (juntar, acrescentar, separar, retirar)",
-            "habilidade": "(EF02MA06)",
-            "abilityDescription": "Resolver e elaborar problemas de adição e de subtração, envolvendo números de até três ordens, com os significados de juntar, acrescentar, separar, retirar, utilizando estratégias pessoais."
-              },
-              {
-            "id": "50",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo adição de parcelas iguais (multiplicação)",
-            "habilidade": "(EF02MA07)",
-            "abilityDescription": "Resolver e elaborar problemas de multiplicação (por 2, 3, 4 e 5) com a ideia de adição de parcelas iguais por meio de estratégias e formas de registro pessoais, utilizando ou não suporte de imagens e/ou material manipulável."
-              },
-              {
-            "id": "51",
-            "ano": "2º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo significados de dobro, metade, triplo e terça parte)",
-            "habilidade": "(EF02MA08)",
-            "abilityDescription": "Resolver e elaborar problemas envolvendo dobro, metade, triplo e terça parte, com o suporte de imagens ou material manipulável, utilizando estratégias pessoais."
-              },
-              {
-            "id": "52",
-            "ano": "2º ano",
-            "unidadeTematica": "Álgebra",
-            "objetosDeConhecimento": "Construção de sequências repetitivas e de sequências recursivas",
-            "habilidade": "(EF02MA09)",
-            "abilityDescription": "Construir sequências de números naturais em ordem crescente ou decrescente a partir de um número qualquer, utilizando uma regularidade estabelecida."
-              },
-              {
-            "id": "53",
-            "ano": "2º ano",
-            "unidadeTematica": "Álgebra",
-            "objetosDeConhecimento": "Identificação de regularidade de sequências e determinação de elementos ausentes na sequência",
-            "habilidade": "(EF02MA10)",
-            "abilityDescription": "Descrever um padrão (ou regularidade) de sequências repetitivas e de sequências recursivas, por meio de palavras, símbolos ou desenhos."
-              },
-              {
-            "id": "54",
-            "ano": "2º ano",
-            "unidadeTematica": "Álgebra",
-            "objetosDeConhecimento": "Identificação de regularidade de sequências e determinação de elementos ausentes na sequência",
-            "habilidade": "(EF02MA11)",
-            "abilityDescription": "Descrever os elementos ausentes em sequências repetitivas e em sequências recursivas de números naturais, objetos ou figuras."
-              },
-              {
-            "id": "55",
-            "ano": "2º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Localização e movimentação de pessoas e objetos no espaço, segundo pontos de referência, e indicação de mudanças de direção e sentido",
-            "habilidade": "(EF02MA12)",
-            "abilityDescription": "Identificar e registrar, em linguagem verbal ou não verbal, a localização e os deslocamentos de pessoas e de objetos no espaço, considerando mais de um ponto de referência, e indicar as mudanças de direção e de sentido."
-              },
-              {
-            "id": "56",
-            "ano": "2º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Esboço de roteiros e de plantas simples",
-            "habilidade": "(EF02MA13)",
-            "abilityDescription": "Esboçar roteiros a ser seguidos ou plantas de ambientes familiares, assinalando entradas, saídas e alguns pontos de referência."
-              },
-              {
-            "id": "57",
-            "ano": "2º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento e características",
-            "habilidade": "(EF02MA14)",
-            "abilityDescription": "Reconhecer, nomear e comparar figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera), relacionando-as com objetos do mundo físico."
-              },
-              {
-            "id": "58",
-            "ano": "2º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Figuras geométricas planas (círculo, quadrado, retângulo e triângulo): reconhecimento e características",
-            "habilidade": "(EF02MA15)",
-            "abilityDescription": "Reconhecer, comparar e nomear figuras planas (círculo, quadrado, retângulo e triângulo), por meio de características comuns, em desenhos apresentados em diferentes disposições ou em sólidos geométricos."
-              },
-              {
-            "id": "59",
-            "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medida de comprimento: unidades não padronizadas e padronizadas (metro, centímetro e milímetro)",
-            "habilidade": "(EF02MA16)",
-            "abilityDescription": "Estimar, medir e comparar comprimentos de lados de salas (incluindo contorno) e de polígonos, utilizando unidades de medida não padronizadas e padronizadas (metro, centímetro e milímetro) e instrumentos adequados."
-              },
-              {
-            "id": "60",
-            "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medida de capacidade e de massa: unidades de medida não convencionais e convencionais (litro, mililitro, cm3, grama e quilograma)",
-            "habilidade": "(EF02MA17)",
-            "abilityDescription": "Estimar, medir e comparar capacidade e massa, utilizando estratégias pessoais e unidades de medida não padronizadas ou padronizadas (litro, mililitro, grama e quilograma)."
-              },
-              {
-            "id": "61",
-            "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
-            "habilidade": "(EF02MA18)",
-            "abilityDescription": "Indicar a duração de intervalos de tempo entre duas datas, como dias da semana e meses do ano, utilizando calendário, para planejamentos e organização de agenda."
-              },
-              {
-            "id": "62",
-            "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
-            "habilidade": "(EF02MA19)",
-            "abilityDescription": "Medir a duração de um intervalo de tempo por meio de relógio digital e registrar o horário do início e do fim do intervalo."
-              },
-              {
-            "id": "63",
-            "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Sistema monetário brasileiro: reconhecimento de cédulas e moedas e equivalência de valores",
-            "habilidade": "(EF02MA20)",
-            "abilityDescription": "Estabelecer a equivalência de valores entre moedas e cédulas do sistema monetário brasileiro para resolver situações cotidianas."
-              },
-              {
-            "id": "64",
-            "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Análise da ideia de aleatório em situações do cotidiano",
-            "habilidade": "(EF02MA21)",
-            "abilityDescription": "Classificar resultados de eventos cotidianos aleatórios como “pouco prováveis”, “muito prováveis”, “improváveis” e “impossíveis”."
-              },
-              {
-            "id": "65",
-            "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
-            "habilidade": "(EF02MA22)",
-            "abilityDescription": "Comparar informações de pesquisas apresentadas por meio de tabelas de dupla entrada e em gráficos de colunas simples ou barras, para melhor compreender aspectos da realidade próxima."
-              },
-              {
-            "id": "66",
-            "ano": "2º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Coleta, classificação e representação de dados em tabelas simples e de dupla entrada e em gráficos de colunas",
-            "habilidade": "(EF02MA23)",
-            "abilityDescription": "Realizar pesquisa em universo de até 30 elementos, escolhendo até três variáveis categóricas de seu interesse, organizando os dados coletados em listas, tabelas e gráficos de colunas simples."
-              },
-              {
-            "id": "67",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Leitura, escrita, comparação e ordenação de números naturais de quatro ordens",
-            "habilidade": "(EF03MA01)",
-            "abilityDescription": "Ler, escrever e comparar números naturais de até a ordem de unidade de milhar, estabelecendo relações entre os registros numéricos e em língua materna."
-              },
-              {
-            "id": "68",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Composição e decomposição de números naturais",
-            "habilidade": "(EF03MA02)",
-            "abilityDescription": "Identificar características do sistema de numeração decimal, utilizando a composição e a decomposição de número natural de até quatro ordens."
-              },
-              {
-            "id": "69",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Construção de fatos fundamentais da adição, subtração e multiplicação Reta numérica",
-            "habilidade": "(EF03MA03)",
-            "abilityDescription": "Construir e utilizar fatos básicos da adição e da multiplicação para o cálculo mental ou escrito."
-              },
-              {
-            "id": "70",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Construção de fatos fundamentais da adição, subtração e multiplicação Reta numérica",
-            "habilidade": "(EF03MA04)",
-            "abilityDescription": "Estabelecer a relação entre números naturais e pontos da reta numérica para utilizá-la na ordenação dos números naturais e também na construção de fatos da adição e da subtração, relacionando-os com deslocamentos para a direita ou para a esquerda."
-              },
-              {
-            "id": "71",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Procedimentos de cálculo (mental e escrito) com números naturais: adição e subtração",
-            "habilidade": "(EF03MA05)",
-            "abilityDescription": "Utilizar diferentes procedimentos de cálculo mental e escrito, inclusive os convencionais, para resolver problemas significativos envolvendo adição e subtração com números naturais."
-              },
-              {
-            "id": "72",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo significados da adição e da subtração: juntar, acrescentar, separar, retirar, comparar e completar quantidades",
-            "habilidade": "(EF03MA06)",
-            "abilityDescription": "Resolver e elaborar problemas de adição e subtração com os significados de juntar, acrescentar, separar, retirar, comparar e completar quantidades, utilizando diferentes estratégias de cálculo exato ou aproximado, incluindo cálculo mental."
-              },
-              {
-            "id": "73",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da multiplicação e da divisão: adição de parcelas iguais, configuração retangular, repartição em partes iguais e medida",
-            "habilidade": "(EF03MA07)",
-            "abilityDescription": "Resolver e elaborar problemas de multiplicação (por 2, 3, 4, 5 e 10) com os significados de adição de parcelas iguais e elementos apresentados em disposição retangular, utilizando diferentes estratégias de cálculo e registros."
-              },
-              {
-            "id": "74",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Problemas envolvendo diferentes significados da multiplicação e da divisão: adição de parcelas iguais, configuração retangular, repartição em partes iguais e medida",
-            "habilidade": "(EF03MA08)",
-            "abilityDescription": "Resolver e elaborar problemas de divisão de um número natural por outro (até 10), com resto zero e com resto diferente de zero, com os significados de repartição equitativa e de medida, por meio de estratégias e registros pessoais."
-              },
-              {
-            "id": "75",
-            "ano": "3º ano",
-            "unidadeTematica": "Números",
-            "objetosDeConhecimento": "Significados de metade, terça parte, quarta parte, quinta parte e décima parte",
-            "habilidade": "(EF03MA09)",
-            "abilityDescription": "Associar o quociente de uma divisão com resto zero de um número natural por 2, 3, 4, 5 e 10 às ideias de metade, terça, quarta, quinta e décima partes."
-              },
-              {
-            "id": "76",
-            "ano": "3º ano",
-            "unidadeTematica": "Álgebra",
-            "objetosDeConhecimento": "Identificação e descrição de regularidades em sequências numéricas recursivas",
-            "habilidade": "(EF03MA10)",
-            "abilityDescription": "Identificar regularidades em sequências ordenadas de números naturais, resultantes da realização de adições ou subtrações sucessivas, por um mesmo número, descrever uma regra de formação da sequência e determinar elementos faltantes ou seguintes."
-              },
-              {
-            "id": "77",
-            "ano": "3º ano",
-            "unidadeTematica": "Álgebra",
-            "objetosDeConhecimento": "Relação de igualdade",
-            "habilidade": "(EF03MA11)",
-            "abilityDescription": "Compreender a ideia de igualdade para escrever diferentes sentenças de adições ou de subtrações de dois números naturais que resultem na mesma soma ou diferença."
-              },
-              {
-            "id": "78",
-            "ano": "3º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Localização e movimentação: representação de objetos e pontos de referência",
-            "habilidade": "(EF03MA12)",
-            "abilityDescription": "Descrever e representar, por meio de esboços de trajetos ou utilizando croquis e maquetes, a movimentação de pessoas ou de objetos no espaço, incluindo mudanças de direção e sentido, com base em diferentes pontos de referência."
-              },
-              {
-            "id": "79",
-            "ano": "3º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento, análise de características e planificações",
-            "habilidade": "(EF03MA13)",
-            "abilityDescription": "Associar figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera) a objetos do mundo físico e nomear essas figuras."
-              },
-              {
-            "id": "80",
-            "ano": "3º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Figuras geométricas espaciais (cubo, bloco retangular, pirâmide, cone, cilindro e esfera): reconhecimento, análise de características e planificações",
-            "habilidade": "(EF03MA14)",
-            "abilityDescription": "Descrever características de algumas figuras geométricas espaciais (prismas retos, pirâmides, cilindros, cones), relacionando-as com suas planificações."
-              },
-              {
-            "id": "81",
-            "ano": "3º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Figuras geométricas planas (triângulo, quadrado, retângulo, trapézio e paralelogramo): reconhecimento e análise de características",
-            "habilidade": "(EF03MA15)",
-            "abilityDescription": "Classificar e comparar figuras planas (triângulo, quadrado, retângulo, trapézio e paralelogramo) em relação a seus lados (quantidade, posições relativas e comprimento) e vértices."
-              },
-              {
-            "id": "82",
-            "ano": "3º ano",
-            "unidadeTematica": "Geometria",
-            "objetosDeConhecimento": "Congruência de figuras geométricas planas",
-            "habilidade": "(EF03MA16)",
-            "abilityDescription": "Reconhecer figuras congruentes, usando sobreposição e desenhos em malhas quadriculadas ou triangulares, incluindo o uso de tecnologias digitais."
-              },
-              {
-            "id": "83",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Significado de medida e de unidade de medida",
-            "habilidade": "(EF03MA17)",
-            "abilityDescription": "Reconhecer que o resultado de uma medida depende da unidade de medida utilizada."
-              },
-              {
-            "id": "84",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Significado de medida e de unidade de medida",
-            "habilidade": "(EF03MA18)",
-            "abilityDescription": "Escolher a unidade de medida e o instrumento mais apropriado para medições de comprimento, tempo e capacidade."
-              },
-              {
-            "id": "85",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de comprimento (unidades não convencionais e convencionais): registro, instrumentos de medida, estimativas e comparações",
-            "habilidade": "(EF03MA19)",
-            "abilityDescription": "Estimar, medir e comparar comprimentos, utilizando unidades de medida não padronizadas e padronizadas mais usuais (metro, centímetro e milímetro) e diversos instrumentos de medida."
-              },
-              {
-            "id": "86",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de capacidade e de massa (unidades não convencionais e convencionais): registro, estimativas e comparações",
-            "habilidade": "(EF03MA20)",
-            "abilityDescription": "Estimar e medir capacidade e massa, utilizando unidades de medida não padronizadas e padronizadas mais usuais (litro, mililitro, quilograma, grama e miligrama), reconhecendo-as em leitura de rótulos e embalagens, entre outros."
-              },
-              {
-            "id": "87",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Comparação de áreas por superposição",
-            "habilidade": "(EF03MA21)",
-            "abilityDescription": "Comparar, visualmente ou por superposição, áreas de faces de objetos, de figuras planas ou de desenhos."
-              },
-              {
-            "id": "88",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
-            "habilidade": "(EF03MA22)",
-            "abilityDescription": "Ler e registrar medidas e intervalos de tempo, utilizando relógios (analógico e digital) para informar os horários de início e término de realização de uma atividade e sua duração."
-              },
-              {
-            "id": "89",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
-            "habilidade": "(EF03MA23)",
-            "abilityDescription": "Ler horas em relógios digitais e em relógios analógicos e reconhecer a relação entre hora e minutos e entre minuto e segundos."
-              },
-              {
-            "id": "90",
-            "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
-            "objetosDeConhecimento": "Sistema monetário brasileiro: estabelecimento de equivalências de um mesmo valor na utilização de diferentes cédulas e moedas",
-            "habilidade": "(EF03MA24)",
-            "abilityDescription": "Resolver e elaborar problemas que envolvam a comparação e a equivalência de valores monetários do sistema brasileiro em situações de compra, venda e troca."
-              },
-              {
-            "id": "91",
-            "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Análise da ideia de acaso em situações do cotidiano: espaço amostral",
-            "habilidade": "(EF03MA25)",
-            "abilityDescription": "Identificar, em eventos familiares aleatórios, todos os resultados possíveis, estimando os que têm maiores ou menores chances de ocorrência."
-              },
-              {
-            "id": "92",
-            "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
-            "habilidade": "(EF03MA26)",
-            "abilityDescription": "Resolver problemas cujos dados estão apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas."
-              },
-              {
-            "id": "93",
-            "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Leitura, interpretação e representação de dados em tabelas de dupla entrada e gráficos de barras",
-            "habilidade": "(EF03MA27)",
-            "abilityDescription": "Ler, interpretar e comparar dados apresentados em tabelas de dupla entrada, gráficos de barras ou de colunas, envolvendo resultados de pesquisas significativas, utilizando termos como maior e menor frequência, apropriando-se desse tipo de linguagem para compreender aspectos da realidade sociocultural significativos."
-              },
-              {
-            "id": "94",
-            "ano": "3º ano",
-            "unidadeTematica": "Probabilidade e Estatística",
-            "objetosDeConhecimento": "Coleta, classificação e representação de dados referentes a variáveis categóricas, por meio de tabelas e gráficos",
-            "habilidade": "(EF03MA28)",
-            "abilityDescription": "Realizar pesquisa envolvendo variáveis categóricas em um universo de até 50 elementos, organizar os dados coletados utilizando listas, tabelas simples ou de dupla entrada e representá-los em gráficos de colunas simples, com e sem uso de tecnologias digitais."
               }
               ]
 }

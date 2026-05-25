@@ -112,7 +112,7 @@ export function useEditarProva(id) {
       const atualizado = res.data?.data?.exam || res.data?.data || { ...prova, ...payload };
       setProva(atualizado);
       setModoEdicao(false);
-      alert('Prova atualizada com sucesso!');
+      alert('Prova updated com sucesso!');
     } catch (err) {
       alert('Erro ao salvar alterações: ' + authService._handleError(err));
     } finally {
@@ -155,16 +155,25 @@ export function useEditarProva(id) {
     }
   }
 
-  // =========================================================================
+ // =========================================================================
   // 4. REMOVER QUESTÃO
   // =========================================================================
   async function removerQuestao(questaoId) {
     if (!window.confirm('Remover esta questão da prova?')) return;
     setRemovendo(questaoId);
     try {
-      const novaLista = questoes.filter(q => q.id !== questaoId).map(q => q.id);
-      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: novaLista });
-      setQuestoes(prev => prev.filter(q => q.id !== questaoId));
+      // 1. Filtra a questão removida
+      const novaLista = questoes.filter(q => q.id !== questaoId);
+      
+      // 2. Mapeia para o formato correto do backend: [{question_id: 1, order_index: 0}, ...]
+      const payload = novaLista.map((q, index) => ({
+        question_id: q.id,
+        order_index: index
+      }));
+
+      // 3. Envia o Array puro, sem envolver em { question_ids: ... }
+      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao remover questão: ' + authService._handleError(err));
     } finally {
@@ -178,9 +187,18 @@ export function useEditarProva(id) {
   async function adicionarQuestao(questao) {
     setAdicionando(questao.id);
     try {
-      const novaLista = [...questoes.map(q => q.id), questao.id];
-      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: novaLista });
-      setQuestoes(prev => [...prev, questao]);
+      // 1. Adiciona a nova questão ao final da lista
+      const novaLista = [...questoes, questao];
+      
+      // 2. Mapeia para o formato correto
+      const payload = novaLista.map((q, index) => ({
+        question_id: q.id,
+        order_index: index
+      }));
+
+      // 3. Envia o Array puro
+      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao adicionar questão: ' + authService._handleError(err));
     } finally {
@@ -195,11 +213,15 @@ export function useEditarProva(id) {
     if (index <= 0) return;
     
     const novaLista = [...questoes];
+    // Troca as posições no array
     [novaLista[index - 1], novaLista[index]] = [novaLista[index], novaLista[index - 1]];
     
     try {
-      const questaoIds = novaLista.map(q => q.id);
-      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: questaoIds });
+      const payload = novaLista.map((q, i) => ({
+        question_id: q.id,
+        order_index: i
+      }));
+      await api.patch(`/api/v1/exams/${id}/questions`, payload);
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao reordenar questão: ' + authService._handleError(err));
@@ -210,11 +232,15 @@ export function useEditarProva(id) {
     if (index >= questoes.length - 1) return;
     
     const novaLista = [...questoes];
+    // Troca as posições no array
     [novaLista[index], novaLista[index + 1]] = [novaLista[index + 1], novaLista[index]];
     
     try {
-      const questaoIds = novaLista.map(q => q.id);
-      await api.patch(`/api/v1/exams/${id}/questions`, { question_ids: questaoIds });
+      const payload = novaLista.map((q, i) => ({
+        question_id: q.id,
+        order_index: i
+      }));
+      await api.patch(`/api/v1/exams/${id}/questions`, payload);
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao reordenar questão: ' + authService._handleError(err));
@@ -222,12 +248,42 @@ export function useEditarProva(id) {
   }
 
   // =========================================================================
-  // 7. SALVAR LAYOUT
-  // Envia as imagens em base64 para o endpoint dedicado POST /exams/:id/layout
-  // O backend decodifica, salva em uploads/layouts/ e devolve o path relativo.
+  // ALTERNAR EXIBIÇÃO DE ALTERNATIVAS (OTIMISTA + API PIVOT)
   // =========================================================================
-  // 7. SALVAR LAYOUT — envia JSON com base64, backend salva em uploads/layouts/
-  // headerBase64 / footerBase64 : string base64 (novo upload), "" (reset), null (sem mudança)
+  const toggleAlternativasQuestao = useCallback(async (questaoId) => {
+    const questaoAlvo = questoes.find(q => q.id === questaoId);
+    if (!questaoAlvo) return;
+
+    // Normaliza o booleano atual e inverte o estado
+    const valorAtual = questaoAlvo.hide_alternatives === true || questaoAlvo.hide_alternatives === "true";
+    const novoValor = !valorAtual;
+
+    // 1. Atualização Otimista: renderiza a UI sem esperar o servidor
+    setQuestoes(prevQuestoes => 
+      prevQuestoes.map(q => 
+        q.id === questaoId ? { ...q, hide_alternatives: novoValor } : q
+      )
+    );
+
+    try {
+      // 2. Dispara a atualização para o endpoint da relação associativa (pivot)
+      await api.patch(`/api/v1/exams/${id}/questions/${questaoId}`, {
+        hide_alternatives: novoValor
+      });
+    } catch (err) {
+      console.error("Erro ao alternar alternativas no servidor:", err);
+      // 3. Rollback: se a API falhar, reverte o estado visual original
+      setQuestoes(prevQuestoes => 
+        prevQuestoes.map(q => 
+          q.id === questaoId ? { ...q, hide_alternatives: valorAtual } : q
+        )
+      );
+      alert('Não foi possível salvar a alteração: ' + authService._handleError(err));
+    }
+  }, [id, questoes]);
+
+  // =========================================================================
+  // 7. SALVAR LAYOUT
   // =========================================================================
   async function salvarLayout(headerBase64, footerBase64, resetHeader, resetFooter) {
     setSalvandoLayout(true);
@@ -241,7 +297,6 @@ export function useEditarProva(id) {
 
       const res = await api.post(`/api/v1/exams/${id}/layout`, payload);
 
-      // Atualiza paths retornados pelo backend
       const examAtualizado = res.data?.data?.exam;
       if (examAtualizado) {
         setHeaderImage(examAtualizado.header_image || null);
@@ -258,10 +313,8 @@ export function useEditarProva(id) {
     }
   }
 
-
-
   // =========================================================================
-  // 7. EXCLUIR PROVA
+  // 8. EXCLUIR PROVA
   // =========================================================================
   async function excluirProva() {
     setExcluindo(true);
@@ -295,6 +348,7 @@ export function useEditarProva(id) {
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
     moverQuestaoParaCima, moverQuestaoParaBaixo,
+    toggleAlternativasQuestao,  
     //Comentarios
     reviewerComments, setReviewerComments,
     // Layout
