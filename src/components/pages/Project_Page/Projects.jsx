@@ -45,6 +45,7 @@ function Project() {
     const isEstagiario = user?.role?.toUpperCase() === "STUDENT";
     const isAdmin       = user?.role?.toUpperCase() === "ADMIN";
     const isRevisor     = user?.role?.toUpperCase() === "REVISOR"; 
+    const meuCampusAtual = user?.profile?.campus || '';
 
     // === ESTADOS ===
     const [projects,         setProjects]         = useState([]);
@@ -68,6 +69,9 @@ function Project() {
     // Filtro de Data
     const [dateFilter,  setDateFilter]  = useState('all');
     const [searchDate,  setSearchDate]  = useState('');
+    
+    //Filtar questões reçacionada ao meu Campus
+    const [filtrarMeuCampus, setFiltrarMeuCampus] = useState(false);
 
     // === CARREGAR GRAUS ===
     useEffect(() => {
@@ -123,6 +127,9 @@ function Project() {
                     images:             q.images || [],
                     createdAt:          q.created_at,
                     updatedAt:          q.updated_at,
+                    authorName:         q.professor_name || q.author?.name || 'Desconhecido',
+                    authorEmail:        q.author?.email || 'Não informado',
+                    authorPolo:         q.author_campus || q.author?.profile?.campus || q.author_cidade || q.author?.profile?.cidade || 'Não informado'
                 }));
 
                 setProjects(convertedQuestions);
@@ -156,6 +163,12 @@ function Project() {
 
     // === FILTRAGEM ===
     const filteredProjects = projects
+        .filter(p => {
+            if (filtrarMeuCampus && meuCampusAtual) {
+                return p.authorPolo === meuCampusAtual;
+            }
+            return true;
+        })
         .filter(p => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
         .filter(p => dificuldade === '' || String(p.difficultyLevel) === dificuldade)
         .filter(p => {
@@ -204,6 +217,7 @@ function Project() {
         setPhaseLevel('');
         setHabilidade('');
         setBnccTheme('');
+        setFiltrarMeuCampus(false);
     }
 
     return (
@@ -245,7 +259,7 @@ function Project() {
                     <FaCheckDouble /> Aprovadas
                 </button>
                 
-                {!isRevisor && (
+                {isProfessor && (
                     <button 
                         className={`${styles.tab} ${tipoQuestao === 'aplicadas' ? `${styles.active_tab} ${styles.active_aplicadas}` : ''}`}
                         onClick={() => setTipoQuestao('aplicadas')}
@@ -386,6 +400,25 @@ function Project() {
                         value={searchDate}
                         onChange={e => setSearchDate(e.target.value)}
                     />
+
+                    {/* Botão Meu Campus */}
+                    {meuCampusAtual && !isEstagiario && (
+                        <button
+                            type="button"
+                            className={styles.native_select} 
+                            onClick={() => setFiltrarMeuCampus(!filtrarMeuCampus)}
+                            style={{
+                                backgroundColor: filtrarMeuCampus ? '#1967d2' : 'transparent',
+                                color: filtrarMeuCampus ? '#fff' : 'inherit',
+                                border: '1px solid #ccc',
+                                cursor: 'pointer',
+                                fontWeight: filtrarMeuCampus ? 'bold' : 'normal'
+                            }}
+                            title={`Mostrar apenas questões de ${meuCampusAtual}`}
+                        >
+                            {filtrarMeuCampus ? '✓ Meu Campus' : 'Meu Campus'}
+                        </button>
+                    )}
 
                     {/* Alternar visualização */}
                     <div className={styles.view_toggles}>

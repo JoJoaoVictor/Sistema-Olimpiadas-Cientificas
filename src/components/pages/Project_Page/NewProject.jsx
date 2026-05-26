@@ -30,8 +30,6 @@ function NewProject() {
             image_role: project.image?.role || null,
         };
 
-        console.log('Payload enviado:', JSON.stringify(payload, null, 2));
-
         try {
             const response = await api.post('/api/v1/questions', payload);
             if (response.data && response.data.success) {

@@ -44,7 +44,9 @@ function Prova() {
 
   const { user } = useAuth();
   const isRevisor = user?.role?.toUpperCase() === 'REVISOR'
-
+  const isEstagiario = user?.role?.toUpperCase() === 'STUDENT';
+  const meuCampusAtual = user?.profile?.campus || '';
+  const [filtrarMeuCampus, setFiltrarMeuCampus] = useState(false)
   const [provas,          setProvas]          = useState([]);
   const [provasFiltradas, setProvasFiltradas] = useState([]);
   const [loading,         setLoading]         = useState(false);
@@ -86,6 +88,14 @@ function Prova() {
     let filtradas = provas.filter(p =>
       p.status?.toUpperCase() === statusDaTab
     );
+
+    //Campus / Polo
+    if (filtrarMeuCampus && meuCampusAtual) {
+      filtradas = filtradas.filter(p => {
+        const poloProva = p.author?.profile?.campus || p.author?.profile?.municipio || p.author?.profile?.cidade || '';
+        return poloProva.toLowerCase().trim() === meuCampusAtual.toLowerCase().trim();
+      });
+    }
 
     // Nome
     if (searchName.trim()) {
@@ -141,7 +151,7 @@ function Prova() {
     }
 
     setProvasFiltradas(filtradas);
-  }, [searchName, searchDate, anosSelecionados, faseSelecionada, dateFilter, tabAtiva, provas]);
+  }, [searchName, searchDate, anosSelecionados, faseSelecionada, dateFilter, tabAtiva, provas, filtrarMeuCampus, meuCampusAtual]);
 
   // ── Limpar filtros ─────────────────────────────────────────────────────────
   function limparFiltros() {
@@ -150,6 +160,7 @@ function Prova() {
     setAnosSelecionados([]);
     setFaseSelecionada('');
     setDateFilter('all');
+    setFiltrarMeuCampus(false);
   }
 
   // ── Geração de PDF ─────────────────────────────────────────────────────────
@@ -315,7 +326,27 @@ function Prova() {
             value={searchDate}
             onChange={e => setSearchDate(e.target.value)}
           />
-
+          {/* 🌟 ADICIONE O BOTÃO MEU CAMPUS AQUI (Escondido para Estudantes) */}
+          {meuCampusAtual && !isEstagiario && (
+            <button
+              type="button"
+              className={styles.native_select} 
+              onClick={() => setFiltrarMeuCampus(!filtrarMeuCampus)}
+              style={{
+                backgroundColor: filtrarMeuCampus ? '#1967d2' : 'transparent',
+                color: filtrarMeuCampus ? '#fff' : 'inherit',
+                border: '1px solid #ccc',
+                cursor: 'pointer',
+                fontWeight: filtrarMeuCampus ? 'bold' : 'normal',
+                height: '42px',
+                borderRadius: '6px',
+                padding: '0 12px'
+              }}
+              title={`Mostrar apenas provas de ${meuCampusAtual}`}
+            >
+              {filtrarMeuCampus ? '✓ Meu Campus' : 'Meu Campus'}
+            </button>
+          )}
         </div>
       </div>
 
