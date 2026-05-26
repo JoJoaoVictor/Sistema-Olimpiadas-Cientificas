@@ -109,11 +109,10 @@ function Projetos() {
   // SALVAR EDIÇÃO
   // =========================================================================
   async function editPost(dadosDoFormulario) {
-    let categoryId = dadosDoFormulario.categoryId;
-    if (!isRevisor && String(categoryId) === '3') {
-      categoryId = 1;
-      dadosDoFormulario.categoryName = "Revisão";
-    }
+    // Se for Revisor E marcou explicitamente como aprovada (ID 2), aceita.
+    // Caso contrário (não marcado, ou utilizador comum), sempre será 1 (Revisão/Pendente)
+    const marcarComoAprovada = isRevisor && String(dadosDoFormulario.categoryId) === '2';
+    const categoryId = marcarComoAprovada ? 2 : 1;
 
     const payload = {
       name:                dadosDoFormulario.name,
@@ -127,16 +126,23 @@ function Projetos() {
       ability_description: dadosDoFormulario.abilityDescription,
       question_statement:  dadosDoFormulario.questionStatement,
       alternatives:        dadosDoFormulario.alternatives,
-      correct_alternative: dadosDoFormulario.correctAlternative.toUpperCase(),
+      correct_alternative: dadosDoFormulario.correctAlternative ? dadosDoFormulario.correctAlternative.toUpperCase() : "",
       detailed_resolution: dadosDoFormulario.detailedResolution,
-      category_id:         Number(categoryId) || null,
-      reviewer_comments:   dadosDoFormulario.reviewerComments || "",
+      category_id:         categoryId,
+      
+      // 🌟 CORREÇÃO AQUI: Preserva os comentários existentes da base de dados se o formulário não enviar novos,
+      // garantindo que o texto do revisor nunca seja apagado por acidente durante a revisão.
+      reviewer_comments:   dadosDoFormulario.reviewerComments !== undefined 
+                            ? dadosDoFormulario.reviewerComments 
+                            : (projeto.reviewerComments || ""),
+                            
       image_id:            dadosDoFormulario.image?.id || null,
       image_role:          dadosDoFormulario.image?.role || null,
     };
 
     try {
       const response = await api.patch(`/api/v1/questions/${projeto.id}`, payload);
+      
       if (response.data.success) {
         const updated = response.data.data.question;
         const projetoAtualizado = {
@@ -157,7 +163,7 @@ function Projetos() {
           detailedResolution: payload.detailed_resolution,
           categoryId:         payload.category_id,
           categoryName:       updated.category?.name || (payload.category_id === 2 ? 'Aprovado' : 'Revisão'),
-          reviewerComments:   payload.reviewer_comments,
+          reviewerComments:   payload.reviewer_comments, // Atualiza o estado local com o comentário mantido
           imageURL:           updated.image?.url ? new URL(updated.image.url, api.defaults.baseURL).href : null,
           imageRole:          payload.image_role,
           imageId:            updated.image?.id,
@@ -170,10 +176,9 @@ function Projetos() {
       }
     } catch (err) {
       console.error('Erro ao salvar:', err);
-      alert("Erro ao salvar as alterações: " + authService._handleError(err));
+      alert("Erro ao salvar as alterações: " + (err.response?.data?.detail || authService._handleError(err)));
     }
   }
-
   // =========================================================================
   // HELPERS
   // =========================================================================
