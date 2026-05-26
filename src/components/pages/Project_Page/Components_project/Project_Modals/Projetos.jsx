@@ -15,6 +15,7 @@
 import styles from './Projetos.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { FiUser, FiMail, FiMapPin } from 'react-icons/fi';
 
 import ProjectForm from '../../Project_Forme/ProjectForme.jsx';
 import LatexText from '../LatexText.jsx';
@@ -58,6 +59,9 @@ function Projetos() {
             id:                 q.id,
             name:               q.name,
             professorName:      q.professor_name,
+            authorName:         q.author?.name || q.professor_name || 'Desconhecido',
+            authorEmail:        q.author?.email || 'Não informado',
+            authorPolo:         q.author?.profile?.campus || q.author?.profile?.cidade || 'Não informado',
             phaseLevel:         q.phase_level,
             grauId:             q.grau?.id,
             grauName:           q.grau?.name,
@@ -265,6 +269,16 @@ function Projetos() {
                   <span> Criado: {formatDate(projeto.createdAt)}</span>
                   <span className={styles.separator}>|</span>
                   <span> Atualizado: <strong>{formatDate(projeto.updatedAt)}</strong></span>
+                </p>
+                <p className={styles.dates_info} style={{ marginTop: '8px' }}>
+                  <FiUser />
+                  <span> <strong>{projeto.authorName}</strong></span>
+                  <span className={styles.separator}>|</span>
+                  <FiMail />
+                  <span> <strong>{projeto.authorEmail}</strong></span>
+                  <span className={styles.separator}>|</span>
+                  <FiMapPin />
+                  <span> <strong>{projeto.authorPolo}</strong></span>
                 </p>
               </div>
               <button

@@ -5,11 +5,6 @@ import api from '../../services/api';
 import useAuth from '../../hooks/useAuth';
 import styles from './NotificationBell.module.css';
 
-/**
- * NotificationBell Component
- * Display system notifications with polling every 30s
- * Uses centralized API service (Axios) from project
- */
 export default function NotificationBell() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -19,12 +14,14 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // 🌟 NOVO ESTADO: Sinaliza se a autenticação falhou
+  const [authFailed, setAuthFailed] = useState(false);
 
-  /**
-   * Fetch notifications from API
-   */
   const fetchNotifications = async () => {
-    // TRAVA DE SEGURANÇA 1: Garante que há um token salvo antes de disparar
+    // Se a autenticação já falhou antes, nem tenta fazer a requisição
+    if (authFailed) return;
+
     const token = localStorage.getItem('access_token') || localStorage.getItem('token');
     if (!user || !token) return;
 
@@ -37,10 +34,11 @@ export default function NotificationBell() {
       setUnreadCount(data.unread_count || 0);
       setError(null);
     } catch (error) {
-      // TRAVA DE SEGURANÇA 2: Se for 401, lida silenciosamente para não poluir o console do navegador
       if (error.response && error.response.status === 401) {
-        console.warn('Sessão expirada ou token ausente. Busca de notificações pausada.');
+        console.warn('Sessão expirada. Parando o loop de notificações.');
         setError('Sessão expirada. Faça login novamente.');
+        // 🌟 TRAVA FINAL: Altera o estado para parar o loop no useEffect
+        setAuthFailed(true);
       } else {
         console.error('Erro ao buscar notificações:', error);
         setError('Erro ao carregar notificações');
@@ -50,37 +48,28 @@ export default function NotificationBell() {
     }
   };
 
-  /**
-   * Setup polling interval on mount
-   */
   useEffect(() => {
-    // Inicia fluxo inicial
     const token = localStorage.getItem('access_token') || localStorage.getItem('token');
-    if (!user || !token) return;
+    
+    // 🌟 Condição atualizada: Se não tiver usuário/token OU se a auth já tiver falhado, interrompe.
+    if (!user || !token || authFailed) return;
 
     fetchNotifications(); 
     
-    // Configura o loop a cada 30 segundos
     const interval = setInterval(() => {
-      // Verifica novamente antes de cada ciclo do polling (caso o usuário tenha deslogado em outra aba)
-      const currentToken = localStorage.getItem('access_token') || localStorage.getItem('token');
-      if (currentToken) {
+      // 🌟 Dupla checagem: o loop não vai mais rodar se authFailed for true
+      if (!authFailed) {
         fetchNotifications();
       }
     }, 30000); 
 
-    // Limpa o loop ao desmontar o componente
     return () => clearInterval(interval);
-  }, [user]); // Monitora a mudança do usuário
+  }, [user, authFailed]); // 🌟 Adicionamos authFailed como dependência do useEffect
 
-  /**
-   * Mark single notification as read and navigate to entity
-   */
+  // O resto das suas funções continuam idênticas...
   const handleMarkAsRead = async (notificationId, entityId, entityType) => {
     try {
       await api.patch(`/api/v1/notifications/${notificationId}/read`);
-
-      // Update local state
       setNotifications(prev =>
         prev.map(n =>
           n.id === notificationId ? { ...n, is_read: true } : n
@@ -88,17 +77,12 @@ export default function NotificationBell() {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
 
-      // Navigate to entity
       const route =
         entityType === 'QUESTION'
           ? `/projects?id=${entityId}`
           : `/Prova?id=${entityId}`;
       navigate(route);
-
-      // Close dropdown
       setIsOpen(false);
-
-      // Fetch latest to sync with backend
       fetchNotifications();
     } catch (error) {
       console.error('Erro ao marcar como lida:', error);
@@ -106,19 +90,12 @@ export default function NotificationBell() {
     }
   };
 
-  /**
-   * Mark all notifications as read
-   */
   const handleMarkAllAsRead = async () => {
     try {
       await api.patch('/api/v1/notifications/read-all');
-      
-      // Update local state
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
       setIsOpen(false);
-
-      // Fetch latest to sync
       fetchNotifications();
     } catch (error) {
       console.error('Erro ao marcar todos:', error);
@@ -126,12 +103,10 @@ export default function NotificationBell() {
     }
   };
 
-  // Only render if user is authenticated
   if (!user) return null;
 
   return (
     <div className={styles.notificationBell}>
-      {/* Bell Button */}
       <button
         className={styles.bellButton}
         onClick={() => setIsOpen(!isOpen)}
@@ -141,7 +116,6 @@ export default function NotificationBell() {
         {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
       </button>
 
-      {/* Dropdown Menu */}
       {isOpen && (
         <div className={styles.notificationDropdown}>
           <div className={styles.dropdownHeader}>
@@ -207,9 +181,6 @@ export default function NotificationBell() {
   );
 }
 
-/**
- * Format date: "agora", "5m atrás", "2h atrás", "3d atrás", ou data
- */
 function formatDate(isoString) {
   const date = new Date(isoString);
   const now = new Date();

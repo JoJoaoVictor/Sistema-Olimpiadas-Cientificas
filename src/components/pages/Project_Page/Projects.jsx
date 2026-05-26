@@ -44,6 +44,7 @@ function Project() {
     const isProfessor = user?.role?.toUpperCase() === "PROFESSOR" || user?.role?.toUpperCase() === "ADMIN";
     const isEstagiario = user?.role?.toUpperCase() === "STUDENT";
     const isAdmin       = user?.role?.toUpperCase() === "ADMIN";
+    const isRevisor     = user?.role?.toUpperCase() === "REVISOR"; 
 
     // === ESTADOS ===
     const [projects,         setProjects]         = useState([]);
@@ -244,12 +245,14 @@ function Project() {
                     <FaCheckDouble /> Aprovadas
                 </button>
                 
-                <button 
-                    className={`${styles.tab} ${tipoQuestao === 'aplicadas' ? `${styles.active_tab} ${styles.active_aplicadas}` : ''}`}
-                    onClick={() => setTipoQuestao('aplicadas')}
-                >
-                    <LuCalendarDays /> Aplicadas em Prova
-                </button>
+                {!isRevisor && (
+                    <button 
+                        className={`${styles.tab} ${tipoQuestao === 'aplicadas' ? `${styles.active_tab} ${styles.active_aplicadas}` : ''}`}
+                        onClick={() => setTipoQuestao('aplicadas')}
+                    >
+                        <LuCalendarDays /> Aplicadas em Prova
+                    </button>
+                )}
                 
                 <button
                     className={`${styles.tab} ${tipoQuestao === 'pendentes' ? `${styles.active_tab} ${styles.active_pendentes}` : ''}`}
@@ -415,7 +418,7 @@ function Project() {
                         <FaSadTear size={40} color="#ccc" />
                         <p>Nenhuma questão encontrada.</p>
                         <button className={styles.clear_filters} onClick={limparFiltros}>
-                            Limpar Filtros
+                            Limpar Filters
                         </button>
                     </div>
                 ) : (

@@ -121,7 +121,11 @@
     color: #856404;
     border: 1px solid #ffeeba;
   }
-  
+  .aplicadas {
+    background-color: #d1ecf1;
+    color: #0e4c7e;
+    border: 1px solid #bee5eb;
+  }
   .aprovado {
     background-color: #d4edda;
     color: #155724;

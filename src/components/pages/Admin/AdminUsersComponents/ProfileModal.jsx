@@ -1,5 +1,14 @@
-import { FiX, FiMail, FiCalendar, FiBook, FiFileText, FiExternalLink, FiTrash2 } from 'react-icons/fi';
-import { RiIdCardLine } from 'react-icons/ri'; // Ícone para CPF e Matrícula
+import { 
+  FiX, 
+  FiMail, 
+  FiCalendar, 
+  FiBook, 
+  FiFileText, 
+  FiExternalLink, 
+  FiTrash2,
+  FiMapPin // Novo ícone importado para Cidade e Campus
+} from 'react-icons/fi';
+import { RiIdCardLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import styles from '../AdminUsers.module.css';
 import RoleBadge from './RoleBadge';
@@ -18,7 +27,7 @@ function ProfileModal({
 
   if (!profileUser) return null;
 
-  // 1. Tratamento resiliente do Avatar (Igual ao UsersTable e UserCard)
+  // 1. Tratamento resiliente do Avatar
   const getAvatar = () => {
     const avatar = profileUser.avatar_url || profileUser.avatarUrl || profileUser.avatar;
     if (avatar && avatar.trim() !== "") {
@@ -27,7 +36,7 @@ function ProfileModal({
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(profileUser.name || 'JA')}&background=random&size=150`;
   };
 
-  // 2. Acesso seguro ao perfil aninhado retornado pelo joinedload do Backend
+  // 2. Acesso seguro ao perfil aninhado retornado pelo backend
   const perfil = profileUser.profile || {};
 
   // 3. Formatação local simples para exibição limpa no modal admin
@@ -82,6 +91,24 @@ function ProfileModal({
             <div>
               <span className={styles.info_label}>Cadastrado em</span>
               <span className={styles.info_value}>{formatDate(profileUser.created_at)}</span>
+            </div>
+          </div>
+
+          {/* Cidade */}
+          <div className={styles.profile_info_item}>
+            <FiMapPin className={styles.profile_info_icon} />
+            <div>
+              <span className={styles.info_label}>Cidade</span>
+              <span className={styles.info_value}>{perfil.cidade || "—"}</span>
+            </div>
+          </div>
+
+          {/* Campus */}
+          <div className={styles.profile_info_item}>
+            <FiMapPin className={styles.profile_info_icon} />
+            <div>
+              <span className={styles.info_label}>Campus</span>
+              <span className={styles.info_value}>{perfil.campus || "—"}</span>
             </div>
           </div>
 

@@ -90,6 +90,42 @@
     border: 1px solid #ffe0b2;
 }
 
+/* ==========================================================================
+   ESTILIZAÇÃO DE META-DADOS (Datas e Informações do Autor)
+   ========================================================================== */
+
+.dates_info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Garante que as infos desçam de linha no celular, sem quebrar o layout */
+  gap: 8px; /* Dá um respiro agradável entre os ícones e os textos */
+  font-size: 0.85rem; /* ~13px - Tamanho sutil para informações secundárias */
+  color: #6c757d; /* Cinza suave */
+  margin: 0;
+  padding: 0;
+}
+
+/* Deixa os ícones dentro do dates_info com a cor primária (azul) */
+.dates_info svg {
+  color: #1967d2; 
+  font-size: 0.95rem;
+  margin-right: -2px; /* Aproxima um pouquinho o ícone do texto */
+}
+
+/* Escurece levemente o texto que está em negrito para dar destaque */
+.dates_info strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* A barrinha vertical (|) que separa as informações */
+.separator {
+  color: #ced4da; /* Cinza bem clarinho para não poluir visualmente */
+  font-weight: 300;
+  margin: 0 2px;
+  user-select: none; /* Evita que o usuário copie a barrinha se for copiar o texto */
+}
+
 /* Botões de Ação */
 .action_btn {
     display: flex;

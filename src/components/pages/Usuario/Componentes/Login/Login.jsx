@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importar ícones de olho
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import logo from "../../../../../img/logov2-fotor.png";
 import useAuth from "../../../../../hooks/useAuth"; 
-import { authService } from "../../../../../services/authService";
 
 const Login = () => {
   const { login } = useAuth();
@@ -12,7 +11,7 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar senha
+  const [showPassword, setShowPassword] = useState(false); 
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,48 +38,8 @@ const Login = () => {
     window.location.reload();
   };
 
-  const handleGoogleLogin = async (credentialResponse) => {
-    try {
-      setError("");
-      setLoading(true);
-      const result = await authService.loginWithGoogle(credentialResponse.credential);
-      if (!result.success) {
-        setError(result.error);
-        setLoading(false);
-        return;
-      }
-      navigate("/");
-      window.location.reload();
-    } catch (err) {
-      setError("Erro no login com Google");
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: "1095631680198-osc0a7pdlkler2napk9iakp42p3r3if2.apps.googleusercontent.com",
-        callback: handleGoogleLogin,
-      });
-
-      window.google.accounts.id.renderButton(
-        document.getElementById("google-btn"),
-        {
-          width:"365px", /* Opcional: Tenta forçar uma largura específica */
-          theme:"filled_black", /* Opcional: Estilo do botão */
-          shape:"pill", /* Opcional: Arredondado */
-          fontWeight: "600"
-          
-
-        }
-      );
-    }
-  }, []);
-
   return (
     <div className="login-page">
-      {/* Se tiver uma logo do seu sistema, coloque aqui fora do card */}
       <h1 className="brand-logo"><img src={logo} alt="Logo" /></h1> 
 
       <div className="login-card">
@@ -130,17 +89,6 @@ const Login = () => {
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Entrando..." : "Iniciar sessão"}
           </button>
-
-          {/* Divisor OU */}
-          <div className="divider">
-            <span>OU</span>
-          </div>
-
-          {/* Google Login Wrapper */}
-          <div className="social-login">
-            <div id="google-btn" style={{ width: "100%" }}></div>
-            {/* Se tiver botão da Apple, adicione aqui */}
-          </div>
         </form>
       </div>
 

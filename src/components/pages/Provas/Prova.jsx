@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Prova.module.css';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiUser, FiMapPin } from 'react-icons/fi';
 import { BsPencil, BsBook } from 'react-icons/bs';
 import { FaInbox, FaCheckDouble, FaPlay } from 'react-icons/fa';
 import { LuCalendarDays, LuLayers } from 'react-icons/lu';
 import Select from 'react-select';
 import BooksIcon from '../../../img/books_library_study_icon.png' 
+
 // Serviços de API
 import api from '../../../services/api';
 import { authService } from '../../../services/authService';
+import useAuth from '../../../hooks/useAuth';
 
 // Opções de filtro
 const opcoesAno = [
@@ -39,6 +41,9 @@ const TABS = [
 
 function Prova() {
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const isRevisor = user?.role?.toUpperCase() === 'REVISOR'
 
   const [provas,          setProvas]          = useState([]);
   const [provasFiltradas, setProvasFiltradas] = useState([]);
@@ -218,22 +223,24 @@ function Prova() {
             </header>
 
       {/* ── Tabs: Aprovadas / Aplicadas / Pendentes ───────────────────────────── */}
-      <div className={styles.tabs_container}>
-        {TABS.map(tab => (
-          <button
-            key={tab.key}
-            /* Adicionamos uma terceira interpolação que injeta styles.active_aprovadas, styles.active_aplicadas, etc. */
-            className={`
-              ${styles.tab} 
-              ${tabAtiva === tab.key ? styles.active_tab : ''} 
-              ${tabAtiva === tab.key ? styles[`active_${tab.key}`] : ''}
-            `}
-            onClick={() => setTabAtiva(tab.key)}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
-      </div>
+        <div className={styles.tabs_container}>
+          {TABS
+            // BLOQUEIO DO REVISOR: Filtra a aba "aplicadas" antes de desenhar na tela
+            .filter(tab => !(isRevisor && tab.key === 'aplicadas'))
+            .map(tab => (
+            <button
+              key={tab.key}
+              className={`
+                ${styles.tab} 
+                ${tabAtiva === tab.key ? styles.active_tab : ''} 
+                ${tabAtiva === tab.key ? styles[`active_${tab.key}`] : ''}
+              `}
+              onClick={() => setTabAtiva(tab.key)}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
+        </div>
 
       {/* ── Toolbar ──────────────────────────────────────────────────────────── */}
       <div className={styles.toolbar}>
@@ -351,10 +358,23 @@ function Prova() {
                       <BsBook style={{ marginRight: '6px' }} />
                       {(prova.anos || []).join(', ') || 'Sem ano'}
                     </div>
+                    
                     <div className={styles.tag} title="Fase da Prova">
                       <LuLayers style={{ marginRight: '6px' }} />
                       {prova.fase ? `Fase ${prova.fase}` : 'Sem fase'}
                     </div>
+
+                    {/* IDENTIFICAÇÃO DO AUTOR E DO POLO  */}
+                    <div className={styles.tag} title="Autor da Prova">
+                      <FiUser style={{ marginRight: '6px' }} />
+                      {prova.author?.name || 'Autor Desconhecido'}
+                    </div>
+
+                    <div className={styles.tag} title="Cidade">
+                      <FiMapPin style={{ marginRight: '6px' }} />
+                      {prova.author?.profile?.municipio || prova.author?.profile?.cidade || 'Polo não informado'}
+                    </div>
+
                     <div className={`${styles.status_pill} ${styles[prova.status?.toLowerCase()] || ''}`}>
                       {prova.status || 'Pendente'}
                     </div>

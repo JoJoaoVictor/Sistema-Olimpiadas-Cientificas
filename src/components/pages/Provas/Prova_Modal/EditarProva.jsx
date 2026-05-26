@@ -4,7 +4,7 @@ import Select from 'react-select';
 
 // Ícones
 import { FaArrowLeft, FaEdit, FaTimes, FaSave, FaFilePdf, FaPlus, FaTrashAlt, FaExclamationTriangle } from 'react-icons/fa';
-import { FiLayers, FiCalendar, FiCheckCircle, FiClock, FiAlertCircle, FiLayout } from 'react-icons/fi';
+import { FiLayers, FiCalendar, FiCheckCircle, FiClock, FiAlertCircle, FiLayout, FiMail, FiMapPin } from 'react-icons/fi';
 import { BsBook } from 'react-icons/bs';
 
 // Hook e componentes filhos
@@ -42,7 +42,7 @@ const StatusBadge = ({ status }) => {
   const map = {
     APROVADA: { icon: <FiCheckCircle />, cls: styles.status_approved, label: 'Aprovada' },
     APLICADA: { icon: <FiCheckCircle />, cls: styles.status_applied,  label: 'Aplicada' },
-    PENDENTE: { icon: <FiClock />,       cls: styles.status_pending,  label: 'Pendente' },
+    PENDENTE: { icon: <FiClock />,        cls: styles.status_pending,  label: 'Pendente' },
   };
   const { icon, cls, label } = map[s] || map.PENDENTE;
   return (
@@ -86,7 +86,7 @@ export default function EditarProva() {
     opcoesAno,
     reviewerComments, setReviewerComments,
   } = useEditarProva(id);
-
+  
   // ── Loading ───────────────────────────────────────────────────────────────
   if (carregando) {
     return (
@@ -192,6 +192,15 @@ export default function EditarProva() {
               <span> Criado: {formatDate(prova.created_at)}</span>
               <span className={styles.separator}>|</span>
               <span> Atualizado: <strong>{formatDate(prova.updated_at)}</strong></span>
+            </p>
+            
+            {/*EXIBE EMAIL E POLO/CIDADE DEBAIXO DA DATA DE CRIAÇÃO  */}
+            <p className={styles.dates_info} style={{ marginTop: '6px' }}>
+              <FiMail />
+              <span> E-mail: <strong>{prova.author?.email || 'Não informado'}</strong></span>
+              <span className={styles.separator}>|</span>
+              <FiMapPin />
+              <span> Polo: <strong>{prova?.author?.profile?.campus || prova?.author?.profile?.cidade || 'Não informado'}</strong></span>
             </p>
           </div>
 
@@ -412,7 +421,7 @@ export default function EditarProva() {
                       onMoverParaCima={moverQuestaoParaCima}
                       onMoverParaBaixo={moverQuestaoParaBaixo}
                       isLastItem={index === questoes.length - 1}
-                      onToggleAlternativas={toggleAlternativasQuestao} // Passado perfeitamente
+                      onToggleAlternativas={toggleAlternativasQuestao}
                     />
                   ))
                 )}

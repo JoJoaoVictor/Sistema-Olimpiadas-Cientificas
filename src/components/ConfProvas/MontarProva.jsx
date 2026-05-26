@@ -270,7 +270,7 @@ function MontarProva() {
                         <BsFillInfoCircleFill />
                       </button>
                         {questao.is_applied ? (
-                          <span className={styles.tag} style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeeba' }}>
+                          <span className={styles.tag} style={{ backgroundColor: '#d1ecf1', color: '#0e4c7e', border: '1px solid #ffeeba' }}>
                             <strong>Aplicada</strong>
                           </span>
                         ) : (

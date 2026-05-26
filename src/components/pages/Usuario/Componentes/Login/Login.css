@@ -128,41 +128,6 @@ html, body {
   cursor: not-allowed;
 }
 
-/* Divisor "OU" */
-.divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 25px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #ddd;
-}
-
-.divider::before {
-  margin-right: 10px;
-}
-
-.divider::after {
-  margin-left: 10px;
-}
-
-/* Área Social (Google) */
-.social-login {
-  display: flex;
-  flex-direction: column; /* Empilha os botões um em cima do outro */
-  align-items: center;    /* <--- O SEGREDO: Centraliza horizontalmente */
-  justify-content: center;
-  width: 100%;            /* Garante que o container ocupe toda a largura */
-  gap: 15px;
-  margin-top: 10px;
-}
 
 /* Mensagem de Erro */
 .error-message {

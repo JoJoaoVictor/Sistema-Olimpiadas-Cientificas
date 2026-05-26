@@ -79,28 +79,6 @@ export const authService = {
     }
   },
 
-  // Login Social (Google)
-  async loginWithGoogle(credential) {
-    try {
-      const response = await api.post("/api/v1/auth/google", {
-        credential,
-      });
-
-      const { data } = response;
-
-      if (data.success && data.data.tokens) {
-        this.setAuthData(data.data);
-      }
-
-      return { success: true, data: data.data };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Falha ao autenticar com Google. Tente novamente.",
-      };
-    }
-  },
-
   /**
    * ==========================
    * 2. RECUPERAÇÃO DE SENHA
