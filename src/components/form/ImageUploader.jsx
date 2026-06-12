@@ -26,7 +26,6 @@ function ImageUploader({
   const ACCEPTED_TYPES = 'image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml';
   const MAX_SIZE = 5 * 1024 * 1024;
 
-  // Sincroniza com initialImage (para edição)
   useEffect(() => {
     if (initialImage) {
       setImageUrl(initialImage.url);
@@ -84,7 +83,6 @@ function ImageUploader({
         setImageId(id);
         setSelectedFile(null);
         setFileInfo(null);
-        // Notifica o pai com os dados completos
         onImageProcessed({ 
           id,
           url: fullImageUrl, 
@@ -102,13 +100,11 @@ function ImageUploader({
   };
 
   const handleRemoveImage = async () => {
-    // Se há uma imagem carregada com ID, deleta do servidor
     if (imageUrl && imageId) {
       try {
         await api.delete(`/api/v1/images/${imageId}`);
       } catch (err) {
         console.error('Erro ao deletar imagem do servidor:', err);
-        // Não impede a remoção local, apenas loga
       }
     }
     setSelectedFile(null);
@@ -134,7 +130,6 @@ function ImageUploader({
     const newRole = e.target.value;
       console.log('handleRoleChange - novo papel:', newRole);
       setSelectedRole(newRole);
-      // Se já há uma imagem carregada, notifica o pai sobre a mudança de papel
       if (imageUrl && imageId) {
         onImageProcessed({ id: imageId, url: imageUrl, role: newRole, filename: fileInfo?.name });
       }
@@ -149,7 +144,7 @@ function ImageUploader({
     }
   };
 
-  // Prévia da questão completa (aparece apenas se houver imagem carregada)
+  //  Renderiza Enunciado e Alternativas usando <LatexText />
   const renderFullPreview = () => {
     if (!imageUrl) return null;
     return (
@@ -157,7 +152,12 @@ function ImageUploader({
         <h4>Pré-visualização da Questão</h4>
         <div className={styles.previewCard}>
           <div className={styles.previewEnunciado}>
-            <strong>1)</strong> {questionStatement || 'Enunciado aparecerá aqui...'}
+            <strong>1) </strong>
+            {questionStatement ? (
+              <LatexText content={questionStatement} />
+            ) : (
+              <span style={{ color: '#888', italic: 'true' }}>Enunciado aparecerá aqui...</span>
+            )}
           </div>
           <div className={styles.previewImageContainer}>
             <img 
@@ -170,7 +170,12 @@ function ImageUploader({
             {['A', 'B', 'C', 'D', 'E'].map(letra => (
               <div key={letra} className={styles.previewAlternativa}>
                 <span className={correctAlternative?.toUpperCase() === letra ? styles.correctAlt : ''}>
-                  {letra}) {alts[letra] || `Alternativa ${letra}`}
+                  <strong>{letra})</strong>{' '}
+                  {alts[letra] ? (
+                    <LatexText content={alts[letra]} />
+                  ) : (
+                    <span style={{ color: '#888' }}>Alternativa {letra}</span>
+                  )}
                 </span>
               </div>
             ))}
@@ -184,7 +189,6 @@ function ImageUploader({
     <div className={`${styles.imageUploader} ${disabled ? styles.disabled : ''}`}>
       <input ref={fileInputRef} type="file" accept={ACCEPTED_TYPES} onChange={handleFileChange} className={styles.fileInput} disabled={disabled || isUploading} />
 
-      {/* Estado inicial: sem arquivo e sem imagem */}
       {!selectedFile && !imageUrl && (
         <div className={styles.uploadArea} onClick={triggerFileInput}>
           <div className={styles.uploadIcon}>📷</div>
@@ -196,7 +200,6 @@ function ImageUploader({
         </div>
       )}
 
-      {/* Arquivo selecionado, aguardando upload */}
       {selectedFile && !imageUrl && (
         <div className={styles.selectionPanel}>
           {fileInfo && (
@@ -234,7 +237,6 @@ function ImageUploader({
         </div>
       )}
 
-      {/* Imagem carregada com sucesso */}
       {imageUrl && (
         <div className={styles.previewSection}>
           <div className={styles.previewHeader}>

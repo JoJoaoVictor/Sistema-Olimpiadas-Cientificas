@@ -21,6 +21,31 @@ const extrairNumeroAno = (nomeAno) => {
   return match ? match[0] : '';
 };
 
+// EXTRAI STRING DE QUALQUER TIPO DE INPUT (OBJETO OU STRING)
+const safeString = (val) => {
+  if (!val) return '';
+  if (typeof val === 'object') {
+    return String(val.value || val.label || val.habilidade || val.objetosDeConhecimento || val.unidadeTematica || '');
+  }
+  return String(val);
+};
+
+// VERIFICA SE O FILTRO ESTÁ ATIVO (IGNORA PLACEHOLDERS DE RESET)
+const isFilterActive = (val) => {
+  if (!val) return false;
+  const str = safeString(val).toLowerCase().trim();
+  return (
+    str !== '' && 
+    str !== 'todos' && 
+    str !== 'todas' && 
+    str !== 'selecione' && 
+    str !== 'selecionar' && 
+    str !== 'all' &&
+    str !== 'undefined' &&
+    str !== 'null'
+  );
+};
+
 function MontarProva() {
   const { id } = useParams();
 
@@ -65,13 +90,10 @@ function MontarProva() {
         const data = response.data?.data?.questions || response.data?.questions || response.data || [];
         
         setQuestoes(data.map(q => {
-          // NOVA REGRA: Confia APENAS no campo oficial is_applied que o banco mandou, 
-          // ou no campo status textual (se houver). Remove as deduções com arrays.
           let foiAplicada = false;
           if (q.is_applied === true || String(q.is_applied) === "true" || q.is_applied === 1) {
              foiAplicada = true;
           }
-          // Caso o backend use a string "status":
           if (q.status && String(q.status).toUpperCase() === 'APLICADA') {
              foiAplicada = true;
           }
@@ -79,12 +101,12 @@ function MontarProva() {
           return {
             ...q,
             is_applied: foiAplicada,
-            serieAno: q.grau?.name || q.serie_ano || q.serieAno || '',
-            bncc_theme: q.bncc_theme || q.bnccTheme || '',
-            knowledge_objects: q.knowledge_objects || q.knowledgeObjects || '',
-            ability_code: q.ability_code || q.abilityCode || '',
-            phase_level: q.phase_level || q.phaseLevel || '',
-            difficulty_level: q.difficulty_level || q.difficultyLevel || 0,
+            serieAno: q.ano || q.grau?.name || q.serie_ano || q.serieAno || '',
+            bncc_theme: q.unidadeTematica || q.bncc_theme || q.bnccTheme || q.tema_bncc || q.tema || '',
+            knowledge_objects: q.objetosDeConhecimento || q.knowledge_objects || q.knowledgeObjects || q.knowledge_object || q.knowledgeObject || q.objetivo_conhecimento || '',
+            ability_code: q.habilidade?.habilidade || (typeof q.habilidade === 'string' ? q.habilidade : '') || q.ability_code || q.abilityCode || '',
+            phase_level: q.phase_level || q.phaseLevel || q.fase || '',
+            difficulty_level: q.difficulty_level || q.difficultyLevel || q.dificuldade || 0,
             imageURL: q.image?.url ? new URL(q.image.url, api.defaults.baseURL).href : null,
           };
         }));
@@ -110,7 +132,10 @@ function MontarProva() {
             setQuestoesSelecionadas((data.questions || []).map(q => ({
               ...q,
               is_applied: true, 
-              serieAno: q.grau?.name || q.serie_ano || q.serieAno,
+              serieAno: q.ano || q.grau?.name || q.serie_ano || q.serieAno,
+              bncc_theme: q.unidadeTematica || q.bncc_theme || q.bnccTheme || q.tema_bncc || q.tema || '',
+              knowledge_objects: q.objetosDeConhecimento || q.knowledge_objects || q.knowledgeObjects || q.knowledge_object || q.knowledgeObject || q.objetivo_conhecimento || '',
+              ability_code: q.habilidade?.habilidade || (typeof q.habilidade === 'string' ? q.habilidade : '') || q.ability_code || q.abilityCode || '',
               imageURL: q.image?.url ? new URL(q.image.url, api.defaults.baseURL).href : null,
             })));
           }
@@ -212,26 +237,107 @@ function MontarProva() {
     }
   };
 
-  // Aplicação dos Filtros na Lista Otimizada
+  // MOTOR DE FILTRAGEM CORRIGIDO COM DETECÇÃO INTELIGENTE DE OFFSET DE ANOS
   const questoesFiltradas = mostrarQuestoes ? questoes.filter(q => {
     const f = filtros;
-    const isAplicada = q.is_applied === true;
     
+    // 1. Filtro de Status de Uso
+    const isAplicada = q.is_applied === true;
     const passaFiltroUso = 
         f.statusUso === 'todas' ? true :
         f.statusUso === 'aplicadas' ? isAplicada :
         f.statusUso === 'ineditas' ? !isAplicada : true;
 
-    return passaFiltroUso && 
-           (!f.searchTerm || q.name?.toLowerCase().includes(f.searchTerm.toLowerCase())) &&
-           (!f.temaSelecionado || q.bncc_theme?.toLowerCase().includes(f.temaSelecionado.toLowerCase())) &&
-           (!f.objetoConhecimento || q.knowledge_objects?.toLowerCase().includes(f.objetoConhecimento.toLowerCase())) &&
-           (!f.habilidade || q.ability_code?.toLowerCase().includes(f.habilidade.toLowerCase())) &&
-           (!f.phaseLevel || q.phase_level?.toLowerCase().includes(f.phaseLevel.toLowerCase())) &&
-           (!f.dificuldade || String(q.difficulty_level) === f.dificuldade) &&
-           (f.anosSelecionadosFiltro.length === 0 || f.anosSelecionadosFiltro.some(a => 
-             extrairNumeroAno(q.serieAno).includes(extrairNumeroAno(a.value))
-           ));
+    if (!passaFiltroUso) return false;
+
+    const filterSearch = safeString(f.searchTerm || f.search || f.texto);
+    const filterTema = safeString(f.temaSelecionado || f.tema || f.unidadeTematica);
+    const filterObjeto = safeString(f.objetoConhecimento || f.objeto || f.objetosDeConhecimento || f.knowledge_objects);
+    const filterHabilidade = safeString(f.habilidade || f.ability_code || f.abilityCode);
+    const filterFase = safeString(f.phaseLevel || f.phase_level || f.fase);
+    const filterDif = safeString(f.dificuldade || f.difficulty_level || f.difficulty);
+
+    // 2. Campo de Busca por Texto Livre
+    if (isFilterActive(filterSearch)) {
+      const pool = String([
+        q.name, q.enunciado, q.description, q.texto, q.body, q.question,
+        q.knowledge_objects, q.ability_code, q.bncc_theme, q.serieAno
+      ].filter(Boolean).join(' ')).toLowerCase();
+      if (!pool.includes(filterSearch.toLowerCase().trim())) return false;
+    }
+
+    // 3. Filtro de Tema BNCC
+    if (isFilterActive(filterTema)) {
+      const qTema = String(q.bncc_theme).toLowerCase().trim();
+      const fTema = filterTema.toLowerCase().trim();
+      if (!qTema.includes(fTema) && !fTema.includes(qTema)) return false;
+    }
+
+    // 4. Filtro de Objeto de Conhecimento
+    if (isFilterActive(filterObjeto)) {
+      const qObj = String(q.knowledge_objects).toLowerCase().trim();
+      const fObj = filterObjeto.toLowerCase().trim();
+      if (!qObj.includes(fObj) && !fObj.includes(qObj)) return false;
+    }
+
+    // 5. Filtro de Habilidade Código
+    if (isFilterActive(filterHabilidade)) {
+      const qHab = String(q.ability_code).toLowerCase().replace(/[()]/g, '').trim();
+      const fHab = filterHabilidade.toLowerCase().replace(/[()]/g, '').trim();
+      if (!qHab.includes(fHab) && !fHab.includes(qHab)) return false;
+    }
+
+    // 6. Filtro de Nível de Fase
+    if (isFilterActive(filterFase)) {
+      const qFase = String(q.phase_level || '').toLowerCase().trim();
+      const fFase = filterFase.toLowerCase().trim();
+      if (!qFase.includes(fFase)) return false;
+    }
+
+    // 7. Filtro de Dificuldade
+    if (isFilterActive(filterDif)) {
+      if (String(q.difficulty_level) !== filterDif) return false;
+    }
+
+    // 8. SOLUÇÃO DO BUG: Mapeador de Anos Tolerante a Deslocamentos (Offset de IDs/Índices e BNCC)
+    if (f.anosSelecionadosFiltro && f.anosSelecionadosFiltro.length > 0) {
+      const anosPossiveisDaQuestao = [];
+
+      // A) Extrai o número do campo textual da questão (ex: "6° Ano" -> 6)
+      const matchTexto = safeString(q.serieAno || q.ano).match(/\d+/);
+      if (matchTexto) {
+        const n = parseInt(matchTexto[0], 10);
+        anosPossiveisDaQuestao.push(n, n - 1, n + 1); // Salva o ano, ano-1 e ano+1 para neutralizar o bug do frontend
+      }
+
+      // B) Extrai o ano real e infalível pelo código BNCC (ex: EF06MA01 -> 6)
+      const matchBNCC = safeString(q.ability_code).toUpperCase().match(/EF(\d+)/);
+      if (matchBNCC) {
+        const nBNCC = parseInt(matchBNCC[1], 10);
+        anosPossiveisDaQuestao.push(nBNCC, nBNCC - 1, nBNCC + 1);
+      }
+
+      // Valida se o ano selecionado no filtro intercepta alguma das marcas da questão
+      const bateuAno = f.anosSelecionadosFiltro.some(a => {
+        const digitosFiltro = [];
+        if (a && typeof a === 'object') {
+          const mLabel = safeString(a.label).match(/\d+/);
+          if (mLabel) digitosFiltro.push(parseInt(mLabel[0], 10));
+          const mVal = safeString(a.value).match(/\d+/);
+          if (mVal) digitosFiltro.push(parseInt(mVal[0], 10));
+        } else {
+          const mSimples = safeString(a).match(/\d+/);
+          if (mSimples) digitosFiltro.push(parseInt(mSimples[0], 10));
+        }
+
+        // Se o valor ou label do filtro bater com qualquer variação aceitável da questão, valida como verdadeiro!
+        return digitosFiltro.some(fAno => anosPossiveisDaQuestao.includes(fAno));
+      });
+
+      if (!bateuAno) return false;
+    }
+
+    return true; 
   }) : [];
 
   return (
@@ -291,6 +397,9 @@ function MontarProva() {
                   </div>
                 </li>
               ))}
+              {questoesFiltradas.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#666', padding: '20px', width: '100%' }}>Nenhuma questão corresponde aos filtros aplicados.</p>
+              )}
             </ul>
           </>
         )}

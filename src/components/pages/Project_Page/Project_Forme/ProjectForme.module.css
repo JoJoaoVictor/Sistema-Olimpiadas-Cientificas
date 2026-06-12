@@ -201,6 +201,11 @@
     margin-top: 5px;
     color: #495057;
     font-size: 0.95rem;
+    white-space: pre-wrap;       
+    overflow-wrap: break-word;   
+    word-break: break-word;      
+    max-width: 100%;              
+    box-sizing: border-box;
 }
 
 .preview_box strong {
@@ -497,4 +502,37 @@
 .alt_card label,
 .resolution_block label {
     display: none;
+}
+/* ================================================================
+   CLASSES ADICIONADAS PARA TEXTAREAS COM EXPANSÃO DINÂMICA
+   ================================================================ */
+
+.textarea_label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.expanding_textarea {
+    width: 100%;
+    min-height: 46px; /* Altura inicial próxima a um input padrão */
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+    resize: none; /* Esconde o puxador manual do canto */
+    overflow: hidden; /* Esconde barras de rolagem enquanto cresce */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.expanding_textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    outline: none;
 }

@@ -11,19 +11,48 @@ import {
   getHabilidadesByObjeto 
 } from '../../data/bnccHelper';
 
+// RESOLVIDO: Valores únicos para evitar que o react-select duplique chaves (ex: 2º Fund vs 2º Médio)
 const opcoesAnoFiltro = [
-  { value: '2', label: '2º Fundamental' },
-  { value: '3', label: '3º Fundamental' },
-  { value: '4', label: '4º Fundamental' },
-  { value: '5', label: '5º Fundamental' },
-  { value: '6', label: '6º Fundamental' },
-  { value: '7', label: '7º Fundamental' },
-  { value: '8', label: '8º Fundamental' },
-  { value: '9', label: '9º Fundamental' },
-  { value: '1', label: '1º Médio' }, 
-  { value: '2', label: '2º Médio' },
-  { value: '3', label: '3º Médio' },
+  { value: 'fundamental_2', label: '2º Fundamental' },
+  { value: 'fundamental_3', label: '3º Fundamental' },
+  { value: 'fundamental_4', label: '4º Fundamental' },
+  { value: 'fundamental_5', label: '5º Fundamental' },
+  { value: 'fundamental_6', label: '6º Fundamental' },
+  { value: 'fundamental_7', label: '7º Fundamental' },
+  { value: 'fundamental_8', label: '8º Fundamental' },
+  { value: 'fundamental_9', label: '9º Fundamental' },
+  { value: 'medio_1', label: '1º Médio' }, 
+  { value: 'medio_2', label: '2º Médio' },
+  { value: 'medio_3', label: '3º Médio' },
 ];
+
+// FUNÇÃO ISOLADA QUE TRADUZ O ANO SELECIONADO PARA O ID REAL QUE O SEU HELPER/BANCO ESPERE
+const obterGrauIdBNCC = (ano) => {
+  if (!ano) return 0;
+  const label = String(ano.label || '');
+  const value = String(ano.value || '');
+  
+  // Extrai o número contido no texto (ex: 'fundamental_6' ou '6º Fundamental' vira 6)
+  const match = value.match(/\d+/) || label.match(/\d+/);
+  if (!match) return 0;
+  const numeroAno = parseInt(match[0], 10);
+
+  // CORREÇÃO DO BUG DE OFFSET DO FUNDAMENTAL:
+  // Se for Fundamental, o banco espera (Ano - 1). Ex: 6º Ano = ID 5.
+  if (label.includes('Fundamental') || value.includes('fundamental')) {
+    return numeroAno - 1;
+  }
+  
+  // CORREÇÃO DO ENSINO MÉDIO:
+  // No padrão sequencial da BNCC, após o 9º ano (ID 8), o 1º Médio costuma ser ID 9, 2º Médio ID 10 e 3º Médio ID 11.
+  if (label.includes('Médio') || value.includes('medio')) {
+    if (numeroAno === 1) return 9;
+    if (numeroAno === 2) return 10;
+    if (numeroAno === 3) return 11;
+  }
+
+  return numeroAno;
+};
 
 function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
   // Opções dinâmicas para a Cascata
@@ -38,7 +67,7 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
     setMostrarQuestoes(true);
   };
 
-  // 1. Cascata: Atualizar Temas com base nos Anos
+  /// 1. Cascata: Atualizar Temas com base nos Anos (Com ID Corrigido)
   useEffect(() => {
     const todosTemas = new Set();
     const anosParaBuscar = filtros.anosSelecionadosFiltro.length > 0 
@@ -46,8 +75,13 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
       : opcoesAnoFiltro;
 
     anosParaBuscar.forEach(ano => {
-      const temasDoAno = getTemasByGrauId(Number(ano.value)) || [];
-      temasDoAno.forEach(t => todosTemas.add(t));
+      const grauIdCorrigido = obterGrauIdBNCC(ano);
+      const temasDoAno = getTemasByGrauId(grauIdCorrigido) || [];
+      
+      temasDoAno.forEach(t => {
+          const nomeTema = typeof t === 'object' ? t.unidadeTematica : t;
+          if (nomeTema) todosTemas.add(nomeTema);
+      });
     });
 
     setTemasDisponiveis(Array.from(todosTemas).sort());
@@ -56,7 +90,7 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
     setFiltros(prev => ({ ...prev, temaSelecionado: '', objetoConhecimento: '', habilidade: '' }));
   }, [filtros.anosSelecionadosFiltro, setFiltros]);
 
-  // 2. Cascata: Atualizar Objetos com base nos Anos + Tema Selecionado
+  // 2. Cascata: Atualizar Objetos com base nos Anos + Tema Selecionado (Com ID Corrigido)
   useEffect(() => {
     if (filtros.temaSelecionado) {
       const todosObjetos = new Set();
@@ -65,9 +99,15 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
         : opcoesAnoFiltro;
 
       anosParaBuscar.forEach(ano => {
-        // CORREÇÃO: Passamos o ID numérico primeiro, e depois o tema!
-        const objetosDoAno = getObjetosByTema(Number(ano.value), filtros.temaSelecionado) || [];
-        objetosDoAno.forEach(o => todosObjetos.add(o));
+        const grauIdCorrigido = obterGrauIdBNCC(ano);
+        const objetosDoAno = getObjetosByTema(grauIdCorrigido, filtros.temaSelecionado) || [];
+        
+        objetosDoAno.forEach(o => {
+          const nomeObjeto = typeof o === 'object' ? o.objetosDeConhecimento : o;
+          if (nomeObjeto) {
+             todosObjetos.add(String(nomeObjeto).trim());
+          }
+        });
       });
 
       setObjetosDisponiveis(Array.from(todosObjetos).sort());
@@ -78,20 +118,21 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
     setFiltros(prev => ({ ...prev, objetoConhecimento: '', habilidade: '' }));
   }, [filtros.temaSelecionado, filtros.anosSelecionadosFiltro, setFiltros]);
 
-  // 3. Cascata: Atualizar Habilidades com base nos Anos + Tema + Objeto
+  // 3. Cascata: Atualizar Habilidades com base nos Anos + Tema + Objeto (Com ID Corrigido)
   useEffect(() => {
     if (filtros.objetoConhecimento) {
-      const todasHabilidades = new Map(); // Usamos Map para não duplicar códigos de habilidade iguais
+      const todasHabilidades = new Map();
       const anosParaBuscar = filtros.anosSelecionadosFiltro.length > 0 
         ? filtros.anosSelecionadosFiltro 
         : opcoesAnoFiltro;
 
       anosParaBuscar.forEach(ano => {
-        // CORREÇÃO: Passamos o ID numérico, depois o tema, e depois o objeto!
-        const habilidadesDoAno = getHabilidadesByObjeto(Number(ano.value), filtros.temaSelecionado, filtros.objetoConhecimento) || [];
+        const grauIdCorrigido = obterGrauIdBNCC(ano);
+        const habilidadesDoAno = getHabilidadesByObjeto(grauIdCorrigido, filtros.temaSelecionado, filtros.objetoConhecimento) || [];
+        
         habilidadesDoAno.forEach(h => {
-          const code = typeof h === 'object' ? h.codigo : h;
-          todasHabilidades.set(code, h);
+          const code = typeof h === 'object' ? (h.codigo || h.habilidade) : h;
+          if (code) todasHabilidades.set(code, h);
         });
       });
 

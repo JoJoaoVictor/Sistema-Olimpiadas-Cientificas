@@ -15,7 +15,7 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // 🌟 NOVO ESTADO: Sinaliza se a autenticação falhou
+  //  Sinaliza se a autenticação falhou
   const [authFailed, setAuthFailed] = useState(false);
 
   const fetchNotifications = async () => {
@@ -37,7 +37,7 @@ export default function NotificationBell() {
       if (error.response && error.response.status === 401) {
         console.warn('Sessão expirada. Parando o loop de notificações.');
         setError('Sessão expirada. Faça login novamente.');
-        // 🌟 TRAVA FINAL: Altera o estado para parar o loop no useEffect
+        // TRAVA FINAL: Altera o estado para parar o loop no useEffect
         setAuthFailed(true);
       } else {
         console.error('Erro ao buscar notificações:', error);
@@ -51,20 +51,20 @@ export default function NotificationBell() {
   useEffect(() => {
     const token = localStorage.getItem('access_token') || localStorage.getItem('token');
     
-    // 🌟 Condição atualizada: Se não tiver usuário/token OU se a auth já tiver falhado, interrompe.
+    //Condição: Se não tiver usuário/token OU se a auth já tiver falhado, interrompe.
     if (!user || !token || authFailed) return;
 
     fetchNotifications(); 
     
     const interval = setInterval(() => {
-      // 🌟 Dupla checagem: o loop não vai mais rodar se authFailed for true
+      // Dupla checagem: o loop não vai mais rodar se authFailed for true
       if (!authFailed) {
         fetchNotifications();
       }
     }, 30000); 
 
     return () => clearInterval(interval);
-  }, [user, authFailed]); // 🌟 Adicionamos authFailed como dependência do useEffect
+  }, [user, authFailed]); 
 
   // O resto das suas funções continuam idênticas...
   const handleMarkAsRead = async (notificationId, entityId, entityType) => {

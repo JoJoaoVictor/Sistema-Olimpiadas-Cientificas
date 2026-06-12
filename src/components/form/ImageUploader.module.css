@@ -414,14 +414,16 @@
 
 .previewAlternativas {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 10px;
   margin-top: 15px;
   font-size: 0.95rem;
 }
 
 .previewAlternativa {
-  white-space: nowrap;
+  white-space: pre-wrap;       
+  overflow-wrap: break-word;    
+  max-width: 100%;
 }
 
 .correctAlt {

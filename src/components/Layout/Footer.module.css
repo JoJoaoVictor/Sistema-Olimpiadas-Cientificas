@@ -1,25 +1,49 @@
-.footer{
-    background-color: #000000;
-    color: white;
-    padding: 0.5em;
+.footer {
+    background-color: #0f172a; /* Azul bem escuro, mesma cor base do Header */
+    color: #cbd5e1; /* Cinza claro elegante (não é branco puro, o que descansa a visão) */
+    padding: 1em 1em 2em 1em; /* Mais respiro e espaço interno */
     text-align: center;
+    border-top: 4px solid #087dea; /* Linha amarela separadora no topo */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin-top: auto; /* Empurra o footer sempre para o final da página */
 }
-.social_list{
+
+.social_list {
     display: flex;
     justify-content: center;
     list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
-.social_list li{
-    margin:  0.5em;
+
+.social_list li {
+    margin: 0 0.8em;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease; /* Transição suave */
 }
-.social_list li:hover{
-    color: #6cf173;
+
+/* O Segredo do Efeito Moderno nos Ícones */
+.social_list li:hover {
+    color: #087dea; /* Amarelo/Dourado do sistema */
+    transform: translateY(-4px); /* O ícone "pula" de leve para cima ao passar o mouse */
 }
-.social_list svg{
-    font-size: 1.3em;
+
+.social_list svg {
+    font-size: 1.8em; /* Ícones um pouco maiores */
     cursor: pointer;
 }
-.copy_right{
-    margin-top: 2em;
+
+.copy_right {
+    margin-top: 1.5em;
+    font-size: 0.95em;
+    color: #94a3b8;
+}
+
+/* Destacando o nome do Sistema no Footer */
+.copy_right span {
+    color: #087dea;
+    font-weight: 700;
+    letter-spacing: 1px;
 }

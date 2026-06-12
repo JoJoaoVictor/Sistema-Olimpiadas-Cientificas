@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Input from '../../../form/Input.jsx';
@@ -15,6 +15,10 @@ import { getTemasByGrauId, getObjetosByTema, getHabilidadesByObjeto, getDescrica
 function ProjectForme({ handleSubmit, projectData, btnText }) {
     const location = useLocation();
     const isEditMode = location.pathname.includes('/projetos/') || !!projectData?.id;
+
+    // Refs para expansão automática dos campos de texto longo
+    const enunciadoRef = useRef(null);
+    const resolucaoRef = useRef(null);
 
     const opcoesAno = [
         { value: '2º Fundamental', label: '2º Fundamental' },
@@ -84,6 +88,21 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     const [objetosList, setObjetosList] = useState([]);
     const [habilidadesList, setHabilidadesList] = useState([]);
 
+    // --- EFEITOS DE EXPANSÃO AUTOMÁTICA (Auto-resize) ---
+    useEffect(() => {
+        if (enunciadoRef.current) {
+            enunciadoRef.current.style.height = 'auto';
+            enunciadoRef.current.style.height = `${enunciadoRef.current.scrollHeight}px`;
+        }
+    }, [project.questionStatement]);
+
+    useEffect(() => {
+        if (resolucaoRef.current) {
+            resolucaoRef.current.style.height = 'auto';
+            resolucaoRef.current.style.height = `${resolucaoRef.current.scrollHeight}px`;
+        }
+    }, [project.detailedResolution]);
+
     // --- 3. CARREGAR DADOS DO BACKEND ---
     useEffect(() => {
         const fetchData = async () => {
@@ -93,15 +112,16 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
 
                 const nomesOficiais = {
                     1: "Pendentes (Revisão)",
-                    2: "Aprovadas (Banco)",
+                    2: "Aprovadas (Banco)", // Mantido aqui apenas como referência interna se necessário
                     3: "Aplicadas (Em Prova)"
                 };
 
+                // ALTERAÇÃO AQUI: Removido o ID 2 para que "Aprovadas (Banco)" não seja listado
                 fetchedCategories = fetchedCategories
-                    .filter(cat => [1, 2, 3].includes(cat.id)) // Corta qualquer ID duplicado (4, 5, etc)
+                    .filter(cat => [1,2,].includes(cat.id)) 
                     .map(cat => ({
                         ...cat,
-                        name: nomesOficiais[cat.id] || cat.name // Força o nome correto para não haver confusão
+                        name: nomesOficiais[cat.id] || cat.name
                     }));
 
                 setCategories(fetchedCategories);
@@ -152,17 +172,12 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno) {
             const grauId = Number(project.serieAno);
-            
-            // 1. Pega os temas originais do MEC
             const temasMEC = getTemasByGrauId(grauId);
-            
-            // 2. Pega os temas customizados do cache local
             const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
             const temasCustom = customBNCC
                 .filter(item => item.grauId === grauId)
                 .map(item => item.unidadeTematica);
 
-            // 3. Junta tudo e remove nomes duplicados (usando Set)
             setTemasList([...new Set([...temasMEC, ...temasCustom])]);
             setObjetosList([]);
             setHabilidadesList([]);
@@ -177,13 +192,11 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno && project.bnccTheme) {
             const grauId = Number(project.serieAno);
-            
             const objetosMEC = getObjetosByTema(grauId, project.bnccTheme);
-            
             const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
             const objetosCustom = customBNCC
                 .filter(item => item.grauId === grauId && item.unidadeTematica === project.bnccTheme)
-                .map(item => item.objetosDeConhecimento);
+                .map(item => item.objectsDeConhecimento);
 
             setObjetosList([...new Set([...objetosMEC, ...objetosCustom])]);
             setHabilidadesList([]);
@@ -197,9 +210,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     useEffect(() => {
         if (project.serieAno && project.bnccTheme && project.knowledgeObjects) {
             const grauId = Number(project.serieAno);
-            
             const habsMEC = getHabilidadesByObjeto(grauId, project.bnccTheme, project.knowledgeObjects);
-            
             const customBNCC = JSON.parse(localStorage.getItem('customBNCC') || '[]');
             const habsCustom = customBNCC
                 .filter(item => 
@@ -209,10 +220,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                 )
                 .map(item => ({ codigo: item.habilidade, descricao: item.abilityDescription }));
 
-            // Junta as habilidades do MEC com as customizadas
             const todasHabs = [...habsMEC, ...habsCustom];
-            
-            // Remove códigos de habilidade duplicados (caso exista algum conflito)
             const habsUnicas = Array.from(new Map(todasHabs.map(h => [h.codigo, h])).values());
 
             setHabilidadesList(habsUnicas);
@@ -253,7 +261,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
 
     const handleImageProcessed = (processedImage) => {
         setProject(prev => ({ ...prev, image: processedImage }));
-        console.log('handleImageProcessed:', processedImage);
     };
 
     const handleImageRemoved = () => {
@@ -263,7 +270,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
     // --- 8. ENVIO DO FORMULÁRIO ---
     const submit = async (e) => {
         e.preventDefault();
-        console.log('project.image antes do submit:', project.image);
 
         const errors = {};
         if (!project.name?.trim()) errors.name = "O título da questão é obrigatório.";
@@ -338,7 +344,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
             return (
                 <span style={{
                     color: '#e74c3c', fontSize: '0.85rem',
-                    marginTop: '-10px', display: 'block', marginBottom: '10px'
+                    marginTop: '-5px', display: 'block', marginBottom: '10px'
                 }}>
                     {fieldErrors[fieldName]}
                 </span>
@@ -419,7 +425,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     </div>
                 </div>
 
-                {/* CASCATA BNCC */}
                 <div className={styles.grid_row_2}>
                     <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <label className={styles.label}>Tema BNCC (Unidade Temática):</label>
@@ -461,7 +466,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     </div>
                 </div>
 
-                {/* Habilidade BNCC */}
                 <div className={styles.grid_row}>
                     <div className={styles.input_group} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <label className={styles.label}>Habilidade BNCC:</label>
@@ -482,7 +486,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     </div>
                 </div>
 
-                {/* Código e Descrição */}
                 <div className={styles.grid_row_auto}>
                     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <label style={{ marginBottom: '.5em', fontWeight: 'bold', color: '#333' }}>
@@ -501,7 +504,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                                 borderRadius: '5px', 
                                 border: '1px solid #ccc',
                                 fontFamily: 'inherit',
-                                resize: 'vertical' /* Permite que o usuário estique a caixa para baixo se o texto for muito grande */
+                                resize: 'vertical'
                             }}
                         />
                     </div>
@@ -520,12 +523,16 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     <br />Exemplo: A área do círculo é <code>\(\pi r^2\)</code>
                 </div>
 
-                {/* ENUNCIADO */}
+                {/* CORRIGIDO: ENUNCIADO COMO TEXTAREA DINÂMICO */}
                 <div className={styles.editor_block}>
-                    <Input
-                        type="text" text="Enunciado" name="questionStatement"
-                        placeholder="Digite o enunciado..." value={project.questionStatement}
-                        handleOnChange={handleChange}
+                    <label className={styles.textarea_label}>Enunciado</label>
+                    <textarea
+                        ref={enunciadoRef}
+                        name="questionStatement"
+                        placeholder="Digite o enunciado..."
+                        value={project.questionStatement}
+                        onChange={handleChange}
+                        className={styles.expanding_textarea}
                     />
                     {renderError('questionStatement')}
                     {project.questionStatement && (
@@ -555,7 +562,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     )}
                 </div>
 
-                {/* ── ALTERNATIVAS (redesenhado) ─────────────────────────── */}
+                {/* ── ALTERNATIVAS ─────────────────────────── */}
                 <div className={styles.editor_block}>
                     <div className={styles.alt_section_header}>
                         <span className={styles.alt_section_title}>Alternativas</span>
@@ -600,7 +607,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     {renderError('alternatives')}
                 </div>
 
-                {/* ── SELETOR ALTERNATIVA CORRETA (redesenhado) ─────────── */}
+                {/* ── SELETOR ALTERNATIVA CORRETA ─────────── */}
                 <div className={styles.correct_alt_block}>
                     <label className={styles.correct_alt_label}>Alternativa correta</label>
                     <p className={styles.correct_alt_hint}>
@@ -629,7 +636,7 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                     {renderError('correctAlternative')}
                 </div>
 
-                {/* ── RESOLUÇÃO (redesenhado) ───────────────────────────── */}
+                {/* CORRIGIDO: RESOLUÇÃO DETALHADA COMO TEXTAREA DINÂMICO */}
                 <div className={`${styles.editor_block} ${styles.resolution_block}`}>
                     <div className={styles.resolution_header}>
                         <span className={styles.resolution_title}>Resolução detalhada</span>
@@ -637,13 +644,14 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                             Explique o raciocínio passo a passo.
                         </span>
                     </div>
-                    <Input
-                        type="text"
-                        text=" "
+                    <textarea
+                        ref={resolucaoRef}
                         name="detailedResolution"
                         placeholder="Ex: Aplicando o teorema de Pitágoras, temos que..."
                         value={project.detailedResolution}
-                        handleOnChange={handleChange}
+                        onChange={handleChange}
+                        className={styles.expanding_textarea}
+                        style={{ background: '#fff' }}
                     />
                     {renderError('detailedResolution')}
                     {project.detailedResolution && (
@@ -682,7 +690,6 @@ function ProjectForme({ handleSubmit, projectData, btnText }) {
                             style={{ width: '100%', minHeight: '80px', marginTop: '5px' }}
                         />
                     </div>
-                    {/* Se for apenas visualização de erro/status para o usuário comum */}
                     <div className={styles.review_preview}>
                         <label>Comentários do Revisor (Visualização):</label>
                         <div className={styles.preview_box}>

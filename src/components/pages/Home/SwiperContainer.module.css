@@ -1,12 +1,92 @@
-
-.swiper_container{
-    width:100%;
-    max-width: 1440px;
-    margin: 0 auto;
-} 
-.slide_image img{
+/* Caixa externa que envelopa o carrossel dando espaçamento e sombra */
+.swiper_wrapper_box {
     width: 100%;
-    height: 300px;
-    object-fit: cover; 
-    filter:brightness(95%);
+    max-width: 1630px; /* Alinhado perfeitamente com a largura do corpo do seu portal */
+    margin: 10px auto 0 auto; /* Afasta um pouco do topo e do conteúdo abaixo */
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* O container do Swiper em si */
+.swiper_container {
+    width: 100%;
+    border-radius: 12px; /* Bordas arredondadas modernas */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); /* Sombra elegante */
+    overflow: hidden;
+    background-color: #0f172a; /* Fundo escuro protetivo caso a imagem demore a carregar */
+}
+
+/* Imagens dos Slides */
+.slide_image img {
+    width: 100%;
+    height: 440px; /* Altura ideal de banner para sistemas web */
+    object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
+    display: block;
+    filter: brightness(90%); /* Escurece levemente a imagem para dar contraste visual */
+    transition: filter 0.3s ease;
+}
+
+.slide_image img:hover {
+    filter: brightness(98%);
+}
+
+/* ── ESTILIZAÇÃO DOS COMPONENTES INTERNOS DO SWIPER ── */
+
+/* Customização das Setas Laterais de Navegação */
+.swiper_container :global(.swiper-button-next),
+.swiper_container :global(.swiper-button-prev) {
+    color: #ffffffa2; /* Seta branca */
+    background-color: rgba(15, 23, 42, 0.377); /* Fundo azul escuro translúcido */
+    width: 35px;
+    height: 35px;
+    border-radius: 50%; /* Transforma em um botão redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+/* Diminui o tamanho do ícone interno da seta para caber no círculo */
+.swiper_container :global(.swiper-button-next::after),
+.swiper_container :global(.swiper-button-prev::after) {
+    font-size: 1.2rem !important;
+    font-weight: bold;
+}
+
+/* Efeito Hover nas Setas */
+.swiper_container :global(.swiper-button-next:hover),
+.swiper_container :global(.swiper-button-prev:hover) {
+    background-color: #1c499b; /* Vira amarelo ouro ao passar o mouse */
+    color: #ffffff; /* Ícone fica azul escuro */
+    transform: scale(1.05);
+}
+
+/* Customização das Bolinhas de Paginação (Bottom) */
+.swiper_container :global(.swiper-pagination-bullet) {
+    background: #ffffff;
+    opacity: 0.6;
+    width: 10px;
+    height: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Bolinha Ativa (Slide Atual) */
+.swiper_container :global(.swiper-pagination-bullet-active) {
+    background: #1c499b !important; /* Cor Amarela de Destaque do Sistema */
+    width: 24px; /* Estica a bolinha ativa (efeito moderno capsule slider) */
+    border-radius: 5px;
+    opacity: 1;
+}
+
+/* Ajustes de Responsividade */
+@media (max-width: 768px) {
+    .slide_image img {
+        height: 220px; /* Reduz a altura em telas de celular para não sumir com o resto */
+    }
+    
+    /* Esconde as setas no celular para priorizar o toque (swipe por dedo) */
+    .swiper_container :global(.swiper-button-next),
+    .swiper_container :global(.swiper-button-prev) {
+        display: none;
+    }
 }
