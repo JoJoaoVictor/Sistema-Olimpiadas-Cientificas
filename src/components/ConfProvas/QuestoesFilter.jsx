@@ -236,7 +236,7 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
       />
       <button 
           onClick={() => setModalBNCCAberto(true)} 
-          style={{ padding: '0 15px', marginLeft: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+          style={{ fontSize:'15px',marginLeft: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
         >
           + Nova BNCC
         </button>
@@ -254,8 +254,8 @@ function QuestoesFilter({ filtros, setFiltros, setMostrarQuestoes }) {
             onChange={(e) => setFiltros({ ...filtros, statusUso: e.target.value })}
         >
             <option value="todas">Todas as Questões</option>
-            <option value="ineditas">Aprovadas</option>
-            <option value="aplicadas">Aplicadas </option>
+            <option value="ineditas">Não Aplicadas</option>
+            <option value="aplicadas">Aplicadas em provas </option>
         </select>
       </div>
     </div>

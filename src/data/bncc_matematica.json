@@ -122,7 +122,7 @@
               {
             "id": "15",
             "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medida de comprimento: unidades não padronizadas e padronizadas (metro, centímetro e milímetro)",
             "habilidade": "(EF02MA16)",
             "abilityDescription": "Estimar, medir e comparar comprimentos de lados de salas (incluindo contorno) e de polígonos, utilizando unidades de medida não padronizadas e padronizadas (metro, centímetro e milímetro) e instrumentos adequados."
@@ -130,7 +130,7 @@
               {
             "id": "16",
             "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medida de capacidade e de massa: unidades de medida não convencionais e convencionais (litro, mililitro, cm3, grama e quilograma)",
             "habilidade": "(EF02MA17)",
             "abilityDescription": "Estimar, medir e comparar capacidade e massa, utilizando estratégias pessoais e unidades de medida não padronizadas ou padronizadas (litro, mililitro, grama e quilograma)."
@@ -138,7 +138,7 @@
               {
             "id": "17",
             "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
             "habilidade": "(EF02MA18)",
             "abilityDescription": "Indicar a duração de intervalos de tempo entre duas datas, como dias da semana e meses do ano, utilizando calendário, para planejamentos e organização de agenda."
@@ -146,7 +146,7 @@
               {
             "id": "18",
             "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de tempo: intervalo de tempo, uso do calendário, leitura de horas em relógios digitais e ordenação de datas",
             "habilidade": "(EF02MA19)",
             "abilityDescription": "Medir a duração de um intervalo de tempo por meio de relógio digital e registrar o horário do início e do fim do intervalo."
@@ -154,7 +154,7 @@
               {
             "id": "19",
             "ano": "2º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Sistema monetário brasileiro: reconhecimento de cédulas e moedas e equivalência de valores",
             "habilidade": "(EF02MA20)",
             "abilityDescription": "Estabelecer a equivalência de valores entre moedas e cédulas do sistema monetário brasileiro para resolver situações cotidianas."
@@ -316,7 +316,7 @@
               {
             "id": "16",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Significado de medida e de unidade de medida",
             "habilidade": "(EF03MA17)",
             "abilityDescription": "Reconhecer que o resultado de uma medida depende da unidade de medida utilizada."
@@ -324,7 +324,7 @@
               {
             "id": "17",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Significado de medida e de unidade de medida",
             "habilidade": "(EF03MA18)",
             "abilityDescription": "Escolher a unidade de medida e o instrumento mais apropriado para medições de comprimento, tempo e capacidade."
@@ -332,7 +332,7 @@
               {
             "id": "18",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de comprimento (unidades não convencionais e convencionais): registro, instrumentos de medida, estimativas e comparações",
             "habilidade": "(EF03MA19)",
             "abilityDescription": "Estimar, medir e comparar comprimentos, utilizando unidades de medida não padronizadas e padronizadas mais usuais (metro, centímetro e milímetro) e diversos instrumentos de medida."
@@ -340,7 +340,7 @@
               {
             "id": "19",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de capacidade e de massa (unidades não convencionais e convencionais): registro, estimativas e comparações",
             "habilidade": "(EF03MA20)",
             "abilityDescription": "Estimar e medir capacidade e massa, utilizando unidades de medida não padronizadas e padronizadas mais usuais (litro, mililitro, quilograma, grama e miligrama), reconhecendo-as em leitura de rótulos e embalagens, entre outros."
@@ -348,7 +348,7 @@
               {
             "id": "20",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Comparação de áreas por superposição",
             "habilidade": "(EF03MA21)",
             "abilityDescription": "Comparar, visualmente ou por superposição, áreas de faces de objetos, de figuras planas ou de desenhos."
@@ -356,7 +356,7 @@
               {
             "id": "21",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
             "habilidade": "(EF03MA22)",
             "abilityDescription": "Ler e registrar medidas e intervalos de tempo, utilizando relógios (analógico e digital) para informar os horários de início e término de realização de uma atividade e sua duração."
@@ -364,7 +364,7 @@
               {
             "id": "22",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Medidas de tempo: leitura de horas em relógios digitais e analógicos, duração de eventos e reconhecimento de relações entre unidades de medida de tempo",
             "habilidade": "(EF03MA23)",
             "abilityDescription": "Ler horas em relógios digitais e em relógios analógicos e reconhecer a relação entre hora e minutos e entre minuto e segundos."
@@ -372,7 +372,7 @@
               {
             "id": "23",
             "ano": "3º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Sistema monetário brasileiro: estabelecimento de equivalências de um mesmo valor na utilização de diferentes cédulas e moedas",
             "habilidade": "(EF03MA24)",
             "abilityDescription": "Resolver e elaborar problemas que envolvam a comparação e a equivalência de valores monetários do sistema brasileiro em situações de compra, venda e troca."
@@ -1332,7 +1332,7 @@
           {
             "id": "29",
             "ano": "7º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Problemas envolvendo medições",
             "habilidade": "(EF07MA29) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvam medidas de grandezas inseridos em contextos oriundos de situações cotidianas ou de outras áreas do conhecimento, reconhecendo que toda medida empírica é aproximada."
@@ -1340,7 +1340,7 @@
           {
             "id": "30",
             "ano": "7º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Cálculo de volume de blocos retangulares, utilizando unidades de medida convencionais mais usuais",
             "habilidade": "(EF07MA30) ",
             "abilityDescription": "Resolver e elaborar problemas de cálculo de medida do volume de blocos retangulares, envolvendo as unidades usuais (metro cúbico, decímetro cúbico e centímetro cúbico)."
@@ -1348,7 +1348,7 @@
           {
             "id": "31",
             "ano": "7º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Equivalência de área de figuras planas: cálculo de áreas de figuras que podem ser decompostas por outras, cujas áreas podem ser facilmente determinadas como triângulos e quadriláteros",
             "habilidade": "(EF07MA31) ",
             "abilityDescription": "Estabelecer expressões de cálculo de área de triângulos e de quadriláteros."
@@ -1356,7 +1356,7 @@
           {
             "id": "32",
             "ano": "7º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Equivalência de área de figuras planas: cálculo de áreas de figuras que podem ser decompostas por outras, cujas áreas podem ser facilmente determinadas como triângulos e quadriláteros",
             "habilidade": "(EF07MA32) ",
             "abilityDescription": "Resolver e elaborar problemas de cálculo de medida de área de figuras planas que podem ser decompostas por quadrados, retângulos e/ou triângulos, utilizando a equivalência entre áreas."
@@ -1550,7 +1550,7 @@
           {
             "id": "19",
             "ano": "8º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Área de figuras planas Área do círculo e comprimento de sua circunferência",
             "habilidade": "(EF08MA19) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvam medidas de área de figuras geométricas, utilizando expressões de cálculo de área (quadriláteros, triângulos e círculos), em situações como determinar medida de terrenos."
@@ -1558,7 +1558,7 @@
           {
             "id": "20",
             "ano": "8º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Volume de bloco retangular. Medidas de capacidade",
             "habilidade": "(EF08MA20) ",
             "abilityDescription": "Reconhecer a relação entre um litro e um decímetro cúbico e a relação entre litro e metro cúbico, para resolver problemas de cálculo de capacidade de recipientes."
@@ -1566,7 +1566,7 @@
           {
             "id": "21",
             "ano": "8º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Volume de bloco retangular. Medidas de capacidade",
             "habilidade": "(EF08MA21) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvam o cálculo do volume de recipiente cujo formato é o de um bloco retangular."
@@ -1760,7 +1760,7 @@
           {
             "id": "16",
             "ano": "9º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Unidades de medida para medir distâncias muito grandes e muito pequenas Unidades de medida utilizadas na informática",
             "habilidade": "(EF09MA16) ",
             "abilityDescription": "Reconhecer e empregar unidades usadas para expressar medidas muito grandes ou muito pequenas, tais como distância entre planetas e sistemas solares, tamanho de vírus ou de células, capacidade de armazenamento de computadores, entre outros."
@@ -1768,7 +1768,7 @@
           {
             "id": "19",
             "ano": "9º ano",
-            "unidadeTematica": "Grandezas e medidas",
+            "unidadeTematica": "Grandezas e Medidas",
             "objetosDeConhecimento": "Volume de prismas e cilindros",
             "habilidade": "(EF09MA19) ",
             "abilityDescription": "Resolver e elaborar problemas que envolvam medidas de volumes de prismas e de cilindros retos, inclusive com uso de expressões de cálculo, em situações cotidianas."

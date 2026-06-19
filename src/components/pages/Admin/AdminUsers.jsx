@@ -22,7 +22,7 @@ const ROLE_META = {
   ADMIN:     { label: 'Admin',     color: '#6f42c1', bg: '#f0eaff', icon: <FaUserShield /> },
   PROFESSOR: { label: 'Professor', color: '#0d6efd', bg: '#e7f0ff', icon: <FaChalkboardTeacher /> },
   REVISOR:   { label: 'Revisor',   color: '#0ca678', bg: '#e6fcf5', icon: <FaUserCheck /> },
-  STUDENT:   { label: 'Estudante', color: '#fd7e14', bg: '#fff4e6', icon: <FaUserGraduate /> },
+  STUDENT:   { label: 'Elaborador', color: '#fd7e14', bg: '#fff4e6', icon: <FaUserGraduate /> },
 };
 
 function formatDate(iso) {
@@ -31,7 +31,8 @@ function formatDate(iso) {
 }
 
 function AdminUsers() {
-  const { token } = useAuth();
+  // Não precisamos mais do token manual – usamos signed/user para saber se estamos logados
+  const { signed, user } = useAuth();
 
   const [users,        setUsers]        = useState([]);
   const [loading,      setLoading]      = useState(true);
@@ -43,17 +44,20 @@ function AdminUsers() {
 
   // Modais
   const [userToDelete,  setUserToDelete]  = useState(null);
-  const [profileUser,   setProfileUser]   = useState(null);  // modal de perfil
-  const [profileStats,  setProfileStats]  = useState(null);  // dados carregados
+  const [profileUser,   setProfileUser]   = useState(null);
+  const [profileStats,  setProfileStats]  = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
   // ── Carregar usuários ────────────────────────────────────────────────────────
   useEffect(() => {
+    // Só carrega se estiver autenticado
+    if (!signed) return;
+
     async function loadUsers() {
-      if (!token) return;
       setLoading(true);
       try {
-        const data = await userService.getAllUsers(token);
+        // Agora sem token – o interceptor cuida disso
+        const data = await userService.getAllUsers();
         if (Array.isArray(data)) setUsers(data);
       } catch (err) {
         console.error('Erro ao buscar usuários:', err);
@@ -62,7 +66,7 @@ function AdminUsers() {
       }
     }
     loadUsers();
-  }, [token]);
+  }, [signed]);   // recarrega ao logar/deslogar
 
   // ── Abrir perfil + buscar stats REAIS e individuais do usuário ────────────────
   const openProfile = useCallback(async (user) => {
@@ -70,9 +74,7 @@ function AdminUsers() {
     setProfileStats(null);
     setProfileLoading(true);
     try {
-      // 🌟 MUDANÇA REALIZADA: Consome a nova rota focada nas estatísticas individuais
       const response = await api.get(`/api/v1/users/${user.id}/stats`);
-      
       if (response.data && response.data.success) {
         setProfileStats({
           questionsTotal: response.data.data.questionsTotal ?? 0,
@@ -92,7 +94,7 @@ function AdminUsers() {
   // ── Deletar usuário ──────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (!userToDelete) return;
-    const success = await userService.deleteUser(userToDelete.id, token);
+    const success = await userService.deleteUser(userToDelete.id);
     if (success) {
       setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
       setUserToDelete(null);
@@ -105,10 +107,9 @@ function AdminUsers() {
   const handleRoleChange = async (id, newRole) => {
     const oldUsers = [...users];
     setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
-    // Atualiza modal de perfil se estiver aberto para este user
     if (profileUser?.id === id) setProfileUser(prev => ({ ...prev, role: newRole }));
 
-    const success = await userService.updateUserRole(id, newRole, token);
+    const success = await userService.updateUserRole(id, newRole);
     if (!success) {
       setUsers(oldUsers);
       alert('Erro ao atualizar cargo.');
@@ -121,23 +122,17 @@ function AdminUsers() {
     else { setSortField(field); setSortDir('asc'); }
   };
 
-  // ── Filtragem + ordenação (Corrigido para o Schema Pydantic) ─────────────────
+  // ── Filtragem + ordenação ───────────────────────────────────────────────────
   const filteredUsers = users
     .filter(u => {
-      // 1. Filtro de Cargo (Role)
       const matchRole = roleFilter === 'ALL' || u.role?.toUpperCase() === roleFilter.toUpperCase();
-      
-      // 2. Filtro de Cidade (Polo) - Lendo do sub-objeto profile.cidade
       const userCidade = u.profile?.cidade?.trim() || '';
       const matchCity = cityFilter === 'ALL' || 
         userCidade.toLowerCase() === cityFilter.trim().toLowerCase();
-        
-      // 3. Filtro de Busca por texto (Nome ou Email)
       const matchText = !searchTerm ? true : (
         u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
-
       return matchRole && matchCity && matchText;
     })
     .sort((a, b) => {
@@ -146,20 +141,18 @@ function AdminUsers() {
       return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     });
 
-  // ── Obter cidades únicas padronizadas (Corrigido para o Schema Pydantic) ─────
+  // ── Cidades únicas ─────────────────────────────────────────────────────────
   const uniqueCities = useMemo(() => {
     if (!users || users.length === 0) return [];
-    
     const cidadesFiltradas = users
-      .map(u => u.profile?.cidade?.trim()) // 👈 Acessa u.profile.cidade
-      .filter(Boolean);                   // Remove nulos ou vazios
-
+      .map(u => u.profile?.cidade?.trim())  
+      .filter(Boolean);
     return Array.from(new Set(cidadesFiltradas)).sort((a, b) => 
       a.localeCompare(b, 'pt-BR')
     );
   }, [users]);
   
-  // ── Stats totais ─────────────────────────────────────────────────────────────
+  // ── Stats totais ─────────────────────────────────────────────────────────
   const countByRole = (role) => users.filter(u => u.role?.toUpperCase() === role).length;
 
   const STAT_CARDS = [
@@ -167,7 +160,7 @@ function AdminUsers() {
     { label: 'Admins',     value: countByRole('ADMIN'),    icon: <FaUserShield />,         color: '#6f42c1' },
     { label: 'Professores',value: countByRole('PROFESSOR'),icon: <FaChalkboardTeacher />,  color: '#0d6efd' },
     { label: 'Revisores',  value: countByRole('REVISOR'),  icon: <FaUserCheck />,          color: '#0ca678' },
-    { label: 'Estudantes', value: countByRole('STUDENT'),  icon: <FaUserGraduate />,       color: '#fd7e14' },
+    { label: 'Elaborador', value: countByRole('STUDENT'),  icon: <FaUserGraduate />,       color: '#fd7e14' },
   ];
 
   const ROLE_TABS = [
@@ -175,15 +168,13 @@ function AdminUsers() {
     { key: 'ADMIN',    label: 'Admins' },
     { key: 'PROFESSOR',label: 'Professores' },
     { key: 'REVISOR',  label: 'Revisores' },
-    { key: 'STUDENT',  label: 'Estudantes' },
+    { key: 'STUDENT',  label: 'Elaboradores' },
   ];
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={styles.page_wrapper}>
       <div className={styles.container}>
-
-        {/* ── Header ── */}
         <div className={styles.header_section}>
           <div>
             <h1><FiShield style={{ marginRight: '10px' }} />Gerenciar Usuários</h1>
@@ -191,7 +182,6 @@ function AdminUsers() {
           </div>
         </div>
 
-        {/* ── Stats Cards ── */}
         <div className={styles.stats_grid}>
           {STAT_CARDS.map(s => (
             <StatCard
@@ -204,7 +194,6 @@ function AdminUsers() {
           ))}
         </div>
 
-        {/* ── Toolbar ── */}
         <ToolBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -218,12 +207,10 @@ function AdminUsers() {
           roleTabsConfig={ROLE_TABS}
         />
 
-        {/* ── Resultado ── */}
         <p className={styles.result_count}>
           {loading ? 'Carregando...' : `${filteredUsers.length} usuário${filteredUsers.length !== 1 ? 's' : ''} encontrado${filteredUsers.length !== 1 ? 's' : ''}`}
         </p>
 
-        {/* ── Conteúdo ── */}
         <div className={styles.content_area}>
           {loading ? (
             <div className={styles.loading_state}>
@@ -236,7 +223,6 @@ function AdminUsers() {
             </div>
           ) : (
             <>
-              {/* TABELA (Desktop) - 🌟 Removido parâmetro obsoleto avatarUrl */}
               <UsersTable
                 users={filteredUsers}
                 sortField={sortField}
@@ -249,7 +235,6 @@ function AdminUsers() {
                 formatDate={formatDate}
               />
 
-              {/* CARDS (Mobile) - 🌟 Removido parâmetro obsoleto avatarUrl e corrigido bug de carregamento */}
               <div className={styles.mobile_list}>
                 {filteredUsers.map(user => (
                   <UserCard
@@ -267,7 +252,6 @@ function AdminUsers() {
         </div>
       </div>
 
-      {/* ── Modal: Perfil do Usuário ── - 🌟 Removido parâmetro obsoleto avatarUrl */}
       <ProfileModal
         profileUser={profileUser}
         profileStats={profileStats}
@@ -279,7 +263,6 @@ function AdminUsers() {
         formatDate={formatDate}
       />
 
-      {/* ── Modal: Confirmar Exclusão ── */}
       <DeleteConfirmationModal
         userToDelete={userToDelete}
         onConfirm={handleDelete}

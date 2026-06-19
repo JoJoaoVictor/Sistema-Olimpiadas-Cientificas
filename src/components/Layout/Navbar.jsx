@@ -37,7 +37,7 @@ function Navbar() {
             <img
               src={logo}
               alt="S.G.O.M"
-              className={styles.logo} // Movi o estilo inline para o CSS
+              className={styles.logo} 
             />
           </Link>
 
@@ -82,14 +82,11 @@ function Navbar() {
               </>
             )}
 
-            {/* ÁREA DO REVISOR */}
+            {/* ÁREA DO REVISOR (MODIFICADO: Removido link de Provas) */}
             {signed && isRevisor && (
               <>
                 <li className={styles.item}>
                   <Link to="/projects" onClick={handleLinkClick}>Revisar Questões</Link>
-                </li>
-                <li className={styles.item}>
-                  <Link to="/Prova" onClick={handleLinkClick}>Revisar Provas</Link>
                 </li>
               </>
             )}

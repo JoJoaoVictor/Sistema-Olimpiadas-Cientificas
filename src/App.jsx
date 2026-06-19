@@ -117,7 +117,7 @@ function AppContent() {
               5. ÁREA DO ADMINISTRADOR
              ==================================================== */}
           <Route element={<PrivateRoute allowedRoles={['ADMIN']} />}>
-            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/users" element={<AdminUsers key={location.pathname}/>} />
           </Route>
 
           {/* Rota Coringa (404) - Redireciona para login */}

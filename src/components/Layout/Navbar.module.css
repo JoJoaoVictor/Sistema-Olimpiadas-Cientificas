@@ -19,7 +19,7 @@
 
 /* Estilo da Logo */
 .logo {
-  width: 50px; /* Tamanho fixo é melhor que vw para mobile */
+  width: 70px; 
   height: auto;
   margin-left: 10px;
   transition: transform 0.2s;

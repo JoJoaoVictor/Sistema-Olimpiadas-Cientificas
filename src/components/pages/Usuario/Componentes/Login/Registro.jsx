@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useSearchParams  } from "react-router-dom";
 import "./Registro.css";
 import { authService } from "../../../../../services/authService";
 import useAuth from "../../../../../hooks/useAuth";
@@ -89,6 +89,13 @@ const Registro = () => {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
 
+   // Lê o parâmetro 'role' da URL (ex: /registro?role=STUDENT)
+  const [searchParams] = useSearchParams();
+  const roleFromUrl = searchParams.get('role');
+  const initialRole = (roleFromUrl && ['STUDENT', 'PROFESSOR', 'REVISOR'].includes(roleFromUrl))
+    ? roleFromUrl
+    : 'STUDENT';
+    
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -303,7 +310,7 @@ const Registro = () => {
                   onChange={handleRoleChange}
                   disabled={loading}
                 >
-                  <option value="STUDENT">Estudante</option>
+                  <option value="STUDENT">Elaborador</option>
                   <option value="PROFESSOR">Professor</option>
                   <option value="REVISOR">Revisor</option>
                 </select>

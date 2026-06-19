@@ -27,9 +27,18 @@
     margin-bottom: 12px;
     letter-spacing: -0.5px;
 }
+.header_content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
 
 .header_content h1 span {
     color: #0871ea;
+}
+.header_content h2 span {
+    color: #29a834;
 }
 
 .header_content p {
@@ -232,6 +241,7 @@
     border-radius: 6px;
     font-weight: 500;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .city_tag:hover {
@@ -487,8 +497,6 @@
     .split_card {
         flex-direction: column;
     }
-
-    /* Muda a ordem para o celular: Texto primeiro, Imagem depois (ou vice-versa) */
     .reverse_mobile {
         flex-direction: column-reverse;
     }

@@ -71,7 +71,7 @@ function UsersTable({
                     borderColor: ROLE_META[user.role?.toUpperCase()]?.color || '#ddd',
                   }}
                 >
-                  <option value="STUDENT">Estudante</option>
+                  <option value="STUDENT">Elaborador</option>
                   <option value="PROFESSOR">Professor</option>
                   <option value="REVISOR">Revisor</option>
                   <option value="ADMIN">Admin</option>

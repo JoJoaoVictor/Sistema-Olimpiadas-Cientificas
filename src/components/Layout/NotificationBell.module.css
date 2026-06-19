@@ -1,6 +1,6 @@
 /* ============================================================
    NotificationBell.module.css
-   Estilos para o componente de notificações
+   Estilos para o componente de notificações (versão S.G.O.M)
    ============================================================ */
 
 .notificationBell {
@@ -20,12 +20,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
-  color: #ffffff;
+  transition: transform 0.2s ease, color 0.2s ease;
+  color: #cbd5e1;                /* cinza claro (padrão da navbar) */
 }
 
 .bellButton:hover {
   transform: scale(1.1);
+  color: #087dea;               /* azul destaque no hover */
 }
 
 .bellButton:active {
@@ -37,7 +38,7 @@
   position: absolute;
   top: 2px;
   right: 2px;
-  background: #ef4444;
+  background: #ef4444;          /* vermelho mantido para contraste */
   color: white;
   border-radius: 50%;
   width: 18px;
@@ -50,6 +51,7 @@
   line-height: 1;
   min-width: 18px;
   min-height: 18px;
+  font-family: 'Inter', sans-serif;
 }
 
 /* ── DROPDOWN MENU ───────────────────────────────────────── */
@@ -58,62 +60,63 @@
   top: calc(100% + 12px);
   right: 0;
   width: 380px;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
   max-height: 500px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  animation: slideDown 0.2s ease;
+  animation: slideDown 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-12px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 /* ── DROPDOWN HEADER ─────────────────────────────────────── */
 .dropdownHeader {
   padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-  background: #f9fafb;
+  background: #f8fafc;          /* fundo levemente azulado */
 }
 
 .dropdownHeader h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: #0f172a;               /* azul escuro do sistema */
 }
 
 .markAllBtn {
   background: none;
   border: none;
-  color: #3b82f6;
+  color: #087dea;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .markAllBtn:hover {
-  text-decoration: underline;
-  color: #2563eb;
+  background-color: #e7f1ff;
 }
 
 .markAllBtn:active {
@@ -127,50 +130,59 @@
   max-height: 420px;
 }
 
-/* Scrollbar styling */
+/* Scrollbar personalizada (tema azul) */
 .notificationList::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 .notificationList::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f5f9;
+  border-radius: 3px;
 }
 
 .notificationList::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #94a3b8;
   border-radius: 3px;
 }
 
 .notificationList::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #64748b;
 }
 
 /* ── NOTIFICATION ITEM ───────────────────────────────────── */
 .notificationItem {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-left-color 0.2s;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+  border-left: 3px solid transparent;   /* preparado para destaque */
 }
 
 .notificationItem:hover {
-  background-color: #f9fafb;
+  background-color: #f8fafc;
 }
 
 .notificationItem:active {
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
 }
 
+/* Item não lido */
 .notificationItem.unread {
-  background-color: #eff6ff;
+  background-color: #e7f1ff;          /* azul bem claro */
+  border-left-color: #087dea;         /* destaque lateral */
 }
 
 .notificationItem.unread:hover {
   background-color: #dbeafe;
+}
+
+/* Item lido */
+.notificationItem.read {
+  border-left-color: transparent;
 }
 
 /* ── NOTIFICATION CONTENT ────────────────────────────────── */
@@ -182,7 +194,7 @@
 .notifContent strong {
   display: block;
   font-size: 14px;
-  color: #1f2937;
+  color: #0f172a;
   margin-bottom: 4px;
   font-weight: 600;
 }
@@ -190,7 +202,7 @@
 .notifContent p {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: #475569;
   word-break: break-word;
   line-height: 1.4;
 }
@@ -198,16 +210,22 @@
 .notifContent small {
   display: block;
   margin-top: 6px;
-  color: #9ca3af;
+  color: #94a3b8;
   font-size: 11px;
   font-weight: 500;
+}
+
+/* Nome do editor (quem gerou a notificação) */
+.editor {
+  font-weight: 600;
+  color: #087dea;
 }
 
 /* ── UNREAD DOT ──────────────────────────────────────────── */
 .dot {
   width: 8px;
   height: 8px;
-  background: #3b82f6;
+  background: #087dea;
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 4px;
@@ -218,7 +236,7 @@
 .emptyMessage,
 .errorMessage,
 .loadingMessage {
-  padding: 32px 16px;
+  padding: 40px 16px;
   text-align: center;
   font-size: 14px;
 }
@@ -226,7 +244,7 @@
 .emptyMessage p,
 .loadingMessage p {
   margin: 0;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .errorMessage p {
@@ -244,7 +262,7 @@
   }
 
   .notificationItem {
-    padding: 10px 12px;
+    padding: 12px 12px;
   }
 
   .notifContent strong {
@@ -265,28 +283,29 @@
 
   .markAllBtn {
     font-size: 11px;
-    padding: 2px 6px;
+    padding: 2px 8px;
   }
 }
 
-/* ── DARK MODE (se implementado no futuro) ──────────────── */
+/* ── DARK MODE (opcional, mantido por consistência) ──────── */
 @media (prefers-color-scheme: dark) {
   .notificationDropdown {
-    background: #1f2937;
-    border-color: #374151;
+    background: #1e293b;
+    border-color: #334155;
   }
 
   .dropdownHeader {
-    background: #111827;
-    border-color: #374151;
+    background: #0f172a;
+    border-color: #334155;
   }
 
   .dropdownHeader h3 {
-    color: #f3f4f6;
+    color: #f1f5f9;
   }
 
   .notificationItem.unread {
     background-color: #1e3a8a;
+    border-left-color: #3b82f6;
   }
 
   .notificationItem.unread:hover {
@@ -294,27 +313,35 @@
   }
 
   .notificationItem:hover {
-    background-color: #374151;
+    background-color: #334155;
   }
 
   .notifContent strong {
-    color: #f3f4f6;
+    color: #f1f5f9;
   }
 
   .notifContent p {
-    color: #d1d5db;
+    color: #cbd5e1;
   }
 
   .notifContent small {
-    color: #9ca3af;
+    color: #64748b;
   }
 
   .emptyMessage p,
   .loadingMessage p {
-    color: #6b7280;
+    color: #64748b;
   }
 
   .errorMessage p {
     color: #fca5a5;
+  }
+
+  .dot {
+    background: #3b82f6;
+  }
+
+  .markAllBtn {
+    color: #60a5fa;
   }
 }

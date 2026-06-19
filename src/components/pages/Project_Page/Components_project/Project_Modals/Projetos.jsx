@@ -1,16 +1,6 @@
 // src/components/pages/Project_Page/Components_project/Project_Modals/Projetos.jsx
 //
-// ── ALTERAÇÃO 9 ────────────────────────────────────────────────────────────
-// Antes: um useEffect lia localStorage para setar isRevisor. Isso causava
-// dois bugs:
-//   1. Ao trocar de conta, o componente ainda usava o role da sessão anterior
-//      até ser desmontado/remontado — fazendo campos sumirem ou aparecerem errado.
-//   2. Se o usuário sem permissão tentasse acessar a rota, o 403 do backend
-//      era silenciado e a tela ficava em branco sem feedback.
-//
-// Agora:
-//   - isRevisor vem do usePermission() (reativo ao AuthContext).
-//   - O erro 403 é tratado explicitamente com mensagem clara na tela.
+// (cabeçalho de comentários mantido)
 
 import styles from './Projetos.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -31,8 +21,6 @@ function Projetos() {
   const { id }   = useParams();
   const navigate = useNavigate();
 
-  // ── Substituição do useEffect de role ──────────────────────────────────
-  // Antes: useEffect com localStorage → agora uma linha reativa
   const { isRevisor } = usePermission();
 
   const [projeto,         setProjeto]         = useState({});
@@ -88,9 +76,6 @@ function Projetos() {
         }
       } catch (err) {
         if (!isMounted) return;
-        // ── Tratamento explícito do 403 ──────────────────────────────────
-        // Antes: o erro era apenas logado no console e a tela ficava em branco.
-        // Agora: seta erroAcesso=true e exibe mensagem clara ao usuário.
         if (err.response?.status === 403) {
           setErroAcesso(true);
         } else {
@@ -109,8 +94,6 @@ function Projetos() {
   // SALVAR EDIÇÃO
   // =========================================================================
   async function editPost(dadosDoFormulario) {
-    // Se for Revisor E marcou explicitamente como aprovada (ID 2), aceita.
-    // Caso contrário (não marcado, ou utilizador comum), sempre será 1 (Revisão/Pendente)
     const marcarComoAprovada = isRevisor && String(dadosDoFormulario.categoryId) === '2';
     const categoryId = marcarComoAprovada ? 2 : 1;
 
@@ -129,13 +112,9 @@ function Projetos() {
       correct_alternative: dadosDoFormulario.correctAlternative ? dadosDoFormulario.correctAlternative.toUpperCase() : "",
       detailed_resolution: dadosDoFormulario.detailedResolution,
       category_id:         categoryId,
-      
-      // 🌟 CORREÇÃO AQUI: Preserva os comentários existentes da base de dados se o formulário não enviar novos,
-      // garantindo que o texto do revisor nunca seja apagado por acidente durante a revisão.
       reviewer_comments:   dadosDoFormulario.reviewerComments !== undefined 
                             ? dadosDoFormulario.reviewerComments 
                             : (projeto.reviewerComments || ""),
-                            
       image_id:            dadosDoFormulario.image?.id || null,
       image_role:          dadosDoFormulario.image?.role || null,
     };
@@ -163,7 +142,7 @@ function Projetos() {
           detailedResolution: payload.detailed_resolution,
           categoryId:         payload.category_id,
           categoryName:       updated.category?.name || (payload.category_id === 2 ? 'Aprovado' : 'Revisão'),
-          reviewerComments:   payload.reviewer_comments, // Atualiza o estado local com o comentário mantido
+          reviewerComments:   payload.reviewer_comments,
           imageURL:           updated.image?.url ? new URL(updated.image.url, api.defaults.baseURL).href : null,
           imageRole:          payload.image_role,
           imageId:            updated.image?.id,
@@ -179,6 +158,7 @@ function Projetos() {
       alert("Erro ao salvar as alterações: " + (err.response?.data?.detail || authService._handleError(err)));
     }
   }
+
   // =========================================================================
   // HELPERS
   // =========================================================================
@@ -227,7 +207,6 @@ function Projetos() {
   // RENDER
   // =========================================================================
 
-  // Tela de acesso negado — substitui o branco silencioso do 403
   if (erroAcesso) {
     return (
       <div className={styles.page_wrapper}>
@@ -325,6 +304,15 @@ function Projetos() {
                       <p>{projeto.bnccTheme}</p>
                     </div>
                   </section>
+                  <div className={styles.info_box}>
+                      <span className={styles.label}>Habilidade BNCC</span>
+                      <p><strong>{projeto.abilityCode}</strong></p>
+                      {projeto.abilityDescription && (
+                        <p style={{ fontSize: '0.9rem', color: '#555', marginTop: '4px' }}>
+                          {projeto.abilityDescription}
+                        </p>
+                      )}
+                    </div>
                   <hr className={styles.divider} />
                   <section className={styles.latex_section}>
                     <h3><BsCardText /> Conteúdo da Questão</h3>

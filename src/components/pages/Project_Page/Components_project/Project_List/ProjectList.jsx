@@ -2,7 +2,8 @@
 import styles from './ProjectList.module.css';
 
 // Ícones para edição e exclusão
-import { BsPencil, BsFillTrashFill, BsCalendar3, BsBarChart, BsCodeSlash } from 'react-icons/bs';
+import {BsPencil, BsFillTrashFill, BsCalendar3, BsBarChart, BsCodeSlash } from 'react-icons/bs';
+import {  FiEye } from 'react-icons/fi';
 
 // React Router para navegação
 import { Link } from 'react-router-dom';
@@ -94,7 +95,7 @@ function ProjectList({
         {/* Botões de Ação */}
         <div className={styles.actions}>
           <Link className={styles.edit_btn} to={`/projetos/${id}`} title="Editar">
-            <BsPencil />
+            <  FiEye  />
           </Link>
           <button className={styles.delete_btn} onClick={remove} title="Excluir">
             <BsFillTrashFill /> 

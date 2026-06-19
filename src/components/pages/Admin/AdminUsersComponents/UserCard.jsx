@@ -58,7 +58,7 @@ function UserCard({
           onChange={e => onRoleChange(user?.id, e.target.value)}
           className={styles.role_select_mobile}
         >
-          <option value="STUDENT">Estudante</option>
+          <option value="STUDENT">Elaborador</option>
           <option value="PROFESSOR">Professor</option>
           <option value="REVISOR">Revisor</option>
           <option value="ADMIN">Admin</option>

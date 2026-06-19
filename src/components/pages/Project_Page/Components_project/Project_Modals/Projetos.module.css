@@ -12,11 +12,11 @@
 /* Botão de voltar discreto */
 .back_btn {
     align-self: flex-start;
-    margin-bottom: 15px;
+    margin: 10px;
     background: none;
     border: none;
     color: #666;
-    font-size: 1rem;
+    font-size: 1.5rem;
     cursor: pointer;
     display: flex;
     align-items: center;

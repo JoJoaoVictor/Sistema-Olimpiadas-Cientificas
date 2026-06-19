@@ -40,7 +40,8 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <h1 className="brand-logo"><img src={logo} alt="Logo" /></h1> 
+      <h1 className="brand-logo">
+        <img style={{width:'100%'}} src={logo} alt="Logo" /></h1> 
 
       <div className="login-card">
         <h2>Iniciar sessão</h2>

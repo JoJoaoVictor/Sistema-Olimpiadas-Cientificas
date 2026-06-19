@@ -1,4 +1,4 @@
-// src/components/pages/Project_Page/NewProject.jsx
+import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProjectForme from './Project_Forme/ProjectForme';
 import api from '../../../services/api';
@@ -7,6 +7,50 @@ import styles from './NewProjects.module.css';
 
 function NewProject() {
     const navigate = useNavigate();
+    const formRef = useRef(null);
+
+    // Carrega o rascunho de forma SÍNCRONA antes da primeira renderização
+    const [initialData] = useState(() => {
+        const saved = sessionStorage.getItem('draftNewProject');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                // Não remova ainda – mantenha até que o usuário submeta com sucesso
+                // sessionStorage.removeItem('draftNewProject');
+                return parsed;
+            } catch (e) {
+                console.error('Erro ao restaurar rascunho:', e);
+                return null;
+            }
+        }
+        return null;
+    });
+
+    // Autosave a cada 2 segundos
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (formRef.current?.getFormData) {
+                const data = formRef.current.getFormData();
+                if (data && Object.keys(data).length > 0) {
+                    sessionStorage.setItem('draftNewProject', JSON.stringify(data));
+                }
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Salvamento de emergência quando a sessão expira
+    useEffect(() => {
+        const handler = () => {
+            if (formRef.current?.getFormData) {
+                const data = formRef.current.getFormData();
+                sessionStorage.setItem('draftNewProject', JSON.stringify(data));
+            }
+        };
+        window.addEventListener('session-expired', handler);
+        return () => window.removeEventListener('session-expired', handler);
+    }, []);
 
     const createPost = async (project) => {
         const payload = {
@@ -33,6 +77,7 @@ function NewProject() {
         try {
             const response = await api.post('/api/v1/questions', payload);
             if (response.data && response.data.success) {
+                sessionStorage.removeItem('draftNewProject');
                 navigate('/projects');
             } else {
                 alert(response.data?.message || 'Erro ao criar questão');
@@ -46,7 +91,12 @@ function NewProject() {
 
     return (
         <div className={styles.newproject_container}>
-            <ProjectForme handleSubmit={createPost} btnText="Submeter Questão" />
+            <ProjectForme
+                ref={formRef}
+                handleSubmit={createPost}
+                btnText="Submeter Questão"
+                initialData={initialData}   
+            />
         </div>
     );
 }

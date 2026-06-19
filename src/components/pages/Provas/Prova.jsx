@@ -231,8 +231,7 @@ function Prova() {
                         className={styles.exams_icon_img} 
                     />
                 </div>
-            </header>
-
+      </header>
       {/* ── Tabs: Aprovadas / Aplicadas / Pendentes ───────────────────────────── */}
         <div className={styles.tabs_container}>
           {TABS

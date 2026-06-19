@@ -1,10 +1,7 @@
 // src/services/userService.js
-
-// URL base apontando para a versão 1 da API
-const API_URL = 'http://localhost:8000/api/v1'; 
+import api from './api';
 
 export const userService = {
-  
   // =========================================================================
   // ÁREA ADMINISTRATIVA (Gerenciamento de outros usuários)
   // =========================================================================
@@ -13,51 +10,31 @@ export const userService = {
    * Busca todos os usuários cadastrados.
    * Rota Backend: GET /api/v1/users
    */
-  getAllUsers: async (token) => {
+  getAllUsers: async (params = {}) => {
     try {
-      const response = await fetch(`${API_URL}/users`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        console.error("Erro na requisição:", response.status, response.statusText);
-        return [];
-      }
-
-      const responseData = await response.json();
+      const response = await api.get('/api/v1/users', { params });
       
       // O backend retorna: { success: true, data: { users: [...] } }
-      if (responseData.success && responseData.data && responseData.data.users) {
-        return responseData.data.users;
+      if (response.data.success && response.data.data && response.data.data.users) {
+        return response.data.data.users;
       }
-      
       return [];
     } catch (error) {
-      console.error("Erro de conexão ao buscar usuários:", error);
+      console.error('Erro ao buscar usuários:', error);
       return [];
     }
   },
 
   /**
-   * Remove um usuário pelo ID (Soft Delete).
+   * Remove um usuário pelo ID (Hard Delete).
    * Rota Backend: DELETE /api/v1/users/{id}
    */
-  deleteUser: async (id, token) => {
+  deleteUser: async (id) => {
     try {
-      const response = await fetch(`${API_URL}/users/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      return response.ok;
+      const response = await api.delete(`/api/v1/users/${id}`);
+      return response.data.success || false;
     } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
+      console.error('Erro ao deletar usuário:', error);
       return false;
     }
   },
@@ -66,27 +43,61 @@ export const userService = {
    * Atualiza o cargo (Role) de um usuário específico (Admin -> Outros).
    * Rota Backend: PUT /api/v1/users/{id}/role
    */
-  updateUserRole: async (id, newRole, token) => {
+  updateUserRole: async (id, newRole) => {
     try {
-      const response = await fetch(`${API_URL}/users/${id}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ role: newRole })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Erro ao atualizar cargo:", errorData.detail);
-        return false;
-      }
-
-      return true;
+      const response = await api.put(`/api/v1/users/${id}/role`, { role: newRole });
+      return response.data.success || false;
     } catch (error) {
-      console.error("Erro de conexão ao atualizar cargo:", error);
+      console.error('Erro ao atualizar cargo:', error);
       return false;
+    }
+  },
+
+  /**
+   * Cria um novo usuário (Admin).
+   * Rota Backend: POST /api/v1/users
+   */
+  createUser: async (userData) => {
+    try {
+      const response = await api.post('/api/v1/users', userData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Obtém estatísticas gerais do sistema (Admin).
+   * Rota Backend: GET /api/v1/users/stats/summary
+   */
+  getStatsSummary: async () => {
+    try {
+      const response = await api.get('/api/v1/users/stats/summary');
+      if (response.data.success && response.data.data) {
+        return response.data.data.stats;
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Obtém estatísticas de um usuário específico (Admin).
+   * Rota Backend: GET /api/v1/users/{userId}/stats
+   */
+  getUserStats: async (userId) => {
+    try {
+      const response = await api.get(`/api/v1/users/${userId}/stats`);
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas do usuário:', error);
+      return null;
     }
   },
 
@@ -97,27 +108,16 @@ export const userService = {
   /**
    * Busca os dados atualizados do usuário logado.
    * Rota Backend: GET /api/v1/users/me
-   * Útil para atualizar o estado da aplicação sem precisar relogar.
    */
-  getMe: async (token) => {
+  getMe: async () => {
     try {
-      const response = await fetch(`${API_URL}/users/me`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) return null;
-
-      const responseData = await response.json();
-      // O backend retorna: { success: true, data: { ...user_data } }
-      if (responseData.success && responseData.data) {
-        return responseData.data;
+      const response = await api.get('/api/v1/users/me');
+      if (response.data.success && response.data.data) {
+        return response.data.data;
       }
       return null;
     } catch (error) {
-      console.error("Erro ao buscar dados do perfil:", error);
+      console.error('Erro ao buscar dados do perfil:', error);
       return null;
     }
   },
@@ -126,27 +126,12 @@ export const userService = {
    * Atualiza dados do próprio perfil (Nome e Foto).
    * Rota Backend: PUT /api/v1/users/me
    */
-  updateProfile: async (data, token) => {
-    // data deve ser um objeto: { name: "Novo Nome", avatar_url: "http://..." }
+  updateProfile: async (data) => {
     try {
-      const response = await fetch(`${API_URL}/users/me`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-      });
-      
-      if (!response.ok) {
-        throw new Error("Falha ao atualizar perfil");
-      }
-
-      const responseData = await response.json();
-      // Retorna os dados do usuário atualizados
-      return responseData.data || null; 
+      const response = await api.put('/api/v1/users/me', data);
+      return response.data.data || null;
     } catch (error) {
-      console.error("Erro na atualização de perfil:", error);
+      console.error('Erro na atualização de perfil:', error);
       return null;
     }
   },
@@ -155,29 +140,26 @@ export const userService = {
    * Altera a senha do usuário logado.
    * Rota Backend: POST /api/v1/users/change-password
    */
-  changePassword: async (data, token) => {
-    // data deve ser: { current_password: "...", new_password: "..." }
+  changePassword: async (data) => {
     try {
-      const response = await fetch(`${API_URL}/users/change-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        // Lança o erro específico retornado pelo backend (ex: "Senha atual incorreta")
-        throw new Error(result.detail || "Erro ao alterar senha");
-      }
-
-      return result; // { success: true, message: "..." }
+      const response = await api.post('/api/v1/users/change-password', data);
+      return response.data;
     } catch (error) {
-      // Repassa o erro para ser tratado no componente (exibir alerta vermelho)
       throw error;
     }
-  }
+  },
+
+  /**
+   * Aceita os termos de uso (LGPD).
+   * Rota Backend: POST /api/v1/users/accept-terms
+   */
+  acceptTerms: async () => {
+    try {
+      const response = await api.post('/api/v1/users/accept-terms');
+      return response.data.success || false;
+    } catch (error) {
+      console.error('Erro ao aceitar termos:', error);
+      return false;
+    }
+  },
 };

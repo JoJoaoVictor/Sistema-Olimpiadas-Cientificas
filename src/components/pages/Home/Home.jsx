@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import styles from './Home.module.css';
 import LinkButton from '../../Layout/LinkButton.jsx';
 import Swipe from './Swipe.jsx';
+import { Link } from 'react-router-dom'; 
 
 // Imagens Originais Restauradas
 import Imagens from './Imgs/ferramentas.png';
 import Imagens2 from './Imgs/t2.jpg';
 import Imagens3 from './Imgs/t3.jpg';
-import Imagens4 from './Imgs/Logo_Programa_Olimpiadas-removebg-preview.png';
+import Imagens4 from './../../../img/logov.png';
 import Imagens5 from './Imgs/logo_Unemat-removebg-preview.png';
-
+//
 // Ícones modernos
 import { 
     FaSignInAlt, FaTasks, FaPlusCircle, FaUserGraduate, FaUserShield, 
@@ -19,6 +20,40 @@ import {
 
 import useAuth from '../.././../hooks/useAuth.jsx';
 import TermsOverlay from './../Usuario/TermsOverlay.jsx'; 
+
+// ========================
+// MAPEAMENTO DE LINKS EXTERNOS POR CIDADE
+// Substitua os valores "#" pelos links reais (ex: site da prefeitura, página do projeto na cidade, etc.)
+// ========================
+const CIDADE_LINKS = {
+    // Polo Barra do Bugres (BBG)
+    "Alto Paraguai": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/alto-paraguai?authuser=0",
+    "Barra do Bugres": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/barra-do-bugres?authuser=0",
+    "Diamantino": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/diamantino?authuser=0",
+    "Nortelândia": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/nortel%C3%A2ndia?authuser=0",
+    "Nova Marilândia": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/nova-maril%C3%A2ndia?authuser=0",
+    "Nova Olímpia": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/nova-ol%C3%ADmpia?authuser=0",
+    "Porto Estrela": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/porto-estrela?authuser=0",
+    "Tangará da Serra": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-barra-do-bugres/tangar%C3%A1-da-serra?authuser=0",
+
+    // Polo Sinop (SNP)
+    "Alta Floresta": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/alta-floresta?authuser=0",
+    "Campo Novo do Parecis": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/campo-novo-do-parecis?authuser=0",
+    "Carlinda": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/carlinda?authuser=0",
+    "Itanhangá": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/itanhang%C3%A1?authuser=0",
+    "Itaúba": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/ita%C3%BAba?authuser=0",
+    "Lucas do Rio Verde": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/lucas-do-rio-verde?authuser=0",
+    "Marcelândia": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/marcel%C3%A2ndia?authuser=0",
+    "Nova Canaã do Norte": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/nova-cana%C3%A3-do-norte?authuser=0",
+    "Nova Monte Verde": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/nova-monte-verde?authuser=0",
+    "Nova Santa Helena": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/nova-santa-helena?authuser=0",
+    "Paranaíta": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/parana%C3%ADta?authuser=0",
+    "Porto dos Gaúchos": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/porto-dos-ga%C3%BAchos?authuser=0",
+    "Sinop": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/sinop?authuser=0",
+    "Tabaporã": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/tabapor%C3%A3?authuser=0",
+    "Tapurah": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/tapurah?authuser=0",
+    "Terra Nova do Norte": "https://sites.google.com/unemat.br/olimpiada-de-matematica/OM/polo-sinop/terra-nova-do-norte?authuser=0"
+};
 
 function Home() {
     const { user, signed, updateUser } = useAuth();
@@ -57,8 +92,9 @@ function Home() {
 
             <header className={styles.portal_header}>
                 <div className={styles.header_content}>
-                    <h1>Sistema <span>S.G.O.M</span></h1>
-                    <p>Sistema de Gestão do Programa Olimpíada de Matemática da UNEMAT</p>
+                    <img style={{width:'15%'}} src={Imagens4} alt="Emblema" />
+                    <h2>Sistema de Gestão de provas do Programa Olimpíada de Matemática da<span> UNEMAT</span></h2>
+                        <h3>S.G.O.M</h3>
                 </div>
             </header>
 
@@ -90,22 +126,44 @@ function Home() {
                     </div>
 
                     <div className={styles.roles_grid}>
-                        <div className={styles.role_card}>
-                            <div className={`${styles.role_icon_badge} ${styles.student_badge}`}><FaUserGraduate /></div>
+                        {/* ELABORADOR → STUDENT */}
+                        <Link
+                            to="/register?role=STUDENT"
+                            className={styles.role_card}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <div className={`${styles.role_icon_badge} ${styles.student_badge}`}>
+                                <FaUserGraduate />
+                            </div>
                             <h3>Elaborador de Questões</h3>
                             <p>Elaboração e sugestão de novas questões baseadas no LaTeX e BNCC.</p>
-                        </div>
-                        <div className={styles.role_card}>
-                            <div className={`${styles.role_icon_badge} ${styles.revisor_badge}`}><FaUserShield /></div>
+                        </Link>
+
+                        {/* REVISOR */}
+                        <Link
+                            to="/register?role=REVISOR"
+                            className={styles.role_card}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <div className={`${styles.role_icon_badge} ${styles.revisor_badge}`}>
+                                <FaUserShield />
+                            </div>
                             <h3>Revisor / Moderador</h3>
                             <p>Análise, correção e revisão técnica de questões e rascunhos de exames pendentes.</p>
-                        </div>
-                        <div className={styles.role_card}>
-                            <div className={`${styles.role_icon_badge} ${styles.professor_badge}`}><FaUserTie /></div>
-                            <h3>Professor Orientador</h3>
+                        </Link>
+
+                        {/* PROFESSOR COORDENADOR */}
+                        <Link
+                            to="/register?role=PROFESSOR"
+                            className={styles.role_card}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <div className={`${styles.role_icon_badge} ${styles.professor_badge}`}>
+                                <FaUserTie />
+                            </div>
+                            <h3>Professor Coordenador</h3>
                             <p>Autonomia para criar novas questões e montar provas completas personalizadas.</p>
-                        </div>
-                      
+                        </Link>
                     </div>
                 </section>
 
@@ -126,7 +184,7 @@ function Home() {
                 {/* === SEÇÃO: POLOS REGIONAIS E MUNICÍPIOS === */}
                 <section className={styles.polos_section}>
                     <div className={styles.section_title}>
-                        <h2>Polos Ativos de Abrangência</h2>
+                        <h2>Polos Ativos e Municípios Participantes</h2>
                     </div>
                     <div className={styles.polos_grid}>
                         <div className={styles.polo_card}>
@@ -135,7 +193,18 @@ function Home() {
                                 <span className={styles.polo_count}>8 Projetos</span>
                             </div>
                             <div className={styles.cities_grid}>
-                                {cidadesBBG.map((cidade, i) => <span key={i} className={styles.city_tag}>{cidade}</span>)}
+                                {cidadesBBG.map((cidade, i) => (
+                                    <a 
+                                        key={i}
+                                        href={CIDADE_LINKS[cidade] || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.city_tag}
+                                        title={`Saiba mais sobre o projeto em ${cidade}`}
+                                    >
+                                        {cidade}
+                                    </a>
+                                ))}
                             </div>
                         </div>
                         <div className={styles.polo_card}>
@@ -144,7 +213,18 @@ function Home() {
                                 <span className={styles.polo_count}>16 Projetos</span>
                             </div>
                             <div className={styles.cities_grid}>
-                                {cidadesSNP.map((cidade, i) => <span key={i} className={styles.city_tag}>{cidade}</span>)}
+                                {cidadesSNP.map((cidade, i) => (
+                                    <a 
+                                        key={i}
+                                        href={CIDADE_LINKS[cidade] || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.city_tag}
+                                        title={`Saiba mais sobre o projeto em ${cidade}`}
+                                    >
+                                        {cidade}
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -154,13 +234,13 @@ function Home() {
                 <section className={styles.stats_dashboard_section}>
                     <div className={styles.stats_banner}>
                         <div className={styles.stats_header}>
-                            <h2><FaHistory /> Histórico de Impacto e Atuação</h2>
+                            <h2><FaHistory /> Estatísticas do Projeto</h2>
                             <p>Aplicando exames em três fases distribuídos por níveis de escolaridade continuamente desde 2015.</p>
                         </div>
                         <div className={styles.stats_row}>
                             <div className={styles.stat_box}>
                                 <FaGraduationCap className={styles.stat_icon} />
-                                <h4>+ 4.000</h4>
+                                <h4>+ 2.000</h4>
                                 <p>Alunos por Edição</p>
                             </div>
                             <div className={styles.stat_box}>
@@ -180,17 +260,17 @@ function Home() {
                 {/* === EQUIPE DIRETIVA === */}
                 <section className={styles.team_section}>
                     <div className={styles.section_title}>
-                        <h2>Corpo de Coordenação</h2>
+                        <h2>Coordenação Geral do programa Olimpíadas</h2>
                     </div>
                     <div className={styles.team_container}>
                         <div className={styles.coordinator_card}>
-                            <h4>Coordenador Geral</h4>
+                            <h4>Coordenador Geral do Programa </h4>
                             <h5>Prof. Dr. Miguel Tadayuki Koga</h5>
                             <span>UNEMAT</span>
                         </div>
                         <div className={styles.members_panel} style={{}}>
                             <div>
-                                <h4>Membros do Corpo Docente</h4>
+                                <h4>Membros do Programa </h4>
                             <div className={styles.members_list}>
                                 <div className={styles.member_item}>Prof. Dr. Alexandre Porto <small>(UNEMAT)</small></div>
                                 <div className={styles.member_item}>Prof. Dr. Diego Piason <small>(UNEMAT)</small></div>
@@ -199,36 +279,8 @@ function Home() {
                             </div>
                             </div>
                                        
-                            <img style={{width:"50%"}} src={Imagens5}/>
+                            <img style={{width:"50%"}} src={Imagens5} alt="Logo UNEMAT"/>
                         </div> 
-                    </div>
-                </section>
-            {/* === SEÇÃO COM IMAGEM 3: CALL TO ACTION FINAL === */}
-                <section className={styles.split_card_section}>
-                    <div className={`${styles.split_card} ${styles.cta_special}`}>
-                        <div className={styles.split_text}>
-                            <h2>Pronto para começar?</h2>
-                            {!signed ? (
-                                <p>Faça login para acessar suas ferramentas de gerenciamento e elaboração.</p>
-                            ) : isRevisor ? (
-                                <p>Acesse o painel para moderar e revisar as questões pendentes.</p>
-                            ) : (
-                                <p>Inicie agora mesmo a elaboração de questões no sistema.</p>
-                            )}
-
-                            <div className={styles.cta_buttons}>
-                                {!signed ? (
-                                    <LinkButton to="/login" text={<><FaSignInAlt /> Acessar o Sistema</>} />
-                                ) : isRevisor ? (
-                                    <LinkButton to="/projects" text={<><FaTasks /> Revisar Questões</>} />
-                                ) : podeCriar ? (
-                                    <LinkButton to="/newproject" text={<><FaPlusCircle /> Criar Projeto</>} />
-                                ) : null}
-                            </div>
-                        </div>
-                        <div className={styles.split_image}>
-                            <img src={Imagens4} alt="Estudantes" />
-                        </div>
                     </div>
                 </section>
                 

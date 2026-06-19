@@ -14,69 +14,54 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  //  Sinaliza se a autenticação falhou
-  const [authFailed, setAuthFailed] = useState(false);
+  const [paused, setPaused] = useState(false); // substitui authFailed
 
   const fetchNotifications = async () => {
-    // Se a autenticação já falhou antes, nem tenta fazer a requisição
-    if (authFailed) return;
-
-    const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+    if (paused) return;
+    const token = localStorage.getItem('access_token');
     if (!user || !token) return;
 
     setLoading(true);
     try {
       const response = await api.get('/api/v1/notifications?limit=50&offset=0');
-      
       const data = response.data.data || response.data;
       setNotifications(data.notifications || []);
       setUnreadCount(data.unread_count || 0);
       setError(null);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.warn('Sessão expirada. Parando o loop de notificações.');
-        setError('Sessão expirada. Faça login novamente.');
-        // TRAVA FINAL: Altera o estado para parar o loop no useEffect
-        setAuthFailed(true);
-      } else {
-        console.error('Erro ao buscar notificações:', error);
-        setError('Erro ao carregar notificações');
-      }
+    } catch (err) {
+      // Apenas erros de rede ou outros – NÃO 401, que o interceptor já resolve
+      setError('Não foi possível carregar notificações');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token') || localStorage.getItem('token');
-    
-    //Condição: Se não tiver usuário/token OU se a auth já tiver falhado, interrompe.
-    if (!user || !token || authFailed) return;
+    const token = localStorage.getItem('access_token');
+    if (!user || !token || paused) return;
 
-    fetchNotifications(); 
-    
-    const interval = setInterval(() => {
-      // Dupla checagem: o loop não vai mais rodar se authFailed for true
-      if (!authFailed) {
-        fetchNotifications();
-      }
-    }, 30000); 
-
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, [user, authFailed]); 
+  }, [user, paused]);
 
-  // O resto das suas funções continuam idênticas...
+  // Escuta o evento de sessão expirada (quando o refresh falha de vez)
+  useEffect(() => {
+    const handler = () => {
+      setPaused(true);
+      setError('Sessão expirada. Faça login novamente.');
+    };
+    window.addEventListener('session-expired', handler);
+    return () => window.removeEventListener('session-expired', handler);
+  }, []);
+
   const handleMarkAsRead = async (notificationId, entityId, entityType) => {
     try {
       await api.patch(`/api/v1/notifications/${notificationId}/read`);
       setNotifications(prev =>
-        prev.map(n =>
-          n.id === notificationId ? { ...n, is_read: true } : n
-        )
+        prev.map(n => (n.id === notificationId ? { ...n, is_read: true } : n))
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
-
       const route =
         entityType === 'QUESTION'
           ? `/projects?id=${entityId}`
@@ -84,8 +69,8 @@ export default function NotificationBell() {
       navigate(route);
       setIsOpen(false);
       fetchNotifications();
-    } catch (error) {
-      console.error('Erro ao marcar como lida:', error);
+    } catch (err) {
+      console.error('Erro ao marcar como lida:', err);
       alert('Erro ao marcar notificação como lida');
     }
   };
@@ -97,8 +82,8 @@ export default function NotificationBell() {
       setUnreadCount(0);
       setIsOpen(false);
       fetchNotifications();
-    } catch (error) {
-      console.error('Erro ao marcar todos:', error);
+    } catch (err) {
+      console.error('Erro ao marcar todos:', err);
       alert('Erro ao marcar notificações como lidas');
     }
   };
@@ -121,10 +106,7 @@ export default function NotificationBell() {
           <div className={styles.dropdownHeader}>
             <h3>Notificações</h3>
             {unreadCount > 0 && (
-              <button
-                className={styles.markAllBtn}
-                onClick={handleMarkAllAsRead}
-              >
+              <button className={styles.markAllBtn} onClick={handleMarkAllAsRead}>
                 Marcar tudo como lido
               </button>
             )}
@@ -139,7 +121,7 @@ export default function NotificationBell() {
 
             {loading && notifications.length === 0 && (
               <div className={styles.loadingMessage}>
-                <p>Carregando... Aguarde.</p>
+                <p>Carregando...</p>
               </div>
             )}
 

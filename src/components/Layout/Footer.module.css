@@ -1,49 +1,163 @@
 .footer {
-    background-color: #0f172a; /* Azul bem escuro, mesma cor base do Header */
-    color: #cbd5e1; /* Cinza claro elegante (não é branco puro, o que descansa a visão) */
-    padding: 1em 1em 2em 1em; /* Mais respiro e espaço interno */
-    text-align: center;
-    border-top: 4px solid #087dea; /* Linha amarela separadora no topo */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    margin-top: auto; /* Empurra o footer sempre para o final da página */
+  background-color: #0f172a;
+  color: #cbd5e1;
+  border-top: 4px solid #087dea;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin-top: auto;
 }
 
+.container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2rem;
+}
+
+/* Colunas */
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #087dea;
+  margin: 0 0 0.5rem;
+  letter-spacing: 1px;
+}
+
+.description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Títulos das seções */
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 30px;
+  height: 3px;
+  background-color: #087dea;
+  border-radius: 2px;
+}
+
+/* Listas */
+.linkList, .contactList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.linkList li {
+  margin-bottom: 0.6rem;
+}
+
+.linkList a,
+.contactList a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+  display: inline-block;
+}
+
+.linkList a:hover {
+  color: #087dea;
+  padding-left: 5px; 
+}
+
+.contactList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  color: #94a3b8;
+}
+
+.iconSmall {
+  font-size: 1rem;
+  color: #087dea;
+  flex-shrink: 0;
+}
+
+/* Redes Sociais */
 .social_list {
-    display: flex;
-    justify-content: center;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.2rem;
 }
 
-.social_list li {
-    margin: 0 0.8em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease; /* Transição suave */
+.social_list a {
+  color: #94a3b8;
+  font-size: 1.5rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
 }
 
-/* O Segredo do Efeito Moderno nos Ícones */
-.social_list li:hover {
-    color: #087dea; /* Amarelo/Dourado do sistema */
-    transform: translateY(-4px); /* O ícone "pula" de leve para cima ao passar o mouse */
+.social_list a:hover {
+  color: #087dea;
+  transform: translateY(-4px);
 }
 
-.social_list svg {
-    font-size: 1.8em; /* Ícones um pouco maiores */
-    cursor: pointer;
+/* Barra inferior */
+.bottomBar {
+  border-top: 1px solid #1e293b;
+  padding: 1.2rem 2rem;
+  text-align: center;
 }
 
 .copy_right {
-    margin-top: 1.5em;
-    font-size: 0.95em;
-    color: #94a3b8;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
-/* Destacando o nome do Sistema no Footer */
 .copy_right span {
-    color: #087dea;
-    font-weight: 700;
-    letter-spacing: 1px;
+  color: #087dea;
+  font-weight: 700;
+}
+
+/* Responsivo*/
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .contactList li {
+    justify-content: center;
+  }
+
+  .social_list {
+    justify-content: center;
+  }
 }

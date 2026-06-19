@@ -244,8 +244,7 @@ function Usuario() {
   // ─── Dados básicos (contexto) ────────────────────────────────────────────
   const displayName  = user?.name  || "Usuário";
   const displayEmail = user?.email || "Email não disponível";
-  const displayRole  = role        || "Estudante";
-
+ const displayRole = user?.role === "STUDENT" ? "ELABORADOR" : (role || "Elaborador");
   // ─── Dados do perfil acadêmico ───────────────────────────────────────────
   // Lidos de user.profile — disponíveis após UserSchema incluir o relacionamento.
   // Todos os campos têm fallback "—" para não quebrar se ainda não existirem.

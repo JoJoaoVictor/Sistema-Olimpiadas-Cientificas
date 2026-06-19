@@ -208,7 +208,7 @@ function ProfileModal({
               borderColor: ROLE_META[profileUser.role?.toUpperCase()]?.color || '#ddd',
             }}
           >
-            <option value="STUDENT">Estudante</option>
+            <option value="STUDENT">Elabrador</option>
             <option value="PROFESSOR">Professor</option>
             <option value="REVISOR">Revisor</option>
             <option value="ADMIN">Admin</option>
