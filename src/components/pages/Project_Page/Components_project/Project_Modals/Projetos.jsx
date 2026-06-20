@@ -261,8 +261,6 @@ function Projetos() {
                   <FiMail />
                   <span> <strong>{projeto.authorEmail}</strong></span>
                   <span className={styles.separator}>|</span>
-                  <FiMapPin />
-                  <span> <strong>{projeto.authorPolo}</strong></span>
                 </p>
               </div>
               <button

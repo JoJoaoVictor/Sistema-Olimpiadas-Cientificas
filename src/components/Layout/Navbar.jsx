@@ -1,6 +1,5 @@
-import { useState } from "react"; // Importar useState
-import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa"; // Ícones para o menu mobile
+import { useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 import Container from "./Container";
 import styles from "./Navbar.module.css";
 import logo from "./../../img/logov.png";
@@ -11,17 +10,15 @@ const DEFAULT_AVATAR = "https://www.w3schools.com/howto/img_avatar.png";
 
 function Navbar() {
   const { user, signed } = useAuth();
-  const [isOpen, setIsOpen] = useState(false); // Estado do menu mobile
+  const [isOpen, setIsOpen] = useState(false);
 
   const profilePic = user?.picture || user?.avatar || DEFAULT_AVATAR;
 
-  // Lógica de perfis
   const isProfessor = user?.role === "PROFESSOR" || user?.role === "ADMIN";
   const isRevisor = user?.role === "REVISOR";
   const isEstagiario = user?.role === "STUDENT";
   const isAdmin = user?.role === "ADMIN";
 
-  // Função para fechar o menu ao clicar em um link (UX melhor no mobile)
   const handleLinkClick = () => {
     setIsOpen(false);
   };
@@ -29,96 +26,79 @@ function Navbar() {
   return (
     <nav className={styles.navbar}>
       <Container>
-        {/* Wrapper flex para alinhar Logo (esquerda) e Menu (direita) */}
         <div className={styles.flexWrapper}>
           
-          {/* === LOGO === */}
-          <Link to="/" onClick={handleLinkClick}>
-            <img
-              src={logo}
-              alt="S.G.O.M"
-              className={styles.logo} 
-            />
-          </Link>
+          {/* Logo */}
+          <a href="/" onClick={handleLinkClick}>
+            <img src={logo} alt="S.G.O.M" className={styles.logo} />
+          </a>
 
-          {/* === ÍCONE HAMBURGUER (Mobile) === */}
+          {/* Ícone hamburguer */}
           <div className={styles.mobileIcon} onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <FaTimes /> : <FaBars />}
           </div>
 
-          {/* === MENU === */}
-          {/* Adiciona a classe 'active' se o menu estiver aberto */}
           <ul className={`${styles.list} ${isOpen ? styles.active : ""}`}>
             
-            {/* 1. HOME */}
             <li className={styles.item}>
-              <Link to="/" onClick={handleLinkClick}>Home</Link>
+              <a href="/" onClick={handleLinkClick}>Home</a>
             </li>
 
-            {/* ÁREA DO STUDANT */}
             {signed && isEstagiario && (
               <>
                 <li className={styles.item}>
-                  <Link to="/newproject" onClick={handleLinkClick}>Criar Nova Questão</Link>
+                  <a href="/newproject" onClick={handleLinkClick}>Criar Nova Questão</a>
                 </li>
                 <li className={styles.item}>
-                  <Link to="/projects" onClick={handleLinkClick}>Minhas Questões</Link>
+                  <a href="/projects" onClick={handleLinkClick}>Minhas Questões</a>
                 </li>
               </>
             )}
 
-            {/* ÁREA DO PROFESSOR */}
             {signed && isProfessor && (
               <>
                 <li className={styles.item}>
-                  <Link to="/montarProva" onClick={handleLinkClick}>Montar Prova</Link>
+                  <a href="/montarProva" onClick={handleLinkClick}>Montar Prova</a>
                 </li>
                 <li className={styles.item}>
-                  <Link to="/Prova" onClick={handleLinkClick}>Banco de Provas</Link>
+                  <a href="/Prova" onClick={handleLinkClick}>Banco de Provas</a>
                 </li>
                 <li className={styles.item}>
-                  <Link to="/projects" onClick={handleLinkClick}>Revisar Questões</Link>
+                  <a href="/projects" onClick={handleLinkClick}>Revisar Questões</a>
                 </li>
               </>
             )}
 
-            {/* ÁREA DO REVISOR (MODIFICADO: Removido link de Provas) */}
             {signed && isRevisor && (
-              <>
-                <li className={styles.item}>
-                  <Link to="/projects" onClick={handleLinkClick}>Revisar Questões</Link>
-                </li>
-              </>
-            )}
-
-            {/* ADMIN */}
-            {signed && isAdmin && (
               <li className={styles.item}>
-                <Link to="/admin/users" style={{ color: "red" }} onClick={handleLinkClick}>
-                  Usuários
-                </Link>
+                <a href="/projects" onClick={handleLinkClick}>Revisar Questões</a>
               </li>
             )}
 
-            {/* NOTIFICATION BELL (Apenas para usuários logados) */}
+            {signed && isAdmin && (
+              <li className={styles.item}>
+                <a href="/admin/users" style={{ color: "red" }} onClick={handleLinkClick}>
+                  Usuários
+                </a>
+              </li>
+            )}
+
             {signed && (
               <li className={styles.item_notification}>
                 <NotificationBell />
               </li>
             )}
 
-            {/* LOGIN / PERFIL */}
             {!signed && (
               <li className={styles.item}>
-                <Link to="/login" onClick={handleLinkClick}>Entrar</Link>
+                <a href="/login" onClick={handleLinkClick}>Entrar</a>
               </li>
             )}
 
-            {/* AVATAR (Mostra diferente no mobile vs desktop) */}
             {signed && (
               <li className={styles.item_avatar}>
-                <Link
-                  to="/usuario"
+                <a
+                  href="/usuario"
                   title="Meu Perfil"
                   className={styles.profileLink}
                   onClick={handleLinkClick}
@@ -130,7 +110,7 @@ function Navbar() {
                     className={styles.avatar}
                     onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
                   />
-                </Link>
+                </a>
               </li>
             )}
           </ul>

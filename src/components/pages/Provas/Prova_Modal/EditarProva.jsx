@@ -194,13 +194,11 @@ export default function EditarProva() {
               <span> Atualizado: <strong>{formatDate(prova.updated_at)}</strong></span>
             </p>
             
-            {/*EXIBE EMAIL E POLO/CIDADE DEBAIXO DA DATA DE CRIAÇÃO  */}
             <p className={styles.dates_info} style={{ marginTop: '6px' }}>
-              <FiMail />
-              <span> E-mail: <strong>{prova.author?.email || 'Não informado'}</strong></span>
+              <span> Autor: <strong>{prova.author_name || prova.author?.name || 'Não informado'}</strong></span>
               <span className={styles.separator}>|</span>
-              <FiMapPin />
-              <span> Polo: <strong>{prova?.author?.profile?.campus || prova?.author?.profile?.cidade || 'Não informado'}</strong></span>
+              <FiMail style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              <span> E-mail: <strong>{prova.author_email || prova.author?.email || 'Não informado'}</strong></span>
             </p>
           </div>
 

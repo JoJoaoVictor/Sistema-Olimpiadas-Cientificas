@@ -2,8 +2,8 @@
 import styles from './ProjectList.module.css';
 
 // Ícones para edição e exclusão
-import {BsPencil, BsFillTrashFill, BsCalendar3, BsBarChart, BsCodeSlash } from 'react-icons/bs';
-import {  FiEye } from 'react-icons/fi';
+import { BsPencil, BsFillTrashFill, BsCalendar3, BsBarChart, BsCodeSlash } from 'react-icons/bs';
+import { FiEye, FiUser } from 'react-icons/fi';
 
 // React Router para navegação
 import { Link } from 'react-router-dom';
@@ -21,7 +21,8 @@ function ProjectList({
   categoryName = 'Sem Categoria',    
   serieAno,
   phaseLevel,
-  bnccTheme
+  bnccTheme,
+  authorName // Nova prop recebendo o nome do autor
 }) {
 
   const remove = (e) => {
@@ -82,6 +83,12 @@ function ProjectList({
       {/* 3. Rodapé do Card: Data, Status e Botões */}
       <div className={styles.card_footer}>
         <div className={styles.meta_data}>
+            
+            {/* EXIBIÇÃO DO NOME DO AUTOR (Adicionado antes do status) */}
+            <span className={styles.date_text} style={{ marginRight: '8px', color: '#555' }}>
+               <FiUser /> <strong style={{ marginLeft: '4px' }}>{authorName || 'Desconhecido'}</strong>
+            </span>
+
             {/* Tag de Status Colorida */}
             <span className={`${styles.status_badge} ${getStatusClass(categoryName)}`}>
                {categoryName}
@@ -94,8 +101,8 @@ function ProjectList({
 
         {/* Botões de Ação */}
         <div className={styles.actions}>
-          <Link className={styles.edit_btn} to={`/projetos/${id}`} title="Editar">
-            <  FiEye  />
+          <Link className={styles.edit_btn} to={`/projetos/${id}`} title="Visualizar/Editar">
+            <FiEye />
           </Link>
           <button className={styles.delete_btn} onClick={remove} title="Excluir">
             <BsFillTrashFill /> 
@@ -116,7 +123,8 @@ ProjectList.propTypes = {
   handleRemove: PropTypes.func.isRequired,
   serieAno: PropTypes.string,
   phaseLevel: PropTypes.string,
-  bnccTheme: PropTypes.string
+  bnccTheme: PropTypes.string,
+  authorName: PropTypes.string // Validando a nova prop
 };
 
 export default ProjectList;

@@ -6,9 +6,10 @@ import {
   FiFileText, 
   FiExternalLink, 
   FiTrash2,
-  FiMapPin // Novo ícone importado para Cidade e Campus
+  FiMapPin 
 } from 'react-icons/fi';
 import { RiIdCardLine } from 'react-icons/ri';
+import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from 'react-router-dom';
 import styles from '../AdminUsers.module.css';
 import RoleBadge from './RoleBadge';
@@ -94,51 +95,57 @@ function ProfileModal({
             </div>
           </div>
 
-          {/* Cidade */}
-          <div className={styles.profile_info_item}>
-            <FiMapPin className={styles.profile_info_icon} />
-            <div>
-              <span className={styles.info_label}>Cidade</span>
-              <span className={styles.info_value}>{perfil.cidade || "—"}</span>
-            </div>
-          </div>
-
-          {/* Campus */}
-          <div className={styles.profile_info_item}>
-            <FiMapPin className={styles.profile_info_icon} />
-            <div>
-              <span className={styles.info_label}>Campus</span>
-              <span className={styles.info_value}>{perfil.campus || "—"}</span>
-            </div>
-          </div>
-
-          {/* Sempre exibe o CPF se ele existir no perfil */}
-          <div className={styles.profile_info_item}>
-            <RiIdCardLine className={styles.profile_info_icon} />
-            <div>
-              <span className={styles.info_label}>CPF</span>
-              <span className={styles.info_value}>{formatCPF(perfil.cpf)}</span>
-            </div>
-          </div>
-
-          {/* Exibe Matrícula se for Estudante */}
-          {isStudent && (
+          {/* Cidade (Só exibe se existir) */}
+          {perfil.cidade && (
             <div className={styles.profile_info_item}>
-              <RiIdCardLine className={styles.profile_info_icon} />
+              <FiMapPin className={styles.profile_info_icon} />
               <div>
-                <span className={styles.info_label}>Matrícula</span>
-                <span className={styles.info_value}>{perfil.matricula || "—"}</span>
+                <span className={styles.info_label}>Cidade</span>
+                <span className={styles.info_value}>{perfil.cidade}</span>
               </div>
             </div>
           )}
 
-          {/* Exibe Número Funcional se for Professor ou Revisor */}
-          {isProfessorOrRevisor && (
+          {/* Campus (Só exibe se existir) */}
+          {perfil.campus && (
+            <div className={styles.profile_info_item}>
+              <BsBuilding className={styles.profile_info_icon} />
+              <div>
+                <span className={styles.info_label}>Instituição vinculado</span>
+                <span className={styles.info_value}>{perfil.campus}</span>
+              </div>
+            </div>
+          )}
+
+          {/* CPF (Só exibe se existir) */}
+          {perfil.cpf && (
+            <div className={styles.profile_info_item}>
+              <RiIdCardLine className={styles.profile_info_icon} />
+              <div>
+                <span className={styles.info_label}>CPF</span>
+                <span className={styles.info_value}>{formatCPF(perfil.cpf)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Matrícula (Só exibe se for Estudante E tiver o dado) */}
+          {isStudent && perfil.matricula && (
+            <div className={styles.profile_info_item}>
+              <RiIdCardLine className={styles.profile_info_icon} />
+              <div>
+                <span className={styles.info_label}>Matrícula</span>
+                <span className={styles.info_value}>{perfil.matricula}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Número Funcional (Só exibe se for Professor/Revisor E tiver o dado) */}
+          {isProfessorOrRevisor && perfil.matricula && (
             <div className={styles.profile_info_item}>
               <RiIdCardLine className={styles.profile_info_icon} />
               <div>
                 <span className={styles.info_label}>Nº Funcional</span>
-                <span className={styles.info_value}>{perfil.matricula || "—"}</span>
+                <span className={styles.info_value}>{perfil.matricula}</span>
               </div>
             </div>
           )}
@@ -208,7 +215,7 @@ function ProfileModal({
               borderColor: ROLE_META[profileUser.role?.toUpperCase()]?.color || '#ddd',
             }}
           >
-            <option value="STUDENT">Elabrador</option>
+            <option value="STUDENT">Elaborador</option>
             <option value="PROFESSOR">Professor</option>
             <option value="REVISOR">Revisor</option>
             <option value="ADMIN">Admin</option>

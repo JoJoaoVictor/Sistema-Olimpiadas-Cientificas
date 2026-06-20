@@ -7,11 +7,10 @@ import styles from './Projects.module.css';
 // Componentes do Projeto
 import Loading from '../../Layout/Loading';
 import SearchBar from '../../form/SearchBar';
-import ProjectsCard from './../Project_Page/Components_project/Project_Card/ProjectsCard';
 import ProjectList from './../Project_Page/Components_project/Project_List/ProjectList';
 
 // Dependências Externas
-import { LuLayoutGrid, LuLayoutList, LuPlus, LuCalendarDays } from "react-icons/lu";
+import { LuPlus, LuCalendarDays } from "react-icons/lu";
 import { FaInbox, FaCheckDouble, FaSadTear } from "react-icons/fa";
 import useAuth from '../../../hooks/useAuth';
 import CalculatorIcon from '../../../img/logov2-fotor.png';
@@ -25,7 +24,7 @@ import {
   getHabilidadesByObjeto 
 } from '../../../data/bnccHelper';
 
-// Opções de ano (mesmo formato usado no componente original)
+// Opções de ano
 const opcoesAno = [
   { value: '2º Fundamental', label: '2º Fundamental' },
   { value: '3º Fundamental', label: '3º Fundamental' },
@@ -40,7 +39,6 @@ const opcoesAno = [
   { value: '3º Médio',       label: '3º Médio'       },
 ];
 
-// Função que converte o ano selecionado (objeto {value,label}) para o ID usado pelos helpers BNCC
 const obterGrauIdBNCC = (ano) => {
   if (!ano) return 0;
   const label = String(ano.label || '');
@@ -50,11 +48,9 @@ const obterGrauIdBNCC = (ano) => {
   if (!match) return 0;
   const numeroAno = parseInt(match[0], 10);
 
-  // Fundamental: ID = ano - 1 (ex: 6º ano → ID 5)
   if (label.includes('Fundamental') || value.includes('Fundamental')) {
     return numeroAno - 1;
   }
-  // Médio: 1º → 9, 2º → 10, 3º → 11
   if (label.includes('Médio') || value.includes('Médio')) {
     if (numeroAno === 1) return 9;
     if (numeroAno === 2) return 10;
@@ -69,7 +65,6 @@ function Project() {
   const isProfessor = user?.role?.toUpperCase() === "PROFESSOR" || user?.role?.toUpperCase() === "ADMIN";
   const isEstagiario = user?.role?.toUpperCase() === "STUDENT";
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
-  const meuCampusAtual = user?.profile?.campus || '';
 
   // === ESTADOS GERAIS ===
   const [projects, setProjects] = useState([]);
@@ -80,12 +75,10 @@ function Project() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('recentes');
   const [tipoQuestao, setTipoQuestao] = useState('aprovadas');
-  const [viewMode, setViewMode] = useState('list');
 
-  // Filtros de data e campus
+  // Filtros de data
   const [dateFilter, setDateFilter] = useState('all');
   const [searchDate, setSearchDate] = useState('');
-  const [filtrarMeuCampus, setFiltrarMeuCampus] = useState(false);
 
   // Estado unificado para filtros cascata BNCC
   const [filtrosBNCC, setFiltrosBNCC] = useState({
@@ -97,23 +90,20 @@ function Project() {
     phaseLevel: '',
   });
 
-  // Opções dinâmicas para cascata
   const [temasDisponiveis, setTemasDisponiveis] = useState([]);
   const [objetosDisponiveis, setObjetosDisponiveis] = useState([]);
   const [habilidadesDisponiveis, setHabilidadesDisponiveis] = useState([]);
 
-  // Helper para atualizar um campo do filtrosBNCC
   const updateFiltroBNCC = (chave, valor) => {
     setFiltrosBNCC(prev => ({ ...prev, [chave]: valor }));
   };
 
-  // ============== EFEITOS DA CASCATA (mesma lógica do QuestoesFilter) ==============
-  // 1. Temas baseados nos anos selecionados
+  // ============== EFEITOS DA CASCATA ==============
   useEffect(() => {
     const todosTemas = new Set();
     const anosParaBuscar = filtrosBNCC.anosSelecionadosFiltro.length > 0 
       ? filtrosBNCC.anosSelecionadosFiltro 
-      : opcoesAno; // se nenhum ano selecionado, mostra todos
+      : opcoesAno;
 
     anosParaBuscar.forEach(ano => {
       const grauIdCorrigido = obterGrauIdBNCC(ano);
@@ -125,13 +115,11 @@ function Project() {
     });
 
     setTemasDisponiveis(Array.from(todosTemas).sort());
-    // Resetar filhos
     updateFiltroBNCC('temaSelecionado', '');
     updateFiltroBNCC('objetoConhecimento', '');
     updateFiltroBNCC('habilidade', '');
   }, [filtrosBNCC.anosSelecionadosFiltro]);
 
-  // 2. Objetos baseados no tema selecionado + anos
   useEffect(() => {
     if (filtrosBNCC.temaSelecionado) {
       const todosObjetos = new Set();
@@ -156,7 +144,6 @@ function Project() {
     updateFiltroBNCC('habilidade', '');
   }, [filtrosBNCC.temaSelecionado, filtrosBNCC.anosSelecionadosFiltro]);
 
-  // 3. Habilidades baseadas no objeto + tema + anos
   useEffect(() => {
     if (filtrosBNCC.objetoConhecimento) {
       const todasHabilidades = new Map();
@@ -220,9 +207,10 @@ function Project() {
           images:             q.images || [],
           createdAt:          q.created_at,
           updatedAt:          q.updated_at,
-          authorName:         q.professor_name || q.author?.name || 'Desconhecido',
+          // MAPEAMENTO EXATO AO DO MODAL PROJETOS.JSX:
+          authorName:         q.author?.name || q.professor_name || 'Desconhecido',
           authorEmail:        q.author?.email || 'Não informado',
-          authorPolo:         q.author_campus || q.author?.profile?.campus || q.author_cidade || q.author?.profile?.cidade || 'Não informado'
+          authorPolo:         q.author?.profile?.campus || q.author?.profile?.cidade || q.author_campus || q.author_cidade || 'Não informado'
         }));
 
         setProjects(convertedQuestions);
@@ -255,14 +243,18 @@ function Project() {
 
   // ============== FILTRAGEM ==============
   const filteredProjects = projects
+    // FILTRO DE BUSCA ATUALIZADO: Pesquisa no Nome da Questão, Nome do Autor, E-mail do Autor e Professor
     .filter(p => {
-      if (filtrarMeuCampus && meuCampusAtual) {
-        return p.authorPolo === meuCampusAtual;
-      }
-      return true;
+      if (!searchTerm) return true;
+      const textToSearch = searchTerm.toLowerCase();
+      
+      const matchName = p.name?.toLowerCase().includes(textToSearch);
+      const matchAuthor = p.authorName?.toLowerCase().includes(textToSearch);
+      const matchEmail = p.authorEmail?.toLowerCase().includes(textToSearch);
+      const matchProfessor = p.professorName?.toLowerCase().includes(textToSearch);
+      
+      return matchName || matchAuthor || matchEmail || matchProfessor;
     })
-    .filter(p => p.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-    // Filtro de ano exato usando os selecionados
     .filter(p => {
       if (filtrosBNCC.anosSelecionadosFiltro.length === 0) return true;
       return filtrosBNCC.anosSelecionadosFiltro.some(opcao => {
@@ -271,15 +263,10 @@ function Project() {
         return anoQuestao === anoFiltro;
       });
     })
-    // Filtro de dificuldade
     .filter(p => filtrosBNCC.dificuldade === '' || String(p.difficultyLevel) === filtrosBNCC.dificuldade)
-    // Filtro de phaseLevel
     .filter(p => filtrosBNCC.phaseLevel === '' || String(p.phaseLevel) === String(filtrosBNCC.phaseLevel))
-    // Filtro de tema BNCC (texto contido)
     .filter(p => !filtrosBNCC.temaSelecionado || p.bnccTheme?.toLowerCase().includes(filtrosBNCC.temaSelecionado.toLowerCase()))
-    // Filtro de objeto de conhecimento (texto contido)
     .filter(p => !filtrosBNCC.objetoConhecimento || p.knowledgeObjects?.toLowerCase().includes(filtrosBNCC.objetoConhecimento.toLowerCase()))
-    // Filtro de habilidade (código)
     .filter(p => {
       if (!filtrosBNCC.habilidade) return true;
       const codigoHabilidade = typeof filtrosBNCC.habilidade === 'object' 
@@ -287,22 +274,35 @@ function Project() {
         : filtrosBNCC.habilidade;
       return p.abilityCode?.toLowerCase().includes(String(codigoHabilidade).toLowerCase());
     })
-    // Filtros de data (mantidos originais)
     .filter(p => {
       if (dateFilter === 'all') return true;
-      const ts = Math.max(
-        p.createdAt ? new Date(p.createdAt).getTime() : 0,
-        p.updatedAt ? new Date(p.updatedAt).getTime() : 0,
-      );
-      if (ts === 0) return true;
-      const data = new Date(ts);
+      
+      const dataCriacao = p.createdAt ? new Date(p.createdAt) : null;
+      const dataAtualizacao = p.updatedAt ? new Date(p.updatedAt) : null;
+      
+      let dataFinal = dataAtualizacao || dataCriacao;
+      if (!dataFinal || isNaN(dataFinal.getTime())) return true; 
+
       const hoje = new Date();
-      const inicioHoje = new Date(new Date().setHours(0, 0, 0, 0));
-      const diaDoc = new Date(new Date(ts).setHours(0, 0, 0, 0));
-      if (dateFilter === 'today') return diaDoc.getTime() === inicioHoje.getTime();
-      if (dateFilter === '7days') { const d = new Date(hoje); d.setDate(d.getDate() - 7); return data >= d; }
-      if (dateFilter === '30days') { const d = new Date(hoje); d.setDate(d.getDate() - 30); return data >= d; }
-      if (dateFilter === 'year') return data.getFullYear() === new Date().getFullYear();
+
+      if (dateFilter === 'today') {
+        return dataFinal.getDate() === hoje.getDate() &&
+               dataFinal.getMonth() === hoje.getMonth() &&
+               dataFinal.getFullYear() === hoje.getFullYear();
+      }
+      if (dateFilter === '7days') {
+        const d = new Date();
+        d.setDate(d.getDate() - 7);
+        return dataFinal >= d;
+      }
+      if (dateFilter === '30days') {
+        const d = new Date();
+        d.setDate(d.getDate() - 30);
+        return dataFinal >= d;
+      }
+      if (dateFilter === 'year') {
+        return dataFinal.getFullYear() === hoje.getFullYear();
+      }
       return true;
     })
     .filter(p => {
@@ -327,7 +327,6 @@ function Project() {
       dificuldade: '',
       phaseLevel: '',
     });
-    setFiltrarMeuCampus(false);
   }
 
   // ============== RENDER ==============
@@ -382,7 +381,7 @@ function Project() {
           <SearchBar
             value={searchTerm}
             onDebouncedChange={setSearchTerm}
-            placeholder="Buscar por nome..."
+            placeholder="Buscar por questão, autor ou e-mail..."
           />
         </div>
 
@@ -435,7 +434,7 @@ function Project() {
             />
           </div>
 
-          {/* Unidade Temática (cascata) */}
+          {/* Unidade Temática */}
           <select
             className={styles.native_select}
             value={filtrosBNCC.temaSelecionado}
@@ -461,7 +460,7 @@ function Project() {
             ))}
           </select>
 
-          {/* Habilidade (código) */}
+          {/* Habilidade */}
           <select
             className={styles.native_select}
             value={typeof filtrosBNCC.habilidade === 'object' ? filtrosBNCC.habilidade.codigo || filtrosBNCC.habilidade.habilidade : filtrosBNCC.habilidade}
@@ -502,7 +501,7 @@ function Project() {
             <option value="4">Fase 4</option>
           </select>
 
-          {/* Data exata de criação */}
+          {/* Data exata */}
           <input
             type="date"
             className={styles.native_select}
@@ -510,43 +509,6 @@ function Project() {
             value={searchDate}
             onChange={e => setSearchDate(e.target.value)}
           />
-
-          {/* Botão Meu Campus */}
-          {meuCampusAtual && !isEstagiario && (
-            <button
-              type="button"
-              className={styles.native_select} 
-              onClick={() => setFiltrarMeuCampus(!filtrarMeuCampus)}
-              style={{
-                backgroundColor: filtrarMeuCampus ? '#1967d2' : 'transparent',
-                color: filtrarMeuCampus ? '#fff' : 'inherit',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                fontWeight: filtrarMeuCampus ? 'bold' : 'normal'
-              }}
-              title={`Mostrar apenas questões de ${meuCampusAtual}`}
-            >
-              {filtrarMeuCampus ? '✓ Meu Campus' : 'Meu Campus'}
-            </button>
-          )}
-
-          {/* Alternar visualização */}
-          <div className={styles.view_toggles}>
-            <button
-              className={`${styles.toggle_btn} ${viewMode === 'list' ? styles.active : ''}`}
-              onClick={() => setViewMode('list')}
-              title="Lista"
-            >
-              <LuLayoutList />
-            </button>
-            <button
-              className={`${styles.toggle_btn} ${viewMode === 'grid' ? styles.active : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grade"
-            >
-              <LuLayoutGrid />
-            </button>
-          </div>
         </div>
       </div>
 
@@ -565,23 +527,14 @@ function Project() {
             </button>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? styles.grid_layout : styles.list_layout}>
-            {filteredProjects.map(project =>
-              viewMode === 'grid' ? (
-                <ProjectsCard
-                  key={project.id}
-                  {...project}
-                  grauName={project.serieAno}
-                  handleRemove={removeProject}
-                />
-              ) : (
-                <ProjectList
-                  key={project.id}
-                  {...project}
-                  handleRemove={removeProject}
-                />
-              )
-            )}
+          <div className={styles.list_layout}>
+            {filteredProjects.map(project => (
+              <ProjectList
+                key={project.id}
+                {...project}
+                handleRemove={removeProject}
+              />
+            ))}
           </div>
         )}
       </div>

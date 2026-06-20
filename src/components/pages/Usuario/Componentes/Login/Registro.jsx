@@ -1,60 +1,9 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link, useNavigate,useSearchParams  } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "./Registro.css";
 import { authService } from "../../../../../services/authService";
 import useAuth from "../../../../../hooks/useAuth";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Constante atualizada com o nome da instituição para diferenciar da cidade
-// ─────────────────────────────────────────────────────────────────────────────
-const UNEMAT_CAMPUSES = [
-  // Câmpus Oficiais da UNEMAT no Projeto
-  { value: "ALTA_FLORESTA",         label: "UNEMAT - Alta Floresta",        cidade: "Alta Floresta" },
-  { value: "BARRA_DO_BUGRES",       label: "UNEMAT - Barra do Bugres",      cidade: "Barra do Bugres" },
-  { value: "CACERES",               label: "UNEMAT - Cáceres (Sede)",       cidade: "Cáceres" },
-  { value: "COLIDER",               label: "UNEMAT - Colíder",              cidade: "Colíder" },
-  { value: "DIAMANTINO",            label: "UNEMAT - Diamantino",           cidade: "Diamantino" },
-  { value: "GUARANTA_DO_NORTE",     label: "UNEMAT - Guarantã do Norte",    cidade: "Guarantã do Norte" },
-  { value: "JUARA",                 label: "UNEMAT - Juara",                cidade: "Juara" },
-  { value: "JUINA",                 label: "UNEMAT - Juína",                cidade: "Juína" },
-  { value: "NOVA_MUTUM",            label: "UNEMAT - Nova Mutum",           cidade: "Nova Mutum" },
-  { value: "NOVA_XAVANTINA",        label: "UNEMAT - Nova Xavantina",       cidade: "Nova Xavantina" },
-  { value: "PONTES_E_LACERDA",      label: "UNEMAT - Pontes e Lacerda",     cidade: "Pontes e Lacerda" },
-  { value: "SINOP",                 label: "UNEMAT - Sinop",                cidade: "Sinop" },
-  { value: "TANGARA_DA_SERRA",      label: "UNEMAT - Tangará da Serra",     cidade: "Tangará da Serra" },
-
-  // Cidades do Primeiro Bloco de Texto
-  { value: "ALTO_PARAGUAI",         label: "Polo - Alto Paraguai",          cidade: "Alto Paraguai" },
-  { value: "NORTELANDIA",           label: "Polo - Nortelândia",            cidade: "Nortelândia" },
-  { value: "NOVA_MARILANDIA",       label: "Polo - Nova Marilândia",        cidade: "Nova Marilândia" },
-  { value: "NOVA_OLIMPIA",          label: "Polo - Nova Olímpia",           cidade: "Nova Olímpia" },
-  { value: "PORTO_ESTRELA",         label: "Polo - Porto Estrela",          cidade: "Porto Estrela" },
-
-  // Cidades do Polo de Sinop (Olimpíada de Matemática / Extensão)
-  { value: "CAMPO_NOVO_DO_PARECIS", label: "Polo - Campo Novo do Parecis",  cidade: "Campo Novo do Parecis" },
-  { value: "CARLINDA",              label: "Polo - Carlinda",               cidade: "Carlinda" },
-  { value: "ITANHANGA",             label: "Polo - Itanhangá",              cidade: "Itanhangá" },
-  { value: "ITAUBA",                label: "Polo - Itaúba",                 cidade: "Itaúba" },
-  { value: "LUCAS_DO_RIO_VERDE",    label: "Polo - Lucas do Rio Verde",     cidade: "Lucas do Rio Verde" },
-  { value: "MARCELANDIA",           label: "Polo - Marcelândia",            cidade: "Marcelândia" },
-  { value: "NOVA_CANAA_DO_NORTE",   label: "Polo - Nova Canaã do Norte",    cidade: "Nova Canaã do Norte" },
-  { value: "NOVA_MONTE_VERDE",      label: "Polo - Nova Monte Verde",       cidade: "Nova Monte Verde" },
-  { value: "NOVA_SANTA_HELENA",     label: "Polo - Nova Santa Helena",      cidade: "Nova Santa Helena" },
-  { value: "PARANAITA",             label: "Polo - Paranaíta",              cidade: "Paranaíta" },
-  { value: "PORTO_DOS_GAUCHOS",     label: "Polo - Porto dos Gaúchos",      cidade: "Porto dos Gaúchos" },
-  { value: "TABAPORA",              label: "Polo - Tabaporã",               cidade: "Tabaporã" },
-  { value: "TAPURAH",               label: "Polo - Tapurah",                cidade: "Tapurah" },
-  { value: "TERRA_NOVA_DO_NORTE",   label: "Polo - Terra Nova do Norte",    cidade: "Terra Nova do Norte" }
-];
-
-const CURSOS = [
-  "Administração", "Agronomia", "Biologia", "Ciência da Computação", "Ciências Contábeis",
-  "Direito", "Educação Física", "Enfermagem", "Engenharia Ambiental", "Engenharia Civil",
-  "Engenharia de Produção", "Farmácia", "Geografia", "História", "Jornalismo", "Letras",
-  "Matemática", "Medicina Veterinária", "Pedagogia", "Química", "Sistemas de Informação",
-  "Zootecnia", "Outro"
-];
 
 const formatCPF = (value) => {
   const d = value.replace(/\D/g, "").slice(0, 11);
@@ -89,7 +38,6 @@ const Registro = () => {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
 
-   // Lê o parâmetro 'role' da URL (ex: /registro?role=STUDENT)
   const [searchParams] = useSearchParams();
   const roleFromUrl = searchParams.get('role');
   const initialRole = (roleFromUrl && ['STUDENT', 'PROFESSOR', 'REVISOR'].includes(roleFromUrl))
@@ -100,35 +48,25 @@ const Registro = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("STUDENT");
+  const [role, setRole] = useState(initialRole);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
-  const [campus, setCampus] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [matricula, setMatricula] = useState("");
-  const [curso, setCurso] = useState("");
-
-  const handleCampusChange = (e) => {
-    const selected = UNEMAT_CAMPUSES.find((c) => c.value === e.target.value);
-    setCampus(e.target.value);
-    setCidade(selected ? selected.cidade : "");
-  };
+  const [cidade, setCidade] = useState(""); // Texto livre
+  const [campus, setCampus] = useState(""); // Instituição vinculada como texto livre
 
   const handleRoleChange = (e) => {
     setRole(e.target.value);
-    setMatricula("");
-    setCurso("");
   };
 
   const handleRegistro = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!name || !email || !password || !confirmPassword || !cpf || !campus) {
+    if (!name || !email || !password || !confirmPassword || !cpf) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
@@ -144,14 +82,6 @@ const Registro = () => {
       setError("As senhas não coincidem");
       return;
     }
-    if ((role === "STUDENT" || role === "PROFESSOR") && !matricula) {
-      setError("Matrícula é obrigatória para Estudante e Professor");
-      return;
-    }
-    if (role === "STUDENT" && !curso) {
-      setError("Selecione o curso");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -162,10 +92,8 @@ const Registro = () => {
         role,
         cpf: cpf.replace(/\D/g, ""),
         telefone: telefone.replace(/\D/g, ""),
-        campus,
-        cidade,          
-        matricula,
-        curso,
+        cidade: cidade || null,
+        campus: campus || null, // A instituição enviada pelo usuário
       });
 
       if (!result?.success) {
@@ -297,12 +225,12 @@ const Registro = () => {
               </div>
             </div>
 
-            {/* ── COLUNA 2: DADOS ACADÊMICOS ───────────────────────────── */}
+            {/* ── COLUNA 2: DADOS ACADÊMICOS / FUNÇÃO ──────────────────── */}
             <div className="form-column">
-              <h3 className="section-title">Dados Acadêmicos</h3>
+              <h3 className="section-title">Dados Profissionais</h3>
 
               <div className="input-group">
-                <label htmlFor="role">Eu sou... <span className="required">*</span></label>
+                <label htmlFor="role">Função<span className="required">*</span></label>
                 <select
                   id="role"
                   className="custom-select"
@@ -311,89 +239,36 @@ const Registro = () => {
                   disabled={loading}
                 >
                   <option value="STUDENT">Elaborador</option>
-                  <option value="PROFESSOR">Professor</option>
                   <option value="REVISOR">Revisor</option>
                 </select>
               </div>
 
+              {/* INSTITUIÇÃO VINCULADA - Transformado num campo de digitação livre */}
               <div className="input-group">
-                <label htmlFor="campus">Campus / Polo <span className="required">*</span></label>
-                <select
+                <label htmlFor="campus">Instituição vinculada</label>
+                <input
                   id="campus"
-                  className="custom-select"
+                  type="text"
                   value={campus}
-                  onChange={handleCampusChange}
+                  onChange={(e) => setCampus(e.target.value)}
+                  placeholder="Digite o nome da instituição"
                   disabled={loading}
-                  required
-                >
-                  <option value="">Selecione o campus</option>
-                  {UNEMAT_CAMPUSES.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
-              {/* CIDADE (Fixada na raiz da coluna para estar disponível a todos os cargos) */}
+              {/* CIDADE - Transformado num campo de digitação livre */}
               <div className="input-group">
                 <label htmlFor="cidade">Cidade</label>
                 <input
                   id="cidade"
                   type="text"
                   value={cidade}
-                  readOnly
-                  className="input-readonly"
-                  tabIndex="-1"
-                  placeholder="Preenchida conforme o campus"
+                  onChange={(e) => setCidade(e.target.value)}
+                  placeholder="Digite o nome da sua cidade"
+                  disabled={loading}
                 />
               </div>
 
-              {/* MATRÍCULA */}
-              {(role === "STUDENT" || role === "PROFESSOR") && (
-                <div className="input-group">
-                  <label htmlFor="matricula">
-                    {role === "STUDENT" ? "Matrícula" : "Nº Funcional"}
-                    <span className="required"> *</span>
-                  </label>
-                  <input
-                    id="matricula"
-                    type="text"
-                    placeholder={
-                      role === "STUDENT" ? "Número de matrícula do aluno" : "Número funcional"
-                    }
-                    value={matricula}
-                    onChange={(e) => setMatricula(e.target.value)}
-                    disabled={loading}
-                    autoComplete="off"
-                    required
-                  />
-                </div>
-              )}
-
-              {/* CURSO */}
-              {role === "STUDENT" && (
-                <div className="input-group">
-                  <label htmlFor="curso">Curso <span className="required">*</span></label>
-                  <select
-                    id="curso"
-                    className="custom-select"
-                    value={curso}
-                    onChange={(e) => setCurso(e.target.value)}
-                    disabled={loading}
-                    required
-                  >
-                    <option value="">Selecione o curso</option>
-                    {CURSOS.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* O botão de cadastro agora fica fixado corretamente na base da segunda coluna */}
               <button type="submit" className="register-btn" disabled={loading}>
                 {loading ? "Criando conta..." : "Cadastrar"}
               </button>

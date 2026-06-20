@@ -7,10 +7,9 @@ import api from '../../../../services/api';
 import styles from './EditarPerfil.module.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Constantes (idênticas ao Registro para consistência)
+// Constantes restauradas para garantir a edição dos usuários antigos
 // ─────────────────────────────────────────────────────────────────────────────
 const UNEMAT_CAMPUSES = [
-  // Câmpus Oficiais da UNEMAT no Projeto
   { value: "ALTA_FLORESTA",         label: "UNEMAT - Alta Floresta",        cidade: "Alta Floresta" },
   { value: "BARRA_DO_BUGRES",       label: "UNEMAT - Barra do Bugres",      cidade: "Barra do Bugres" },
   { value: "CACERES",               label: "UNEMAT - Cáceres (Sede)",       cidade: "Cáceres" },
@@ -24,15 +23,11 @@ const UNEMAT_CAMPUSES = [
   { value: "PONTES_E_LACERDA",      label: "UNEMAT - Pontes e Lacerda",     cidade: "Pontes e Lacerda" },
   { value: "SINOP",                 label: "UNEMAT - Sinop",                cidade: "Sinop" },
   { value: "TANGARA_DA_SERRA",      label: "UNEMAT - Tangará da Serra",     cidade: "Tangará da Serra" },
-
-  // Cidades do Primeiro Bloco de Texto (Polo de Cáceres)
   { value: "ALTO_PARAGUAI",         label: "Polo - Alto Paraguai",          cidade: "Alto Paraguai" },
   { value: "NORTELANDIA",           label: "Polo - Nortelândia",            cidade: "Nortelândia" },
   { value: "NOVA_MARILANDIA",       label: "Polo - Nova Marilândia",        cidade: "Nova Marilândia" },
   { value: "NOVA_OLIMPIA",          label: "Polo - Nova Olímpia",           cidade: "Nova Olímpia" },
   { value: "PORTO_ESTRELA",         label: "Polo - Porto Estrela",          cidade: "Porto Estrela" },
-
-  // Cidades do Polo de Sinop (Olimpíada de Matemática / Extensão)
   { value: "CAMPO_NOVO_DO_PARECIS", label: "Polo - Campo Novo do Parecis",  cidade: "Campo Novo do Parecis" },
   { value: "CARLINDA",              label: "Polo - Carlinda",               cidade: "Carlinda" },
   { value: "ITANHANGA",             label: "Polo - Itanhangá",              cidade: "Itanhangá" },
@@ -70,20 +65,25 @@ const EditarPerfil = () => {
 
   const DEFAULT_IMAGE = "https://placehold.co/150?text=Foto";
 
-  // ── Estado dos campos (A cidade foi removida daqui de forma intencional) ──
+  // ── Estado dos campos ──
   const [name,      setName]      = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [telefone,  setTelefone]  = useState("");
+  const [cidade,    setCidade]    = useState(""); 
+  
+  // Estados antigos (restaurados)
   const [campus,    setCampus]    = useState("");
   const [matricula, setMatricula] = useState("");
   const [curso,     setCurso]     = useState("");
 
+  // ── Flags de exibição condicional (Se o dado veio do banco, a flag é true) ──
+  const [hasCampus,    setHasCampus]    = useState(false);
+  const [hasMatricula, setHasMatricula] = useState(false);
+  const [hasCurso,     setHasCurso]     = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
   const [success, setSuccess] = useState("");
-
-  // 🌟 FONTE ÚNICA DA VERDADE: A cidade passa a ser derivada em tempo real do campus selecionado
-  const cidade = UNEMAT_CAMPUSES.find((c) => c.value === campus)?.cidade || "";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -103,30 +103,22 @@ const EditarPerfil = () => {
 
           const p = userData.profile || {};
           setTelefone(p.telefone ? formatTelefone(p.telefone) : '');
-          setMatricula(p.matricula || '');
-          setCurso(p.curso || '');
+          setCidade(p.cidade || '');
 
-          // 🌟 NORMALIZAÇÃO AVANÇADA: Trata strings cruas vindas do banco de dados
+          // Se o usuário tem campus salvo, ativamos a flag de exibição
           if (p.campus) {
-            // Remove prefixos comuns como "UNEMAT - " ou "Polo - " caso existam salvos incorretamente
-            let rawCampus = p.campus.replace(/^(UNEMAT\s*-\s*|Polo\s*-\s*)/i, "");
-            
-            // Substitui espaços por underline, remove acentos básicos e joga para maiúsculas
-            let sanitized = rawCampus
-              .trim()
-              .toUpperCase()
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "") // Remove acentos temporariamente para dar match no value
-              .replace(/\s+/g, '_');
-
-            // Caso o banco traga o label textual, tentamos encontrar pelo label correspondente
-            const matchByLabel = UNEMAT_CAMPUSES.find(
-              c => c.label.toUpperCase() === p.campus.toUpperCase() || c.value === sanitized
-            );
-
-            setCampus(matchByLabel ? matchByLabel.value : sanitized);
-          } else {
-            setCampus('');
+            setHasCampus(true);
+            setCampus(p.campus);
+          }
+          
+          if (p.matricula) {
+            setHasMatricula(true);
+            setMatricula(p.matricula);
+          }
+          
+          if (p.curso) {
+            setHasCurso(true);
+            setCurso(p.curso);
           }
         }
       } catch (err) {
@@ -138,7 +130,10 @@ const EditarPerfil = () => {
   }, []);
 
   const handleCampusChange = (e) => {
-    setCampus(e.target.value);
+    const campusValue = e.target.value;
+    const selected = UNEMAT_CAMPUSES.find((c) => c.value === campusValue);
+    setCampus(campusValue);
+    setCidade(selected ? selected.cidade : "");
   };
 
   const handleSubmit = async (e) => {
@@ -156,20 +151,18 @@ const EditarPerfil = () => {
 
     setLoading(true);
     try {
-      // 🌟 UNIFICAÇÃO: Enviamos tudo em uma única chamada PUT, exatamente como o backend espera
       const response = await api.put('/api/v1/users/me', {
         name: name.trim(),
         avatar_url: finalAvatar,
         profile: {
           telefone: telefone.replace(/\D/g, "") || null,
+          cidade: cidade.trim() || null,
           campus: campus || null,
-          cidade: cidade !== "—" ? cidade : null, // Envia o nome real da cidade (ex: "Tangará da Serra")
           matricula: matricula || null,
           curso: curso || null,
         }
       });
 
-      // Se o contexto tiver a função de atualização, notificamos o app com os dados retornados do servidor
       if (typeof updateUser === 'function' && response.data?.data) {
         const serverData = response.data.data;
         updateUser(serverData);
@@ -186,9 +179,6 @@ const EditarPerfil = () => {
     }
   };
 
-  const showMatricula = ["STUDENT", "PROFESSOR"].includes(user?.role);
-  const showCurso     = user?.role === "STUDENT";
-
   return (
     <div className={styles.page}>
       <div className={styles.card}>
@@ -198,7 +188,7 @@ const EditarPerfil = () => {
           </button>
           <div>
             <h2>Editar Perfil</h2>
-            <p>Atualize suas informações pessoais e acadêmicas</p>
+            <p>Atualize suas informações pessoais e de contato</p>
           </div>
         </div>
 
@@ -241,7 +231,7 @@ const EditarPerfil = () => {
             </div>
           </div>
 
-          <div className={styles.section_divider}><span>Dados Acadêmicos</span></div>
+          <div className={styles.section_divider}><span>Localização e Dados Acadêmicos</span></div>
 
           <div className={styles.fields_grid}>
             <div className={styles.form_group}>
@@ -257,46 +247,60 @@ const EditarPerfil = () => {
               />
             </div>
 
-            <div className={styles.form_group}>
-              <label htmlFor="ep_campus"><BsBuilding /> Campus / Polo</label>
-              <select id="ep_campus" value={campus} onChange={handleCampusChange}>
-                <option value="">Selecione o campus</option>
-                {UNEMAT_CAMPUSES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.form_group}>
-              <label htmlFor="ep_cidade"><FiMapPin /> Cidade</label>
-              <input
-                id="ep_cidade"
-                type="text"
-                value={cidade}
-                readOnly
-                className={styles.input_readonly}
-                tabIndex="-1"
-                placeholder="Preenchida conforme o campus"
-              />
-            </div>
-
-            {showMatricula && (
+            {/* EXIBIÇÃO CONDICIONAL DO CAMPUS E CIDADE */}
+            {hasCampus ? (
+              <>
+                <div className={styles.form_group}>
+                  <label htmlFor="ep_campus"><BsBuilding /> Campus / Polo</label>
+                  <select id="ep_campus" value={campus} onChange={handleCampusChange}>
+                    <option value="">Selecione o campus</option>
+                    {UNEMAT_CAMPUSES.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.form_group}>
+                  <label htmlFor="ep_cidade"><FiMapPin /> Cidade</label>
+                  <input
+                    id="ep_cidade"
+                    type="text"
+                    value={cidade}
+                    readOnly
+                    className={styles.input_readonly}
+                    tabIndex="-1"
+                    placeholder="Preenchida conforme o campus"
+                  />
+                </div>
+              </>
+            ) : (
               <div className={styles.form_group}>
-                <label htmlFor="ep_matricula">
-                  {user?.role === "STUDENT" ? "Matrícula" : "Nº Funcional"}
-                </label>
+                <label htmlFor="ep_cidade"><FiMapPin /> Cidade</label>
+                <input
+                  id="ep_cidade"
+                  type="text"
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                  placeholder="Digite o nome da sua cidade"
+                />
+              </div>
+            )}
+
+            {/* EXIBIÇÃO CONDICIONAL DA MATRÍCULA (Apenas se já tinha salvo) */}
+            {hasMatricula && (
+              <div className={styles.form_group}>
+                <label htmlFor="ep_matricula">Matrícula / Nº Funcional</label>
                 <input
                   id="ep_matricula"
                   type="text"
                   value={matricula}
                   onChange={(e) => setMatricula(e.target.value)}
-                  placeholder={user?.role === "STUDENT" ? "Número de matrícula" : "Número funcional"}
                   autoComplete="off"
                 />
               </div>
             )}
 
-            {showCurso && (
+            {/* EXIBIÇÃO CONDICIONAL DO CURSO (Apenas se já tinha salvo) */}
+            {hasCurso && (
               <div className={styles.form_group}>
                 <label htmlFor="ep_curso"><FiBook /> Curso</label>
                 <select id="ep_curso" value={curso} onChange={(e) => setCurso(e.target.value)}>
@@ -307,6 +311,7 @@ const EditarPerfil = () => {
                 </select>
               </div>
             )}
+
           </div>
 
           <div className={styles.form_actions}>

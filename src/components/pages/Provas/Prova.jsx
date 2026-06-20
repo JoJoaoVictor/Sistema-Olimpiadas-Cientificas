@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Prova.module.css';
-import { FiSearch, FiUser, FiMapPin } from 'react-icons/fi';
+import { FiSearch, FiUser } from 'react-icons/fi';
 import { BsPencil, BsBook } from 'react-icons/bs';
 import { FaInbox, FaCheckDouble, FaPlay } from 'react-icons/fa';
 import { LuCalendarDays, LuLayers } from 'react-icons/lu';
@@ -44,9 +44,6 @@ function Prova() {
 
   const { user } = useAuth();
   const isRevisor = user?.role?.toUpperCase() === 'REVISOR'
-  const isEstagiario = user?.role?.toUpperCase() === 'STUDENT';
-  const meuCampusAtual = user?.profile?.campus || '';
-  const [filtrarMeuCampus, setFiltrarMeuCampus] = useState(false)
   const [provas,          setProvas]          = useState([]);
   const [provasFiltradas, setProvasFiltradas] = useState([]);
   const [loading,         setLoading]         = useState(false);
@@ -56,7 +53,7 @@ function Prova() {
   const [tabAtiva, setTabAtiva] = useState('aprovadas');
 
   // Filtros da toolbar
-  const [searchName,        setSearchName]        = useState('');
+  const [searchTerm,        setSearchTerm]        = useState(''); 
   const [searchDate,        setSearchDate]        = useState('');   // YYYY-MM-DD exato
   const [anosSelecionados,  setAnosSelecionados]  = useState([]);
   const [faseSelecionada,   setFaseSelecionada]   = useState('');
@@ -89,22 +86,26 @@ function Prova() {
       p.status?.toUpperCase() === statusDaTab
     );
 
-    //Campus / Polo
-    if (filtrarMeuCampus && meuCampusAtual) {
+    // 🌟 BUSCA UNIFICADA ADAPTADA DE PROJECTS.JSX:
+    if (searchTerm.trim()) {
+      const textToSearch = searchTerm.toLowerCase();
       filtradas = filtradas.filter(p => {
-        const poloProva = p.author?.profile?.campus || p.author?.profile?.municipio || p.author?.profile?.cidade || '';
-        return poloProva.toLowerCase().trim() === meuCampusAtual.toLowerCase().trim();
+        const matchName = p.name?.toLowerCase().includes(textToSearch);
+        
+        // Mapeamentos de autoria idênticos ao Projects.jsx
+        const authorName = (p.author?.name || p.author_name || p.professor_name || '').toLowerCase();
+        const authorEmail = (p.author?.email || '').toLowerCase();
+        const professorName = (p.professor_name || '').toLowerCase();
+
+        const matchAuthor = authorName.includes(textToSearch);
+        const matchEmail = authorEmail.includes(textToSearch);
+        const matchProfessor = professorName.includes(textToSearch);
+        
+        return matchName || matchAuthor || matchEmail || matchProfessor;
       });
     }
 
-    // Nome
-    if (searchName.trim()) {
-      filtradas = filtradas.filter(p =>
-        p.name?.toLowerCase().includes(searchName.toLowerCase())
-      );
-    }
-
-    // Data exata (YYYY-MM-DD) — compara apenas os 10 primeiros chars do ISO string
+    // Data exata (YYYY-MM-DD)
     if (searchDate) {
       filtradas = filtradas.filter(p =>
         p.created_at ? p.created_at.slice(0, 10) === searchDate : false
@@ -151,16 +152,15 @@ function Prova() {
     }
 
     setProvasFiltradas(filtradas);
-  }, [searchName, searchDate, anosSelecionados, faseSelecionada, dateFilter, tabAtiva, provas, filtrarMeuCampus, meuCampusAtual]);
+  }, [searchTerm, searchDate, anosSelecionados, faseSelecionada, dateFilter, tabAtiva, provas]);
 
   // ── Limpar filtros ─────────────────────────────────────────────────────────
   function limparFiltros() {
-    setSearchName('');
+    setSearchTerm('');
     setSearchDate('');
     setAnosSelecionados([]);
     setFaseSelecionada('');
     setDateFilter('all');
-    setFiltrarMeuCampus(false);
   }
 
   // ── Geração de PDF ─────────────────────────────────────────────────────────
@@ -216,13 +216,11 @@ function Prova() {
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <header className={styles.header}>
-                {/* Lado Esquerdo: Bloco de Texto (Título + Subtítulo) */}
                 <div>
                     <h1 className={styles.page_title}>Banco de Provas</h1>
-                    <p className={styles.subtitle}>Gerencie e aplique as provas cadastradas</p>
+                    <p className={styles.subtitle}>Gerencie e aplique as provas cadastras</p>
                 </div>
 
-                {/* Lado Direito: Contentor da imagem BooksIcon com círculo de fundo */}
                 <div className={styles.icon_wrapper_exams}>
                     <div className={styles.bg_circle_exams}></div>
                     <img 
@@ -232,10 +230,9 @@ function Prova() {
                     />
                 </div>
       </header>
-      {/* ── Tabs: Aprovadas / Aplicadas / Pendentes ───────────────────────────── */}
+      {/* ── Tabs ─────────────────────────────────────────────────────────────── */}
         <div className={styles.tabs_container}>
           {TABS
-            // BLOQUEIO DO REVISOR: Filtra a aba "aplicadas" antes de desenhar na tela
             .filter(tab => !(isRevisor && tab.key === 'aplicadas'))
             .map(tab => (
             <button
@@ -255,15 +252,15 @@ function Prova() {
       {/* ── Toolbar ──────────────────────────────────────────────────────────── */}
       <div className={styles.toolbar}>
 
-        {/* Busca por nome */}
+        {/* Único buscador global */}
         <div className={styles.search_wrapper}>
           <div className={styles.search_container}>
             <FiSearch className={styles.search_icon} />
             <input
               type="text"
-              placeholder="Buscar prova pelo nome..."
-              value={searchName}
-              onChange={e => setSearchName(e.target.value)}
+              placeholder="Buscar por prova, autor ou e-mail..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -325,26 +322,6 @@ function Prova() {
             value={searchDate}
             onChange={e => setSearchDate(e.target.value)}
           />
-          {meuCampusAtual && !isEstagiario && (
-            <button
-              type="button"
-              className={styles.native_select} 
-              onClick={() => setFiltrarMeuCampus(!filtrarMeuCampus)}
-              style={{
-                backgroundColor: filtrarMeuCampus ? '#1967d2' : 'transparent',
-                color: filtrarMeuCampus ? '#fff' : 'inherit',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                fontWeight: filtrarMeuCampus ? 'bold' : 'normal',
-                height: '42px',
-                borderRadius: '6px',
-                padding: '0 12px'
-              }}
-              title={`Mostrar apenas provas de ${meuCampusAtual}`}
-            >
-              {filtrarMeuCampus ? '✓ Meu Campus' : 'Meu Campus'}
-            </button>
-          )}
         </div>
       </div>
 
@@ -393,15 +370,9 @@ function Prova() {
                       {prova.fase ? `Fase ${prova.fase}` : 'Sem fase'}
                     </div>
 
-                    {/* IDENTIFICAÇÃO DO AUTOR E DO POLO  */}
-                    <div className={styles.tag} title="Autor da Prova">
+                    <div className={styles.tag} title={`Autor: ${prova.author?.name || prova.author_name || 'Não informado'}`}>
                       <FiUser style={{ marginRight: '6px' }} />
-                      {prova.author?.name || 'Autor Desconhecido'}
-                    </div>
-
-                    <div className={styles.tag} title="Cidade">
-                      <FiMapPin style={{ marginRight: '6px' }} />
-                      {prova.author?.profile?.municipio || prova.author?.profile?.cidade || 'Polo não informado'}
+                      {prova.author?.name || prova.author_name || 'Autor Desconhecido'}
                     </div>
 
                     <div className={`${styles.status_pill} ${styles[prova.status?.toLowerCase()] || ''}`}>

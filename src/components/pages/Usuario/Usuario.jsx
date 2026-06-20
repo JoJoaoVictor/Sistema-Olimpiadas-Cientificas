@@ -12,74 +12,23 @@ import { usePermission } from "../../../hooks/usePermission";
 import api from "../../../services/api";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Mapa dos 18 campi UNEMAT: value (armazenado no banco) → label legível
+// Helpers de formatação
 // ─────────────────────────────────────────────────────────────────────────────
-const UNEMAT_CAMPUSES = [
-  // Câmpus Oficiais da UNEMAT no Projeto
-  { value: "ALTA_FLORESTA",         label: "UNEMAT - Alta Floresta",        cidade: "Alta Floresta" },
-  { value: "BARRA_DO_BUGRES",       label: "UNEMAT - Barra do Bugres",      cidade: "Barra do Bugres" },
-  { value: "CACERES",               label: "UNEMAT - Cáceres (Sede)",       cidade: "Cáceres" },
-  { value: "COLIDER",               label: "UNEMAT - Colíder",              cidade: "Colíder" },
-  { value: "DIAMANTINO",            label: "UNEMAT - Diamantino",           cidade: "Diamantino" },
-  { value: "GUARANTA_DO_NORTE",     label: "UNEMAT - Guarantã do Norte",    cidade: "Guarantã do Norte" },
-  { value: "JUARA",                 label: "UNEMAT - Juara",                cidade: "Juara" },
-  { value: "JUINA",                 label: "UNEMAT - Juína",                cidade: "Juína" },
-  { value: "NOVA_MUTUM",            label: "UNEMAT - Nova Mutum",           cidade: "Nova Mutum" },
-  { value: "NOVA_XAVANTINA",        label: "UNEMAT - Nova Xavantina",       cidade: "Nova Xavantina" },
-  { value: "PONTES_E_LACERDA",      label: "UNEMAT - Pontes e Lacerda",     cidade: "Pontes e Lacerda" },
-  { value: "SINOP",                 label: "UNEMAT - Sinop",                cidade: "Sinop" },
-  { value: "TANGARA_DA_SERRA",      label: "UNEMAT - Tangará da Serra",     cidade: "Tangará da Serra" },
-
-  // Cidades do Polo de Cáceres (Olimpíada de Matemática / Extensão)
-  { value: "ALTO_PARAGUAI",         label: "Polo - Alto Paraguai",          cidade: "Alto Paraguai" },
-  { value: "NORTELANDIA",           label: "Polo - Nortelândia",            cidade: "Nortelândia" },
-  { value: "NOVA_MARILANDIA",       label: "Polo - Nova Marilândia",        cidade: "Nova Marilândia" },
-  { value: "NOVA_OLIMPIA",          label: "Polo - Nova Olímpia",           cidade: "Nova Olímpia" },
-  { value: "PORTO_ESTRELA",         label: "Polo - Porto Estrela",          cidade: "Porto Estrela" },
-
-  // Cidades do Polo de Sinop (Olimpíada de Matemática / Extensão)
-  { value: "CAMPO_NOVO_DO_PARECIS", label: "Polo - Campo Novo do Parecis",  cidade: "Campo Novo do Parecis" },
-  { value: "CARLINDA",              label: "Polo - Carlinda",               cidade: "Carlinda" },
-  { value: "ITANHANGA",             label: "Polo - Itanhangá",              cidade: "Itanhangá" },
-  { value: "ITAUBA",                label: "Polo - Itaúba",                 cidade: "Itaúba" },
-  { value: "LUCAS_DO_RIO_VERDE",    label: "Polo - Lucas do Rio Verde",     cidade: "Lucas do Rio Verde" },
-  { value: "MARCELANDIA",           label: "Polo - Marcelândia",            cidade: "Marcelândia" },
-  { value: "NOVA_CANAA_DO_NORTE",   label: "Polo - Nova Canaã do Norte",    cidade: "Nova Canaã do Norte" },
-  { value: "NOVA_MONTE_VERDE",      label: "Polo - Nova Monte Verde",       cidade: "Nova Monte Verde" },
-  { value: "NOVA_SANTA_HELENA",     label: "Polo - Nova Santa Helena",      cidade: "Nova Santa Helena" },
-  { value: "PARANAITA",             label: "Polo - Paranaíta",              cidade: "Paranaíta" },
-  { value: "PORTO_DOS_GAUCHOS",     label: "Polo - Porto dos Gaúchos",      cidade: "Porto dos Gaúchos" },
-  { value: "TABAPORA",              label: "Polo - Tabaporã",               cidade: "Tabaporã" },
-  { value: "TAPURAH",               label: "Polo - Tapurah",                cidade: "Tapurah" },
-  { value: "TERRA_NOVA_DO_NORTE",   label: "Polo - Terra Nova do Norte",    cidade: "Terra Nova do Norte" }
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers de formatação para exibição (banco guarda só dígitos)
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** "52998224725" → "529.982.247-25" */
 const formatCPFDisplay = (cpf) => {
-  if (!cpf) return "—";
+  if (!cpf) return "";
   const d = cpf.replace(/\D/g, "");
-  if (d.length !== 11) return cpf; // devolve como veio se inesperado
+  if (d.length !== 11) return cpf;
   return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 };
 
-/** "65999887766" → "(65) 99988-7766"  |  "6533221100" → "(65) 3322-1100" */
 const formatTelefoneDisplay = (tel) => {
-  if (!tel) return "—";
+  if (!tel) return "";
   const d = tel.replace(/\D/g, "");
   if (d.length === 11) return d.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
   if (d.length === 10) return d.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
   return tel;
 };
 
-/** "SINOP" → "Sinop"  |  valor desconhecido → devolve o próprio valor */
-const formatCampusDisplay = (value) => {
-  if (!value) return "—";
-  return UNEMAT_CAMPUSES.find((c) => c.value === value)?.label ?? value;
-};
 // ─────────────────────────────────────────────────────────────────────────────
 // Componente
 // ─────────────────────────────────────────────────────────────────────────────
@@ -113,16 +62,11 @@ function Usuario() {
   const [newPassword,     setNewPassword]     = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleCampusChange = (e) => {
-    const campusValue = e.target.value;
-    const selected = UNEMAT_CAMPUSES.find((c) => c.value === campusValue);
-    setEditCampus(campusValue);
-    setEditCidade(selected ? selected.cidade : "");
-  };
   const handleLogout = () => {
     signout();
     navigate("/login");
   };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -180,13 +124,11 @@ function Usuario() {
         }
       });
 
-      // Pega os dados fresquinhos retornados pelo backend blindado
       const updatedData = response.data?.data;
 
       if (typeof updateUser === 'function' && updatedData) {
         updateUser(updatedData);
       } else if (typeof updateUser === 'function') {
-        // Fallback seguro caso a estrutura mude
         updateUser({
           ...user,
           name: editName,
@@ -205,7 +147,7 @@ function Usuario() {
       setProfilePic(finalAvatarUrl);
       setEditCidade(updatedData?.profile?.cidade || editCidade);
       setShowEditModal(false);
-      alert("Perfil atualizado com sucesso!");
+      alert("Perfil updated successfully!");
     } catch (error) {
       const msg = error.response?.data?.detail || "Erro ao salvar perfil.";
       alert(`Erro: ${msg}`);
@@ -244,19 +186,10 @@ function Usuario() {
   // ─── Dados básicos (contexto) ────────────────────────────────────────────
   const displayName  = user?.name  || "Usuário";
   const displayEmail = user?.email || "Email não disponível";
- const displayRole = user?.role === "STUDENT" ? "ELABORADOR" : (role || "Elaborador");
-  // ─── Dados do perfil acadêmico ───────────────────────────────────────────
-  // Lidos de user.profile — disponíveis após UserSchema incluir o relacionamento.
-  // Todos os campos têm fallback "—" para não quebrar se ainda não existirem.
+  const displayRole = user?.role === "STUDENT" ? "ELABORADOR" : (role || "Elaborador");
   const perfil         = user?.profile ?? {};
-  const displayCPF      = formatCPFDisplay(perfil.cpf);
-  const displayTelefone = formatTelefoneDisplay(perfil.telefone);
-  const displayCampus   = formatCampusDisplay(perfil.campus);
-  const displayCidade   = perfil.cidade   || "—";
-  const displayMatricula = perfil.matricula || "—";
-  const displayCurso    = perfil.curso    || "—";
+  const displayCampus   = perfil.campus; // Agora pega direto a string livre
 
-  // Matrícula e Curso só fazem sentido para STUDENT e PROFESSOR
   const showMatricula = ["STUDENT", "PROFESSOR"].includes(user?.role);
   const showCurso     = user?.role === "STUDENT";
 
@@ -276,8 +209,8 @@ function Usuario() {
             <h2 className={styles.user_name}>{displayName}</h2>
             <span className={styles.user_badge}>{displayRole}</span>
 
-            {/* Campus exibido sob o badge se preenchido */}
-            {perfil.campus && (
+            {/* Campus exibido sob o badge APENAS se existir */}
+            {perfil?.campus && (
               <span className={styles.campus_badge}>
                 <FiMapPin size={11} /> {displayCampus}
               </span>
@@ -307,65 +240,91 @@ function Usuario() {
           </div>
 
           <div className={styles.info_grid}>
-            <div className={styles.info_item}>
-              <label><FiUser /> Nome Completo</label>
-              <p>{displayName}</p>
-            </div>
-            <div className={styles.info_item}>
-              <label><FiMail /> Email</label>
-              <p>{displayEmail}</p>
-            </div>
-            <div className={styles.info_item}>
-              <label><RiIdCardLine /> CPF</label>
-              <p>{editCPF ? formatCPFDisplay(editCPF) : "—"}</p>
-            </div>
-            <div className={styles.info_item}>
-              <label><FiPhone /> Telefone / WhatsApp</label>
-              <p>{user?.profile?.telefone ? formatTelefoneDisplay(user.profile.telefone) : "—"}</p>
-            </div>
+            {displayName && (
+              <div className={styles.info_item}>
+                <label><FiUser /> Nome Completo</label>
+                <p>{displayName}</p>
+              </div>
+            )}
+            
+            {displayEmail && (
+              <div className={styles.info_item}>
+                <label><FiMail /> Email</label>
+                <p>{displayEmail}</p>
+              </div>
+            )}
+            
+            {/* CPF: Ocultado caso esteja vazio */}
+            {editCPF && (
+              <div className={styles.info_item}>
+                <label><RiIdCardLine /> CPF</label>
+                <p>{formatCPFDisplay(editCPF)}</p>
+              </div>
+            )}
+            
+            {/* Telefone: Ocultado caso esteja vazio */}
+            {perfil?.telefone && (
+              <div className={styles.info_item}>
+                <label><FiPhone /> Telefone / WhatsApp</label>
+                <p>{formatTelefoneDisplay(perfil.telefone)}</p>
+              </div>
+            )}
+            
             <div className={styles.info_item}>
               <label><FiCheckCircle /> Cargo</label>
               <p>{displayRole}</p>
             </div>
+            
             <div className={styles.info_item}>
               <label><FiCalendar /> Membro Desde</label>
               <p>{createdAt}</p>
             </div>
+            
             <div className={styles.info_item}>
               <label>Status da Conta</label>
               <span className={styles.status_active}>Ativo</span>
             </div>
           </div>
 
-          {/* ── Dados Acadêmicos ──────────────────────────────────── */}
+          {/* ── Dados Acadêmicos / Localização ──────────────────────── */}
           <div className={styles.details_divider}>
-            <span>Dados Acadêmicos</span>
+            <span>Dados Profissionais</span>
           </div>
 
-            <div className={styles.info_grid}>
+          <div className={styles.info_grid}>
+            
+            {/* Exibe Campus/Polo APENAS se existir */}
+            {perfil?.campus && (
               <div className={styles.info_item}>
-                <label><BsBuilding /> Campus / Polo</label>
-                <p>{user?.profile?.campus ? formatCampusDisplay(user.profile.campus) : "—"}</p>
+                <label><BsBuilding /> Instituição vinculada</label>
+                <p>{perfil.campus}</p>
               </div>
+            )}
+
+            {/* Cidade sempre exibe se houver string válida */}
+            {editCidade && (
               <div className={styles.info_item}>
                 <label><FiMapPin /> Cidade</label>
-                <p>{editCidade || "—"}</p>
-            </div>
+                <p>{editCidade}</p>
+              </div>
+            )}
 
-            {showMatricula && (
+            {/* Exibe Matrícula APENAS se existir e for o perfil adequado */}
+            {showMatricula && perfil?.matricula && (
               <div className={styles.info_item}>
                 <label>
                   <RiIdCardLine />
                   {user?.role === "STUDENT" ? "Matrícula" : "Nº Funcional"}
                 </label>
-                <p>{user?.profile?.matricula || "—"}</p>
+                <p>{perfil.matricula}</p>
               </div>
             )}
 
-            {showCurso && (
+            {/* Exibe Curso APENAS se existir e for Estudante */}
+            {showCurso && perfil?.curso && (
               <div className={styles.info_item}>
                 <label><FiBook /> Curso</label>
-                <p>{user?.profile?.curso || "—"}</p>
+                <p>{perfil.curso}</p>
               </div>
             )}
           </div>
@@ -430,41 +389,34 @@ function Usuario() {
                   </div>
                 </div>
 
-                {/* COLUNA 2: DADOS ACADÉMICOS */}
+                {/* COLUNA 2: DADOS ACADÉMICOS / LOCALIZAÇÃO */}
                 <div className={styles.modal_column}>
-                  <h4 className={styles.modal_section_title}>Dados Académicos</h4>
+                  <h4 className={styles.modal_section_title}>Dados Profissionais</h4>
 
+                  {/* AQUI ESTÁ A CORREÇÃO: Instituição vinculada livre */}
                   <div className={styles.form_group}>
-                    <label>Campus / Polo</label>
-                    <select
-                      className={styles.custom_select}
+                    <label>Instituição vinculada</label>
+                    <input
+                      type="text"
                       value={editCampus}
-                      onChange={handleCampusChange}
-                      required
-                    >
-                      <option value="">Selecione o campus</option>
-                      {UNEMAT_CAMPUSES.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="input-group">
-                      <label htmlFor="cidade">Cidade</label>
-                      <input
-                        id="cidade"
-                        type="text"
-                        value={editCidade}
-                        readOnly
-                        className="input-readonly"
-                        tabIndex="-1"
-                        placeholder="Preenchida conforme o campus"
-                      />
-                    </div>
+                      onChange={(e) => setEditCampus(e.target.value)}
+                      placeholder="Digite o nome da instituição"
+                    />
                   </div>
 
-                  {/* Mostra Matrícula/Nº Funcional baseado no cargo atual do utilizador logado */}
-                  {["STUDENT", "PROFESSOR"].includes(user?.role) && (
+                  {/* AQUI ESTÁ A CORREÇÃO: Cidade livre (sem readOnly, sem if/else) */}
+                  <div className={styles.form_group}>
+                    <label>Cidade</label>
+                    <input
+                      type="text"
+                      value={editCidade}
+                      onChange={(e) => setEditCidade(e.target.value)}
+                      placeholder="Digite o nome da sua cidade"
+                    />
+                  </div>
+
+                  {/* Mostra Matrícula APENAS se o usuário JÁ TIVER esse dado salvo */}
+                  {["STUDENT", "PROFESSOR"].includes(user?.role) && perfil?.matricula && (
                     <div className={styles.form_group}>
                       <label>{user?.role === "STUDENT" ? "Matrícula" : "Nº Funcional"}</label>
                       <input
@@ -476,8 +428,8 @@ function Usuario() {
                     </div>
                   )}
 
-                  {/* Mostra Curso apenas se for estudante */}
-                  {user?.role === "STUDENT" && (
+                  {/* Mostra Curso APENAS se o usuário JÁ TIVER esse dado salvo */}
+                  {user?.role === "STUDENT" && perfil?.curso && (
                     <div className={styles.form_group}>
                       <label>Curso</label>
                       <input
@@ -529,10 +481,10 @@ function Usuario() {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   autoComplete="new-password"
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
 
@@ -545,7 +497,7 @@ function Usuario() {
                   placeholder="Repita a nova senha"
                   autoComplete="new-password"
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
 

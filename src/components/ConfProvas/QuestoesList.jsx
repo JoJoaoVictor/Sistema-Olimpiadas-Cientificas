@@ -43,13 +43,17 @@ function QuestoesList({
   const [loading, setLoading] = useState(true);
   const [paginaAtual, setPaginaAtual] = useState(1);
 
-  // Carrega TODAS as questões uma única vez
+  // Carrega as questões uma única vez aplicando a trava de segurança
   useEffect(() => {
     const fetchQuestoes = async () => {
       setLoading(true);
       try {
         const response = await api.get('/api/v1/questions', {
-          params: { page: 1, per_page: 100 } // Ajuste se necessário
+          params: { 
+            page: 1, 
+            per_page: 1000,              // Aumentado para garantir que traga todo o catálogo utilizável
+            only_approved_applied: true  // 🌟 TRAVA EXTRA: OBRIGA o backend a ocultar as Pendentes nesta tela
+          }
         });
         const data = response.data?.data?.questions || response.data?.questions || response.data || [];
 
@@ -99,7 +103,7 @@ function QuestoesList({
     ? allQuestions.filter(q => {
         const f = filtros;
 
-        // Status de uso
+        // Status de uso (Como o backend só enviou Aprovadas e Aplicadas, 'ineditas' vira sinônimo de prontas/aprovadas)
         const isAplicada = q.is_applied === true;
         const passaFiltroUso =
           f.statusUso === 'todas' ? true :

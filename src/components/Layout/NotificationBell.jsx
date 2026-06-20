@@ -70,7 +70,7 @@ export default function NotificationBell() {
       setIsOpen(false);
       fetchNotifications();
     } catch (err) {
-      console.error('Erro ao marcar como lida:', err);
+      //console.error('Erro ao marcar como lida:', err);
       alert('Erro ao marcar notificação como lida');
     }
   };
@@ -83,7 +83,7 @@ export default function NotificationBell() {
       setIsOpen(false);
       fetchNotifications();
     } catch (err) {
-      console.error('Erro ao marcar todos:', err);
+      //console.error('Erro ao marcar todos:', err);
       alert('Erro ao marcar notificações como lidas');
     }
   };
