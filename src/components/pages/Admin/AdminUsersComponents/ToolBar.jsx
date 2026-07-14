@@ -1,4 +1,4 @@
-import { FiSearch, FiFilter, FiMapPin } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiMapPin, FiActivity } from 'react-icons/fi';
 import styles from '../AdminUsers.module.css';
 
 function ToolBar({ 
@@ -7,19 +7,17 @@ function ToolBar({
   roleFilter, 
   onRoleFilterChange, 
   cityFilter, 
-  onCityFilterChange, 
+  onCityFilterChange,
+  statusFilter,          // NOVO
+  onStatusFilterChange,  // NOVO
   users, 
-  filteredUsers, // 🌟 Nova prop para sincronizar os contadores de abas
+  filteredUsers,  
   cities, 
   roleTabsConfig 
 }) {
 
-  // ── Contador Inteligente local ─────────────────────────────────────────────
-  // Conta quantos usuários de cada role existem baseando-se no que está atualmente filtrado
   const getCountForTab = (tabKey) => {
-    // Lista de referência: se já filtramos por cidade ou texto, calcula em cima dela
     const listToCount = filteredUsers || users; 
-
     if (tabKey === 'ALL') {
       return listToCount.length;
     }
@@ -40,7 +38,22 @@ function ToolBar({
         />
       </div>
 
-      {/* 2. Filtro de Cidade/Polo (Alinhado ao Pydantic) */}
+      {/* 2. NOVO: Filtro de Status da Conta */}
+      <div className={styles.city_filter_wrapper}>
+        <FiActivity style={{ color: '#888', flexShrink: 0 }} />
+        <select
+          value={statusFilter}
+          onChange={e => onStatusFilterChange(e.target.value)}
+          className={styles.city_select}
+        >
+          <option value="ALL">Todos os Status</option>
+          <option value="PENDING">Em Análise (Fila)</option>
+          <option value="APPROVED">Ativo</option>
+          <option value="REJECTED">Rejeitados</option>
+        </select>
+      </div>
+
+      {/* 3. Filtro de Cidade/Polo */}
       <div className={styles.city_filter_wrapper}>
         <FiMapPin style={{ color: '#888', flexShrink: 0 }} />
         <select
@@ -57,7 +70,7 @@ function ToolBar({
         </select>
       </div>
 
-      {/* 3. Abas de Cargos (Roles) */}
+      {/* 4. Abas de Cargos (Roles) */}
       <div className={styles.role_tabs}>
         <FiFilter style={{ color: '#888', flexShrink: 0 }} />
         {roleTabsConfig.map(t => (
@@ -68,7 +81,7 @@ function ToolBar({
           >
             {t.label}
             <span className={styles.tab_count}>
-              {getCountForTab(t.key)} {/* 🌟 Contador dinâmico e reativo */}
+              {getCountForTab(t.key)}  
             </span>
           </button>
         ))}

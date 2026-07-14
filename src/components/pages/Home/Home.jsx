@@ -93,8 +93,7 @@ function Home() {
             <header className={styles.portal_header}>
                 <div className={styles.header_content}>
                     <img style={{width:'15%'}} src={Imagens4} alt="Emblema" />
-                    <h2>Sistema de Gestão de provas do Programa Olimpíada de Matemática da<span> UNEMAT</span></h2>
-                        <h3>S.G.O.M</h3>
+                    <h2>Sistema de Gestão de provas do Programa Olimpíada de Matemática da<span> UNEMAT</span></h2> 
                 </div>
             </header>
 
