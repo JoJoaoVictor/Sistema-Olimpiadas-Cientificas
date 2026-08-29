@@ -12,14 +12,48 @@ const opcoesAno = [
   { value: '3', label: '3º Médio' },
 ];
 
+// Normaliza qualquer representação de booleano vinda da API (true, "true", 1, "1")
+const normalizarBool = (v) => v === true || v === 'true' || v === 1 || v === '1';
+
+/**
+ * Extrai as questões da prova.
+ * IMPORTANTE: hide_alternatives vive na tabela associativa (exam_questions),
+ * não na questão. Ao achatar o pivot, a flag precisa ser mesclada no objeto
+ * da questão — senão o estado "Sem Alts." se perde a cada recarga.
+ */
 function extrairQuestoes(dadosProva) {
-  const fonte = dadosProva.questions || dadosProva.exam_questions || [];
+  const fonte = dadosProva?.questions || dadosProva?.exam_questions || [];
   if (!fonte.length) return [];
+
   const ordenadas = [...fonte].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
-  if (ordenadas[0]?.question) return ordenadas.map(eq => eq.question);
-  if (ordenadas[0]?.id)       return ordenadas;
+
+  // Formato pivot: [{ question: {...}, order_index, hide_alternatives }]
+  if (ordenadas[0]?.question) {
+    return ordenadas.map(eq => ({
+      ...eq.question,
+      order_index: eq.order_index ?? 0,
+      hide_alternatives: normalizarBool(eq.hide_alternatives),
+    }));
+  }
+
+  // Formato plano: [{ id, ... }]
+  if (ordenadas[0]?.id) {
+    return ordenadas.map(q => ({
+      ...q,
+      hide_alternatives: normalizarBool(q.hide_alternatives),
+    }));
+  }
+
   return [];
 }
+
+// Monta o payload de sincronização de questões preservando a flag de cada uma
+const montarPayloadQuestoes = (lista) =>
+  lista.map((q, index) => ({
+    question_id: q.id,
+    order_index: index,
+    hide_alternatives: normalizarBool(q.hide_alternatives),
+  }));
 
 export function useEditarProva(id) {
   const navigate = useNavigate();
@@ -46,10 +80,10 @@ export function useEditarProva(id) {
   const [excluindo,           setExcluindo]           = useState(false);
 
   // ── Questões (remoção / adição) ───────────────────────────────────────────
-  const [removendo,       setRemovendo]       = useState(null);
-  const [adicionando,     setAdicionando]     = useState(null);
+  const [removendo,   setRemovendo]   = useState(null);
+  const [adicionando, setAdicionando] = useState(null);
 
-   // ── Estado para comentários do revisor Questões e Provas ─────────────────
+  // ── Estado para comentários do revisor ───────────────────────────────────
   const [reviewerComments, setReviewerComments] = useState('');
 
   // ── Layout (cabeçalho/rodapé) ─────────────────────────────────────────────
@@ -111,8 +145,13 @@ export function useEditarProva(id) {
       const res = await api.patch(`/api/v1/exams/${id}`, payload);
       const atualizado = res.data?.data?.exam || res.data?.data || { ...prova, ...payload };
       setProva(atualizado);
+
+      // Se a resposta trouxe o pivot, ressincroniza as flags a partir dele
+      const questoesAtualizadas = extrairQuestoes(atualizado);
+      if (questoesAtualizadas.length) setQuestoes(questoesAtualizadas);
+
       setModoEdicao(false);
-      alert('Prova updated com sucesso!');
+      alert('Prova atualizada com sucesso!');
     } catch (err) {
       alert('Erro ao salvar alterações: ' + authService._handleError(err));
     } finally {
@@ -155,24 +194,15 @@ export function useEditarProva(id) {
     }
   }
 
- // =========================================================================
+  // =========================================================================
   // 4. REMOVER QUESTÃO
   // =========================================================================
   async function removerQuestao(questaoId) {
     if (!window.confirm('Remover esta questão da prova?')) return;
     setRemovendo(questaoId);
     try {
-      // 1. Filtra a questão removida
       const novaLista = questoes.filter(q => q.id !== questaoId);
-      
-      // 2. Mapeia para o formato correto do backend: [{question_id: 1, order_index: 0}, ...]
-      const payload = novaLista.map((q, index) => ({
-        question_id: q.id,
-        order_index: index
-      }));
-
-      // 3. Envia o Array puro, sem envolver em { question_ids: ... }
-      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      await api.patch(`/api/v1/exams/${id}/questions`, montarPayloadQuestoes(novaLista));
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao remover questão: ' + authService._handleError(err));
@@ -187,17 +217,8 @@ export function useEditarProva(id) {
   async function adicionarQuestao(questao) {
     setAdicionando(questao.id);
     try {
-      // 1. Adiciona a nova questão ao final da lista
-      const novaLista = [...questoes, questao];
-      
-      // 2. Mapeia para o formato correto
-      const payload = novaLista.map((q, index) => ({
-        question_id: q.id,
-        order_index: index
-      }));
-
-      // 3. Envia o Array puro
-      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      const novaLista = [...questoes, { ...questao, hide_alternatives: normalizarBool(questao.hide_alternatives) }];
+      await api.patch(`/api/v1/exams/${id}/questions`, montarPayloadQuestoes(novaLista));
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao adicionar questão: ' + authService._handleError(err));
@@ -211,17 +232,12 @@ export function useEditarProva(id) {
   // =========================================================================
   async function moverQuestaoParaCima(index) {
     if (index <= 0) return;
-    
+
     const novaLista = [...questoes];
-    // Troca as posições no array
     [novaLista[index - 1], novaLista[index]] = [novaLista[index], novaLista[index - 1]];
-    
+
     try {
-      const payload = novaLista.map((q, i) => ({
-        question_id: q.id,
-        order_index: i
-      }));
-      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      await api.patch(`/api/v1/exams/${id}/questions`, montarPayloadQuestoes(novaLista));
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao reordenar questão: ' + authService._handleError(err));
@@ -230,17 +246,12 @@ export function useEditarProva(id) {
 
   async function moverQuestaoParaBaixo(index) {
     if (index >= questoes.length - 1) return;
-    
+
     const novaLista = [...questoes];
-    // Troca as posições no array
     [novaLista[index], novaLista[index + 1]] = [novaLista[index + 1], novaLista[index]];
-    
+
     try {
-      const payload = novaLista.map((q, i) => ({
-        question_id: q.id,
-        order_index: i
-      }));
-      await api.patch(`/api/v1/exams/${id}/questions`, payload);
+      await api.patch(`/api/v1/exams/${id}/questions`, montarPayloadQuestoes(novaLista));
       setQuestoes(novaLista);
     } catch (err) {
       alert('Erro ao reordenar questão: ' + authService._handleError(err));
@@ -254,29 +265,24 @@ export function useEditarProva(id) {
     const questaoAlvo = questoes.find(q => q.id === questaoId);
     if (!questaoAlvo) return;
 
-    // Normaliza o booleano atual e inverte o estado
-    const valorAtual = questaoAlvo.hide_alternatives === true || questaoAlvo.hide_alternatives === "true";
-    const novoValor = !valorAtual;
+    const valorAtual = normalizarBool(questaoAlvo.hide_alternatives);
+    const novoValor  = !valorAtual;
 
-    // 1. Atualização Otimista: renderiza a UI sem esperar o servidor
-    setQuestoes(prevQuestoes => 
-      prevQuestoes.map(q => 
-        q.id === questaoId ? { ...q, hide_alternatives: novoValor } : q
-      )
+    // 1. Atualização otimista
+    setQuestoes(prev =>
+      prev.map(q => (q.id === questaoId ? { ...q, hide_alternatives: novoValor } : q))
     );
 
     try {
-      // 2. Dispara a atualização para o endpoint da relação associativa (pivot)
+      // 2. Persiste na associação exam_questions
       await api.patch(`/api/v1/exams/${id}/questions/${questaoId}`, {
         hide_alternatives: novoValor
       });
     } catch (err) {
-      console.error("Erro ao alternar alternativas no servidor:", err);
-      // 3. Rollback: se a API falhar, reverte o estado visual original
-      setQuestoes(prevQuestoes => 
-        prevQuestoes.map(q => 
-          q.id === questaoId ? { ...q, hide_alternatives: valorAtual } : q
-        )
+      console.error('Erro ao alternar alternativas no servidor:', err);
+      // 3. Rollback
+      setQuestoes(prev =>
+        prev.map(q => (q.id === questaoId ? { ...q, hide_alternatives: valorAtual } : q))
       );
       alert('Não foi possível salvar a alteração: ' + authService._handleError(err));
     }
@@ -348,8 +354,8 @@ export function useEditarProva(id) {
     removendo, removerQuestao,
     adicionando, adicionarQuestao,
     moverQuestaoParaCima, moverQuestaoParaBaixo,
-    toggleAlternativasQuestao,  
-    //Comentarios
+    toggleAlternativasQuestao,
+    // Comentários
     reviewerComments, setReviewerComments,
     // Layout
     headerImage, setHeaderImage,
