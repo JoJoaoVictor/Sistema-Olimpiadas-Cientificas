@@ -8,7 +8,7 @@ import { FiLayers, FiCalendar, FiCheckCircle, FiClock, FiAlertCircle, FiLayout, 
 import { BsBook } from 'react-icons/bs';
 
 // Hook e componentes filhos
-import { useEditarProva }         from './hooks/useEditarProva.js';
+import { useEditarProva }         from './Hooks/useEditarProva.js';
 import QuestaoCard                from './components/QuestaoCard.jsx';
 import ModalAdicionarQuestao      from './components/ModalAdicionarQuestao.jsx';
 import TabCabecalhoRodape         from './components/TabCabecalhoRodape.jsx';
